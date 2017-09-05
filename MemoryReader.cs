@@ -17,8 +17,8 @@ namespace MemoryReader
         public MemoryReader() : base(PLUGIN_NAME, PLUGIN_AUTHOR)
         {
             I18n.Instance.ApplyLanguage(new DefaultLanguage());
-            base.onInitPlugin += OnInitPlugin;
-            base.onLoadComplete += OnLoadComplete;
+            base.EventBus.BindEvent<PluginEvents.InitPluginEvent>(OnInitPlugin);
+            base.EventBus.BindEvent<PluginEvents.LoadCompleteEvent>(OnLoadComplete);
         }
 
         [Obsolete]
@@ -45,19 +45,19 @@ namespace MemoryReader
             m_osu_listener.OnStatusChanged -= listener.OnStatusChange;
         }
 
-        private void OnInitPlugin()
+        private void OnInitPlugin(PluginEvents.InitPluginEvent e)
         {
             Sync.Tools.IO.CurrentIO.WriteColor(PLUGIN_NAME + " By " + PLUGIN_AUTHOR, ConsoleColor.DarkCyan);
         }
 
-        private void OnLoadComplete(SyncHost host)
+        private void OnLoadComplete(PluginEvents.LoadCompleteEvent ev)
         {
             Setting.PluginInstance = this;
             Setting.LoadSetting();
 
             try
             {
-                m_osu_listener.Init(host);
+                m_osu_listener.Init(ev.Host);
             }
             catch (Exception e)
             {

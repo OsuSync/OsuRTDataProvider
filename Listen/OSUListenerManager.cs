@@ -57,7 +57,7 @@ namespace MemoryReader.Listen
         private MemoryFinder m_memory_finder;
 
         private OsuStatus m_last_osu_status = OsuStatus.Unkonw;
-        private IOSUStatus m_now_player_status = new OSUStatus();
+        private OSUStatus m_now_player_status = new OSUStatus();
         private bool m_stop = false;
         private Task m_listen_task;
 
@@ -87,13 +87,9 @@ namespace MemoryReader.Listen
             {
                 if (t.getName() == "Now Playing")
                 {
-                    ((NowPlaying.NowPlaying)t).registerCallback(p =>
+                    ((NowPlaying.NowPlaying)t).EventBus.BindEvent<StatusChangeEvent>(p =>
                     {
-                        return new System.Threading.Tasks.Task<bool>(status =>
-                        {
-                            m_now_player_status = (NowPlaying.IOSUStatus)status;
-                            return true;
-                        }, p);
+                        m_now_player_status = p.CurrentStatus;
                     });
                     break;
                 }

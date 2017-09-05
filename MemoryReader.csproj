@@ -76,12 +76,12 @@
     <Compile Include="Setting.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Sync\Sync.csproj">
+    <ProjectReference Include="..\..\osuSync\Sync\Sync.csproj">
       <Project>{FBD514C2-2830-479E-B050-D1C383028456}</Project>
       <Name>Sync</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\NowPlaying\NowPlaying.csproj">
+    <ProjectReference Include="..\..\osuSync\OtherPlugins\NowPlaying\NowPlaying.csproj">
       <Project>{91ed3fe1-b0f7-44b4-8ab2-a3f6825eea60}</Project>
       <Name>NowPlaying</Name>
       <Private>False</Private>
