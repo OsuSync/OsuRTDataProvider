@@ -21,7 +21,7 @@ namespace MemoryReader
             base.EventBus.BindEvent<PluginEvents.LoadCompleteEvent>(OnLoadComplete);
         }
 
-        [Obsolete]
+        [Obsolete("Please Use ListenerManager", true)]
         public void RegisterOSUListener(IOSUListener listener)
         {
             m_osu_listener.OnBeatmapChanged += listener.OnCurrentBeatmapChange;
@@ -33,7 +33,7 @@ namespace MemoryReader
             m_osu_listener.OnStatusChanged += listener.OnStatusChange;
         }
 
-        [Obsolete]
+        [Obsolete("Please Use ListenerManager",true)]
         public void UnregisterOSUListener(IOSUListener listener)
         {
             m_osu_listener.OnBeatmapChanged -= listener.OnCurrentBeatmapChange;
