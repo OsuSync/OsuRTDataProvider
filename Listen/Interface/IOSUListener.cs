@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static MemoryReader.Listen.OSUListenerManager;
 
-namespace MemoryReader.Listen.InterFace
+namespace MemoryReader.Listen.Interface
 { 
     public interface IOSUListener
     {

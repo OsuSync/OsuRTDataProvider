@@ -44,7 +44,7 @@ using System.Runtime.InteropServices;
 // ----------------------------------------------------------------------------------------
 namespace MemoryReader.Memory
 {
-    public class SigScan
+    internal class SigScan
     {
         class MemoryRegion
         {
@@ -73,22 +73,9 @@ namespace MemoryReader.Memory
         ///     The number of bytes we wish to read from the process.
         /// </summary>
 
-        private List<Sig> m_SigQueue;
-
 
         #region "sigScan Class Construction"
-        /// <summary>
-        /// SigScan
-        /// 
-        ///     Main class constructor that uses no params. 
-        ///     Simply initializes the class properties and 
-        ///     expects the user to set them later.
-        /// </summary>
-        public SigScan()
-        {
-            this.m_vProcess = null;
-            this.m_SigQueue = new List<Sig>();
-        }
+
         /// <summary>
         /// SigScan
         /// 
@@ -101,7 +88,6 @@ namespace MemoryReader.Memory
         public SigScan(Process proc)
         {
             this.m_vProcess = proc;
-            this.m_SigQueue = new List<Sig>();
             InitMemoryRegionInfo();
         }
         #endregion
@@ -177,7 +163,7 @@ namespace MemoryReader.Memory
                     bReturn = ReadProcessMemory(
                         this.m_vProcess.Handle, region.BaseAddress, region.DumpedRegion, region.RegionSize, out nBytesRead
                         );
-                    Marshal.GetLastWin32Error();
+
                     // Validation checks.
                     if (bReturn == false || nBytesRead != region.RegionSize)
                         return false;
@@ -269,51 +255,6 @@ namespace MemoryReader.Memory
         }
 
         /// <summary>
-        /// FindPattern
-        /// 
-        ///     Attempts to locate all the patterns in SigQueue inside the dumped
-        ///     memory region compared against the given mask. If the pattern is
-        ///     found, the offset is added to the located address and the Sig's
-        ///     Address will be set.
-        /// </summary>
-        public void FindPattern()
-        {
-            try
-            {
-                // Dump the memory region if we have not dumped it yet.
-                if (!this.DumpMemory())
-                    return;
-
-                // Ensure the mask and pattern lengths match.
-                if (m_SigQueue.Any(sig => sig.Mask.Length != sig.Pattern.Length))
-                {
-                    return;
-                }
-
-                // Loop the region and look for the patterns.
-                foreach (var region in m_memoryRegionList)
-                {
-                    for (int x = 0; x < region.DumpedRegion.Length; x++)
-                    {
-                        foreach (var sig in m_SigQueue)
-                        {
-                            if (this.MaskCheck(region,x, sig.Pattern, sig.Mask))
-                            {
-                                // The pattern was found, set it.
-                                sig.Address = region.BaseAddress + (x + sig.Offset);
-                            }
-                        }
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[MemoryReader]:{ex.Message}", ConsoleColor.Red);
-            }
-        }
-
-        /// <summary>
         /// ResetRegion
         /// 
         ///     Resets the memory dump array to nothing to allow
@@ -333,12 +274,6 @@ namespace MemoryReader.Memory
         {
             get { return this.m_vProcess; }
             set { this.m_vProcess = value; }
-        }
-
-        public List<Sig> SigQueue
-        {
-            get { return this.m_SigQueue; }
-            set { this.m_SigQueue = value; }
         }
         #endregion
 
@@ -419,14 +354,6 @@ namespace MemoryReader.Memory
         public static extern bool CloseHandle(IntPtr hObject);
 
         #endregion
-
-    }
-
-    public class Sig
-    {
-        public byte[] Pattern;
-        public string Mask;
-        public int Offset;
-        public IntPtr Address = IntPtr.Zero;
+   
     }
 }

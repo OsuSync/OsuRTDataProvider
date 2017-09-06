@@ -1,5 +1,5 @@
 ﻿using MemoryReader.BeatmapInfo;
-using MemoryReader.Listen.InterFace;
+using MemoryReader.Listen.Interface;
 using MemoryReader.Mods;
 using System;
 using static MemoryReader.Listen.OSUListenerManager;

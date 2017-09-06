@@ -1,5 +1,5 @@
 ﻿using MemoryReader.Listen;
-using MemoryReader.Listen.InterFace;
+using MemoryReader.Listen.Interface;
 using Sync;
 using Sync.Plugins;
 using Sync.Tools;
