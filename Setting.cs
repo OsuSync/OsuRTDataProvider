@@ -19,7 +19,6 @@ namespace MemoryReader
     internal static class Setting
     {
         public static int ListenInterval = 33;//ms
-        public static int NoFoundOSUHintInterval = 120;//s
 
         public static string SongsPath = "";//不保存
 
@@ -37,7 +36,6 @@ namespace MemoryReader
         public static void SaveSetting()
         {
             setting_output.ListenInterval = ListenInterval.ToString();
-            setting_output.NoFoundOsuHintInterval = NoFoundOSUHintInterval.ToString();
             plugin_config.ForceSave();
         }
 
@@ -52,7 +50,6 @@ namespace MemoryReader
             else
             {
                 ListenInterval = int.Parse(setting_output.ListenInterval);
-                NoFoundOSUHintInterval = int.Parse(setting_output.NoFoundOsuHintInterval);
             }
         }
     }

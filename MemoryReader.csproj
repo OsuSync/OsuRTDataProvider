@@ -23,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -81,11 +82,14 @@
       <Name>Sync</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\osuSync\OtherPlugins\NowPlaying\NowPlaying.csproj">
+    <ProjectReference Include="..\..\osuSync\OfficalPlugins\NowPlaying\NowPlaying.csproj">
       <Project>{91ed3fe1-b0f7-44b4-8ab2-a3f6825eea60}</Project>
       <Name>NowPlaying</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Pool\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

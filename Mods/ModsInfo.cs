@@ -68,6 +68,11 @@ namespace MemoryReader.Mods
             Mod = Mods.Uninit;
         }
 
+        public void Reset()
+        {
+            Mod = Mods.Uninit;
+        }
+
         public string Name
         {
             get

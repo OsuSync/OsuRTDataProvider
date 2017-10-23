@@ -15,7 +15,7 @@ namespace MemoryReader.Listen
 
         public void OnComboChange(int combo)
         {
-            Sync.Tools.IO.CurrentIO.Write(String.Format("当前Combo:{0}", combo));
+            //Sync.Tools.IO.CurrentIO.Write(String.Format("当前Combo:{0}", combo));
         }
 
         public void OnCurrentBeatmapChange(Beatmap beatmap)
@@ -35,12 +35,12 @@ namespace MemoryReader.Listen
 
         public void OnHPChange(double hp)
         {
-            Sync.Tools.IO.CurrentIO.Write(String.Format("当前HP:{0}", hp));
+            //Sync.Tools.IO.CurrentIO.Write(String.Format("当前HP:{0}", hp));
         }
 
         public void OnStatusChange(OsuStatus last_status,OsuStatus status)
         {
-
+            Sync.Tools.IO.CurrentIO.Write(String.Format("当前状态:{0}", status));
         }
     }
 }
