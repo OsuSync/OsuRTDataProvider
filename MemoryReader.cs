@@ -53,7 +53,6 @@ namespace MemoryReader
         private void OnLoadComplete(PluginEvents.LoadCompleteEvent ev)
         {
             Setting.PluginInstance = this;
-            Setting.LoadSetting();
 
             try
             {

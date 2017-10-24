@@ -1,4 +1,5 @@
 ﻿using Sync.Tools;
+using System;
 
 namespace MemoryReader
 {
@@ -9,10 +10,19 @@ namespace MemoryReader
 
         public void onConfigurationLoad()
         {
+            try
+            {
+                Setting.ListenInterval = int.Parse(ListenInterval);
+            }
+            catch(Exception e)
+            {
+                onConfigurationSave();
+            }
         }
 
         public void onConfigurationSave()
         {
+            ListenInterval = Setting.ListenInterval.ToString();
         }
     }
 
@@ -30,26 +40,6 @@ namespace MemoryReader
             set
             {
                 plugin_config = new PluginConfiuration(value, setting_output);
-            }
-        }
-
-        public static void SaveSetting()
-        {
-            setting_output.ListenInterval = ListenInterval.ToString();
-            plugin_config.ForceSave();
-        }
-
-        public static void LoadSetting()
-        {
-            plugin_config.ForceLoad();
-            if ((setting_output.NoFoundOsuHintInterval == null && setting_output.ListenInterval == null) ||
-                (setting_output.NoFoundOsuHintInterval == "" && setting_output.ListenInterval == ""))
-            {
-                SaveSetting();
-            }
-            else
-            {
-                ListenInterval = int.Parse(setting_output.ListenInterval);
             }
         }
     }
