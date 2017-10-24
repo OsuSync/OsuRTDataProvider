@@ -66,13 +66,9 @@ namespace MemoryReader.BeatmapInfo
 
                 foreach(var info in dir_info)
                 {
-                    int pos = info.Name.IndexOf('[');
-                    if (pos == -1) return "";
-                    string file_diff = info.Name.Substring(pos);
-
                     foreach (var diff in diffs)
                     {
-                        if (file_diff.Contains(diff))
+                        if (info.Name.Contains(diff))
                             return System.IO.Path.Combine(path, info.Name);
                     }
                 }
