@@ -56,7 +56,7 @@ namespace MemoryReader.Listen
 
         private Process m_osu_process;
 
-        private MemoryFinder m_memory_finder;
+        private MemoryFinder m_memory_finder=null;
 
         private OsuStatus m_last_osu_status = OsuStatus.Unkonw;
         private OSUStatus m_now_player_status = new OSUStatus();

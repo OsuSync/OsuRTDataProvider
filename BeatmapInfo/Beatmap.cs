@@ -62,7 +62,7 @@ namespace MemoryReader.BeatmapInfo
                 diffs.Add(Diff);
 
                 //搜索BeatmapSet文件夹找到Osu文件找到对应Diff的文件
-                var dir_info = new System.IO.DirectoryInfo(path).GetFiles("*.osu");
+                var dir_info = new System.IO.DirectoryInfo(path).GetFiles($"*[{Diff}].osu");
 
                 foreach(var info in dir_info)
                 {
