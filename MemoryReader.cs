@@ -65,8 +65,8 @@ namespace MemoryReader
                 Sync.Tools.IO.CurrentIO.WriteColor(e.StackTrace, ConsoleColor.Red);
             }
 #if DEBUG
-            ListenerManager.OnStatusChanged +=(l,c) => Sync.Tools.IO.CurrentIO.Write("当前状态:" + c);
-            ListenerManager.OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write("Mods" + m);
+            //ListenerManager.OnStatusChanged +=(l,c) => Sync.Tools.IO.CurrentIO.Write("当前状态:" + c);
+            //ListenerManager.OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write("Mods:" + m);
 #endif
             m_osu_listener.Start();
         }

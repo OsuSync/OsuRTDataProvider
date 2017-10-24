@@ -12,10 +12,10 @@ namespace MemoryReader.Mods
         [Flags]
         public enum Mods:uint
         {
-            Uninit=0xFFFFFFFF,
             None = 0,
             NoFail = 1 << 0,
             Easy = 1 << 1,
+            //NoVideo = 1 << 2,
             Hidden = 1 << 3,
             HardRock = 1 << 4,
             SuddenDeath = 1 << 5,
@@ -28,30 +28,43 @@ namespace MemoryReader.Mods
             SpunOut = 1 << 12,
             Relax2 = 1 << 13,
             Perfect = 1 << 14,
-            Key1 = 1 << 26,
-            Key3 = 1 << 27,
-            Key2 = 1 << 28,
             Key4 = 1 << 15,
             Key5 = 1 << 16,
             Key6 = 1 << 17,
             Key7 = 1 << 18,
             Key8 = 1 << 19,
-            Key9 = 1 << 24,
-            KeyCoop = 1 << 25,
             FadeIn = 1 << 20,
             Random = 1 << 21,
             Cinema = 1 << 22,
             Target = 1 << 23,
-            ScoreV2 = 1 << 29
+            Key9 = 1 << 24,
+            KeyCoop = 1 << 25,
+            Key1 = 1 << 26,
+            Key3 = 1 << 27,
+            Key2 = 1 << 28,
+            ScoreV2 = 1 << 29,
         }
 
         static private List<string> mod_short_str = new List<string>()
-        {"Uninit","","NF","EZ","HD","HR","SD","DT","RL","HT","NC","FL","AP","SO","RL2","PF","1K","2K","3K","4K","5K","6K","7K","8K","9K","KC",
+        {"","NF","EZ","HD","HR","SD","DT","RL","HT","NC","FL","AP","SO","RL2","PF","1K","2K","3K","4K","5K","6K","7K","8K","9K","KC",
          "FI","RD","CE","TG","V2"};
 
         static private Dictionary<string, string> mod_map = new Dictionary<string, string>();
 
-        public Mods Mod { set; get; }
+        private Mods m_mod;
+        public Mods Mod {
+            set
+            {
+                if ((value & Mods.Nightcore) == Mods.Nightcore)
+                    value &= ~Mods.DoubleTime;
+                else if ((value & Mods.Cinema) == Mods.Cinema)
+                    value &= ~Mods.Autoplay;
+                else if ((value & Mods.Perfect) == Mods.Perfect)
+                    value &= ~Mods.SuddenDeath;
+                m_mod = value;
+            }
+            get=>m_mod;
+        }
 
         static ModsInfo()
         {
@@ -65,12 +78,12 @@ namespace MemoryReader.Mods
 
         public ModsInfo()
         {
-            Mod = Mods.Uninit;
+            Mod = Mods.None;
         }
 
         public void Reset()
         {
-            Mod = Mods.Uninit;
+            Mod = Mods.None;
         }
 
         public string Name
