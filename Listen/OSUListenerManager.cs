@@ -63,9 +63,9 @@ namespace MemoryReader.Listen
         private bool m_stop = false;
         private Task m_listen_task;
 
-        private BeatmapSet m_last_beatmapset = new BeatmapSet(0);
-        private Beatmap m_last_beatmap = new Beatmap(0);
-        private ModsInfo m_last_mods = new ModsInfo();
+        private BeatmapSet m_last_beatmapset = BeatmapSet.Empty;
+        private Beatmap m_last_beatmap = Beatmap.Empty;
+        private ModsInfo m_last_mods = ModsInfo.Empty;
 
         private double m_last_hp = 0;
         private double m_last_acc = 0;
@@ -77,11 +77,6 @@ namespace MemoryReader.Listen
         private int m_last_miss = 0;
 
         private string m_prev_status = string.Empty;
-
-        public OSUListenerManager()
-        {
-            
-        }
 
         public void Init(SyncHost host)
         {
@@ -155,18 +150,32 @@ namespace MemoryReader.Listen
 
                     if (m_memory_finder != null)
                     {
-                        BeatmapSet beatmapset = m_memory_finder.GetCurrentBeatmapSet();
-                        Beatmap beatmap = m_memory_finder.GetCurrentBeatmap();
-                        ModsInfo mods = m_memory_finder.GetCurrentMods();
-                        double hp = m_memory_finder.GetCurrentHP();
-                        double acc = m_memory_finder.GetCurrentAccuracy();
-                        int cb = m_memory_finder.GetCurrentCombo();
-                        int pt = m_memory_finder.GetPlayingTime();
-                        int n300 = m_memory_finder.Get300Count();
-                        int n100 = m_memory_finder.Get100Count();
-                        int n50 = m_memory_finder.Get50Count();
-                        int nmiss = m_memory_finder.GetMissCount();
-                        
+                        BeatmapSet beatmapset = BeatmapSet.Empty;
+                        Beatmap beatmap = Beatmap.Empty;
+                        ModsInfo mods = ModsInfo.Empty;
+                        int cb = 0;
+                        int pt = 0;
+                        int n300 = 0;
+                        int n100 = 0;
+                        int n50 = 0;
+                        int nmiss = 0;
+                        double hp = 0.0;
+                        double acc = 0.0f;
+
+                        #region if listen 
+                        if (OnCurrentMods != null) mods = m_memory_finder.GetCurrentMods();
+                        if (OnBeatmapSetChanged != null || OnBeatmapChanged != null) beatmapset = m_memory_finder.GetCurrentBeatmapSet();
+                        if (OnBeatmapChanged != null) beatmap = m_memory_finder.GetCurrentBeatmap();
+                        if (OnPlayingTimeChanged != null) pt = m_memory_finder.GetPlayingTime();
+                        if (OnComboChanged != null) cb = m_memory_finder.GetCurrentCombo();
+                        if (On300HitChanged != null) n300 = m_memory_finder.Get300Count();
+                        if (On100HitChanged != null) n100 = m_memory_finder.Get100Count();
+                        if (On50HitChanged != null) n50 = m_memory_finder.Get50Count();
+                        if (OnMissHitChanged != null) nmiss = m_memory_finder.GetMissCount();
+                        if (OnAccuracyChanged != null) acc = m_memory_finder.GetCurrentAccuracy();
+                        if (OnHealthPointChanged != null) hp = m_memory_finder.GetCurrentHP();
+                        #endregion
+
                         beatmapset.Artist = m_now_player_status.Artist;
                         beatmapset.Title = m_now_player_status.Title;
                         if (beatmapset.BeatmapSetID != m_last_beatmapset.BeatmapSetID)
@@ -182,7 +191,8 @@ namespace MemoryReader.Listen
 
                         if (status == OsuStatus.Playing)
                         {
-                            if (m_last_osu_status == OsuStatus.Listening)
+                            if (m_last_osu_status == OsuStatus.Listening || m_last_osu_status == OsuStatus.Unkonw||
+                                m_last_osu_status == OsuStatus.NoFoundProcess)
                             {
                                 if (!string.IsNullOrWhiteSpace(m_now_player_status.Diff))
                                     beatmap.Diff = m_now_player_status.Diff;
@@ -256,13 +266,13 @@ namespace MemoryReader.Listen
             if (m_osu_process==null)return OsuStatus.NoFoundProcess;
             if (m_osu_process.HasExited == true)return OsuStatus.NoFoundProcess;
 
-            string osu_title = m_osu_process != null ? m_osu_process.MainWindowTitle : "unknown title";
+            //string osu_title = m_osu_process != null ? m_osu_process.MainWindowTitle : "unknown title";
 
             if (m_now_player_status.Status == null) return OsuStatus.Unkonw;
 
-            if (m_now_player_status.Status == "Editing" || (osu_title != "osu!" && osu_title.Contains(".osu"))) return OsuStatus.Editing;
+            if (m_now_player_status.Status == "Editing") return OsuStatus.Editing;
 
-            if (m_now_player_status.Status == "Playing" || (osu_title != "osu!" && osu_title != "")) return OsuStatus.Playing;
+            if (m_now_player_status.Status == "Playing") return OsuStatus.Playing;
 
             if (m_now_player_status.Status == "Watching") return OsuStatus.Playing;
             return OsuStatus.Listening;

@@ -51,6 +51,8 @@ namespace MemoryReader.Mods
 
         static private Dictionary<string, string> mod_map = new Dictionary<string, string>();
 
+        public static ModsInfo Empty = new ModsInfo();
+
         private Mods m_mod;
         public Mods Mod {
             set

@@ -96,6 +96,8 @@ namespace MemoryReader.BeatmapInfo
             }
         }
 
+        public static BeatmapSet Empty = new BeatmapSet(-1);
+
         public BeatmapSet(int id)
         {
             BeatmapSetID = id;

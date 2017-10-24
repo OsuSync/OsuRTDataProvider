@@ -6,7 +6,6 @@ namespace MemoryReader
     internal class SettingIni : IConfigurable
     {
         public ConfigurationElement ListenInterval { set; get; }
-        public ConfigurationElement NoFoundOsuHintInterval { set; get; }
 
         public void onConfigurationLoad()
         {
