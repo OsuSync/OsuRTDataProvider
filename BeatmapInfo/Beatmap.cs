@@ -66,7 +66,7 @@ namespace MemoryReader.BeatmapInfo
 
                 foreach(var info in dir_info)
                 {
-                    int pos = info.Name.IndexOf('[');
+                    int pos = info.Name.LastIndexOf('[');
                     if (pos == -1) return "";
                     string file_diff = info.Name.Substring(pos);
 
