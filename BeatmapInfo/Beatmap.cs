@@ -49,35 +49,53 @@ namespace MemoryReader.BeatmapInfo
             return ret;
         }
 
+        private string ObscureDiff(string path)
+        {
+            StringBuilder builder = new StringBuilder(path);
+
+            foreach (var c in s_replace_list)
+                builder.Replace(c, "*");
+
+            for (int i = 0; i < builder.Length; i++)
+            {
+                if (builder[i] > 127)
+                    builder[i] = '*'; 
+            }
+            return builder.ToString();
+        }
+
+        private string _path;
+
         public string LocationFile
         {
             get
             {
-                if (Set == null) return "";
-                if (Diff == null || Diff == "") return "";
+                if (Set == null) return string.Empty;
+                if (Diff == null || Diff == string.Empty) return string.Empty;
                 string path = Set.LocationPath;
-                if (path == "") return "";
+                if (path == string.Empty) return string.Empty;
 
-                List<string> diffs = _GenDiff(Diff, 0);
-                diffs.Add(Diff);
+                if (_path != null) return _path;
 
                 //搜索BeatmapSet文件夹找到Osu文件找到对应Diff的文件
-                var dir_info = new System.IO.DirectoryInfo(path).GetFiles($"*.osu");
+                var dir_info = new System.IO.DirectoryInfo(path).GetFiles($"*[{ObscureDiff(Diff)}].osu");
 
-                foreach(var info in dir_info)
+#if DEBUG
+                Sync.Tools.IO.CurrentIO.Write($"[MemoryReader]找到的{dir_info.Length}个Map文件分别为:");
+                int _i = 0;
+                foreach (var dir in dir_info)
                 {
-                    int pos = info.Name.LastIndexOf('[');
-                    if (pos == -1) return "";
-                    string file_diff = info.Name.Substring(pos);
+                    Sync.Tools.IO.CurrentIO.Write($"[MemoryReader][{_i++}]{dir.FullName}");
+                }
+#endif
 
-                    foreach (var diff in diffs)
-                    {
-                        if (file_diff.Contains(diff))
-                            return System.IO.Path.Combine(path, info.Name);
-                    }
+                if (dir_info.Length>0)
+                {
+                    _path = dir_info[0].FullName;
+                    return _path;
                 }
 
-                return "";
+                return string.Empty;
             }
         }
 

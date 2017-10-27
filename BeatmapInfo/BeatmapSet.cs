@@ -36,63 +36,76 @@ namespace MemoryReader.BeatmapInfo
         }
 
         private static string[] s_replace_list=new string[] { "*",".",":","?","\"","<",">"};
-        private static string[] s_replace_target_list = new string[] { "", "-" };
 
-        private List<string> _GenPath(string path,int startindex)
+        private string ObscurePath(string path)
         {
-            List<string> ret = new List<string>();
             StringBuilder builder = new StringBuilder(path);
-            foreach (var sc in s_replace_list)
-                for(int i= startindex; i<builder.Length;++i)
-                {
-                    if(builder[i]==sc[0])
-                    {
-                        foreach(var tc in s_replace_target_list)
-                        {
-                            StringBuilder tmp_builder = new StringBuilder(builder.ToString());
-                            tmp_builder.Replace(sc, tc, i, 1);
-                            ret.AddRange(_GenPath(tmp_builder.ToString(),i));
-                            ret.Add(tmp_builder.ToString());
-                        }
-                    }
-                }
 
-            return ret;
+            foreach (var c in s_replace_list)
+                builder.Replace(c, "*");
+
+            for (int i = 0; i < builder.Length; i++)
+            {
+                if (builder[i] > 127)
+                    builder[i] = '*';
+            }
+            return builder.ToString();
         }
 
-        private List<string> GenPaths()
-        {
-            List<string> ret = _GenPath($"{BeatmapSetID} {Artist} - {Title}",0);
-            ret.AddRange(_GenPath($"{BeatmapSetID}  - {Title}",0));
-
-            ret.Add($"{BeatmapSetID} {Artist} - {Title}");
-            ret.Add($"{BeatmapSetID} {Artist} - {Title}".Replace(" ", "+"));
-            ret.Add($"{BeatmapSetID}  - {Title}");
-            ret.Add($"{BeatmapSetID}  - {Title}".Replace(" ","+"));
-
-            return ret;
-        }
+        private string _path;
 
         public string LocationPath
         {
             get
             {
-                if (Artist == null || Artist == "") return "";
-                if (Title == null || Title == "") return "";
+                if (Artist == null || Artist == string.Empty) return string.Empty;
+                if (Title == null || Title == string.Empty) return string.Empty;
 
-                string artist = Artist;
-                string title = Title;
+                if (_path != null) return _path;
 
-                List<string> paths = GenPaths();
-                foreach(var  path in paths)
+                var dir_info = new System.IO.DirectoryInfo(Setting.SongsPath);
+                DirectoryInfo[] dir_list;
+
+                if (BeatmapSetID == -1)
                 {
-                    if(SongPathExists(path))
+                    if (Setting.EnableDirectoryImprecisionSearch)
                     {
-                        return Path.Combine(Setting.SongsPath, path);
+                        dir_list = dir_info.GetDirectories(ObscurePath($"{Artist} - {Title}"));
+                        if(dir_list.Length==0)
+                        {
+                            dir_list = dir_info.GetDirectories(ObscurePath($" - {Title}"));//inso mirror bug
+                        }
+                    }
+                    else
+                    {
+                        return string.Empty;
                     }
                 }
+                else
+                {
+                    dir_list = dir_info.GetDirectories(ObscurePath($"{BeatmapSetID} {Artist} - {Title}"));
+                    if (dir_list.Length == 0)
+                    {
+                        dir_list = dir_info.GetDirectories(ObscurePath($"{BeatmapSetID}  - {Title}"));//inso mirror bug
+                    }
+                }
+                
+#if DEBUG
+                Sync.Tools.IO.CurrentIO.Write($"[MemoryReader]找到的{dir_list.Length}个文件夹路径分别为:");
+                int _i = 0;
+                foreach (var dir in dir_list)
+                {
+                    Sync.Tools.IO.CurrentIO.Write($"[MemoryReader][{_i++}]{dir.FullName}");
+                }
+#endif
 
-                return "";
+                if(dir_list.Length!=0)
+                {
+                    _path = dir_list[0].FullName;
+                    return _path;
+                }
+
+                return string.Empty;
             }
         }
 
