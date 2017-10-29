@@ -94,6 +94,15 @@ namespace MemoryReader.Listen
 
         private string m_prev_status = string.Empty;
 
+        private bool m_is_tourney = false;
+        private int m_osu_id = 0;
+
+        public OSUListenerManager(bool tourney=false, int osuid=0)
+        {
+            m_is_tourney = false;
+            m_osu_id = osuid;
+        }
+
         public void Init(SyncHost host)
         {
             foreach (var t in host.EnumPluings())
@@ -118,6 +127,7 @@ namespace MemoryReader.Listen
         public void Stop()
         {
             m_stop = true;
+            m_listen_task.Wait();
         }
 
         private void LoadMemorySearch(Process osu)
@@ -127,7 +137,7 @@ namespace MemoryReader.Listen
 
         private void ListenLoop()
         {
-            Thread.CurrentThread.Name = "MemoryReaderListenThread";
+            Thread.CurrentThread.Name = $"MemoryReaderListenThread-{m_osu_id}";
 
             while (!m_stop)
             {
@@ -144,12 +154,28 @@ namespace MemoryReader.Listen
                     Process[] process_list;
                     do
                     {
-                        process_list = Process.GetProcessesByName("osu!");
                         Thread.Sleep(500);
+                        process_list = Process.GetProcessesByName("osu!");
+
+                        if (process_list.Length == 0) continue;
+
+                        if (m_is_tourney)
+                        {
+                            foreach (var p in process_list)
+                            {
+                                if(p.MainWindowTitle.Contains(m_osu_id.ToString()))
+                                {
+                                    m_osu_process = p;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            m_osu_process = process_list[0];
+                        }
                     }
                     while (process_list.Length == 0);
-
-                    m_osu_process = process_list[0];
                 }
 
                 if (status != OsuStatus.NoFoundProcess && status != OsuStatus.Unkonw)

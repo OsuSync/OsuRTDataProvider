@@ -2,6 +2,7 @@
 using MemoryReader.Mods;
 using System;
 using System.Diagnostics;
+using System.Text;
 using static MemoryReader.DefaultLanguage;
 
 namespace MemoryReader.Memory
@@ -69,6 +70,14 @@ namespace MemoryReader.Memory
             {
                 throw new NoFoundAddressException();
             }
+        }
+
+        private const int s_title_offset = 0x7c;
+
+        public string GetTitleFullName()
+        {
+            var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
+            return ReadStringFromMemory(cur_beatmap_address + s_title_offset);
         }
 
         public Beatmap GetCurrentBeatmap()
@@ -195,6 +204,18 @@ namespace MemoryReader.Memory
                 return BitConverter.ToDouble(buf, 0);
             }
             return 0.0;
+        }
+
+        private string ReadStringFromMemory(IntPtr address)
+        {
+            IntPtr str_base = (IntPtr)ReadIntFromMemory(address);
+            uint len = (uint)ReadIntFromMemory(str_base + 0x4)*2;
+            byte [] buf = new byte[len];
+            if (SigScan.ReadProcessMemory(m_osu_process.Handle, str_base + 0x8,buf,len,out int ret_size_ptr))
+            {
+                return Encoding.Unicode.GetString(buf);
+            }
+            return string.Empty;
         }
     }
 
