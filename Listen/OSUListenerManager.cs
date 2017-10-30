@@ -20,7 +20,8 @@ namespace MemoryReader.Listen
             Unkonwn,
             Listening,
             Playing,
-            Editing
+            Editing,
+            Rank
         }
 
         #region Event
@@ -321,6 +322,8 @@ namespace MemoryReader.Listen
             if (mode == OsuModes.Edit) return OsuStatus.Editing;
 
             if (mode == OsuModes.Play) return OsuStatus.Playing;
+
+            if (mode == OsuModes.Rank) return OsuStatus.Rank;
 
            // if (mode == OsuModes.Play) return OsuStatus.Playing;
             return OsuStatus.Listening;

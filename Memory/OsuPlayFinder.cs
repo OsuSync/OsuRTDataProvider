@@ -181,9 +181,9 @@ namespace MemoryReader.Memory
                 str = ReadStringFromMemory(cur_beatmap_address + s_title_offset);
 
                 if (OsuProcess.HasExited) return "";
-
-                Thread.Sleep(33);
-            } while (string.IsNullOrEmpty(str));
+                if (string.IsNullOrEmpty(str)) Thread.Sleep(33);
+                else break;
+            } while (true);
 
             return str;
         }
