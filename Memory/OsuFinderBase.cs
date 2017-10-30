@@ -59,13 +59,21 @@ namespace MemoryReader.Memory
         protected string ReadStringFromMemory(IntPtr address)
         {
             IntPtr str_base = (IntPtr)ReadIntFromMemory(address);
-            uint len = (uint)ReadIntFromMemory(str_base + 0x4) * 2;
-
-            byte[] buf = new byte[len];
-            if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, buf, len, out int ret_size_ptr))
+            try
             {
-                return Encoding.Unicode.GetString(buf);
+                uint len = (uint)ReadIntFromMemory(str_base + 0x4) * 2;
+
+                byte[] buf = new byte[len];
+                if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, buf, len, out int ret_size_ptr))
+                {
+                    return Encoding.Unicode.GetString(buf);
+                }
             }
+            catch(Exception e)
+            {
+                return string.Empty;
+            }
+
             return string.Empty;
         }
     }
