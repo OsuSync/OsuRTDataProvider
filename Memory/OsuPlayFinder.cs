@@ -3,6 +3,7 @@ using MemoryReader.Mods;
 using System;
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using static MemoryReader.DefaultLanguage;
 
@@ -181,7 +182,9 @@ namespace MemoryReader.Memory
                 str = ReadStringFromMemory(cur_beatmap_address + s_title_offset);
 
                 if (OsuProcess.HasExited) return "";
-                if (string.IsNullOrEmpty(str)) Thread.Sleep(33);
+                if (string.IsNullOrEmpty(str)||
+                    (!Regex.IsMatch(str, @".+\(.+\) - .+ \[.+\]") && 
+                    !Regex.IsMatch(str, @".+ - .+ \[.+\]"))) Thread.Sleep(33);
                 else break;
             } while (true);
 
