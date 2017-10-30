@@ -19,8 +19,6 @@ namespace MemoryReader.BeatmapInfo
             }
         }
 
-
-
         public BeatmapSet Set { get; set; }
         public string Diff { get; set; }
 

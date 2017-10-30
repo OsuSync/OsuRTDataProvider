@@ -3,15 +3,13 @@ using MemoryReader.Mods;
 using System;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
 using static MemoryReader.DefaultLanguage;
 
 namespace MemoryReader.Memory
 {
-    internal class MemoryFinder
+    internal class OsuPlayFinder:OsuFinderBase
     {
-        private SigScan m_sig_scan;
-        private Process m_osu_process;
-
         #region Address Arguments
 
         private static readonly byte[] s_beatmap_pattern = new byte[] {
@@ -19,8 +17,10 @@ namespace MemoryReader.Memory
         };
 
         private static readonly string s_beatmap_mask = "xxxxxx????xxxx";
+
         private static readonly int s_beatmap_offset = 0xc0;
         private static readonly int s_beatmap_set_offset = 0xc4;
+        private static readonly int s_title_offset = 0x7c;
 
         private static readonly byte[] s_acc_patterm = new byte[]
         {
@@ -36,60 +36,62 @@ namespace MemoryReader.Memory
 
         private static readonly string s_time_mask = "xxxxx????x?x";
 
-        #endregion
+        #endregion Address Arguments
 
         private IntPtr m_beatmap_address;
         private IntPtr m_acc_address;//acc,combo,hp,mods,300hit,100hit,50hit,miss Base Address
         private IntPtr m_time_address;
 
-        public MemoryFinder(Process osu)
-        {
-            m_osu_process = osu;
-            m_sig_scan = new SigScan(osu);
 
+        public OsuPlayFinder(Process osu):base(osu)
+        {
             //Find Beatmap ID Address
-            m_beatmap_address = m_sig_scan.FindPattern(s_beatmap_pattern, s_beatmap_mask, 6);
+            m_beatmap_address = SigScan.FindPattern(s_beatmap_pattern, s_beatmap_mask, 6);
             m_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
 
             //Find acc Address
-            m_acc_address = m_sig_scan.FindPattern(s_acc_patterm, s_acc_mask, 4);
+            m_acc_address = SigScan.FindPattern(s_acc_patterm, s_acc_mask, 4);
             m_acc_address = (IntPtr)ReadIntFromMemory(m_acc_address);
 
             //Find Time Address
-            m_time_address = m_sig_scan.FindPattern(s_time_patterm, s_time_mask, 5);
+            m_time_address = SigScan.FindPattern(s_time_patterm, s_time_mask, 5);
             m_time_address = (IntPtr)ReadIntFromMemory(m_time_address);
 
-            m_sig_scan.ResetRegion();
+            SigScan.ResetRegion();
 
 #if DEBUG
             Sync.Tools.IO.CurrentIO.Write($"[MemoryReader]Playing Beatmap Base Address:0x{(int)m_beatmap_address:X8}");
             Sync.Tools.IO.CurrentIO.Write($"[MemoryReader]Playing Accuracy Base Address:0x{(int)m_acc_address:X8}");
             Sync.Tools.IO.CurrentIO.Write($"[MemoryReader]Playing Time Base Address:0x{(int)m_time_address:X8}");
+
 #endif
-            if(m_time_address==IntPtr.Zero||m_acc_address==IntPtr.Zero||m_beatmap_address==IntPtr.Zero)
+            if (m_time_address == IntPtr.Zero || m_acc_address == IntPtr.Zero || m_beatmap_address == IntPtr.Zero)
             {
                 throw new NoFoundAddressException();
             }
         }
 
-        private const int s_title_offset = 0x7c;
-
-        public string GetTitleFullName()
-        {
-            var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
-            return ReadStringFromMemory(cur_beatmap_address + s_title_offset);
-        }
-
         public Beatmap GetCurrentBeatmap()
         {
             var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
-            return new Beatmap(ReadIntFromMemory(cur_beatmap_address + s_beatmap_offset));
+
+            var beatmap=new Beatmap(ReadIntFromMemory(cur_beatmap_address + s_beatmap_offset));
+            var info = GetBeatmapInfo();
+            beatmap.Diff = info.Item3;
+
+            return beatmap;
         }
 
         public BeatmapSet GetCurrentBeatmapSet()
         {
             var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
-            return new BeatmapSet(ReadIntFromMemory(cur_beatmap_address + s_beatmap_set_offset));
+
+            var set = new BeatmapSet(ReadIntFromMemory(cur_beatmap_address + s_beatmap_set_offset));
+            var info = GetBeatmapInfo();
+            set.Artist = info.Item1;
+            set.Title = info.Item2;
+
+            return set;
         }
 
         public double GetCurrentAccuracy()
@@ -168,54 +170,46 @@ namespace MemoryReader.Memory
             };
         }
 
-        private int ReadIntFromMemory(IntPtr address)
+        private string GetTitleFullName()
         {
-            uint size = 4;
-            byte[] buf = new byte[size];
-            int ret_size_ptr = 0;
-            if (SigScan.ReadProcessMemory(m_osu_process.Handle, address, buf, size, out ret_size_ptr))
+            var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
+
+            string str;
+
+            do
             {
-                return BitConverter.ToInt32(buf, 0);
-            }
-            return 0;
-            //throw new ArgumentException();
+                str = ReadStringFromMemory(cur_beatmap_address + s_title_offset);
+
+                if (OsuProcess.HasExited) return "";
+
+                Thread.Sleep(33);
+            } while (string.IsNullOrEmpty(str));
+
+            return str;
         }
 
-        private int ReadShortFromMemory(IntPtr address)
+        ///artist title diff
+        private Tuple<string,string,string> GetBeatmapInfo()
         {
-            uint size = 2;
-            byte[] buf = new byte[size];
-            int ret_size_ptr = 0;
-            if (SigScan.ReadProcessMemory(m_osu_process.Handle, address, buf, size, out ret_size_ptr))
-            {
-                return BitConverter.ToUInt16(buf, 0);
-            }
-            return 0;
-            //throw new ArgumentException();
-        }
+            string str = GetTitleFullName();
 
-        private double ReadDoubleFromMemory(IntPtr address)
-        {
-            uint size = 8;
-            byte[] buf = new byte[size];
-            int ret_size_ptr = 0;
-            if (SigScan.ReadProcessMemory(m_osu_process.Handle, address, buf, size, out ret_size_ptr))
-            {
-                return BitConverter.ToDouble(buf, 0);
-            }
-            return 0.0;
-        }
+            int pos1=str.IndexOf(" - ");
+            int pos2 = str.LastIndexOf("[");
 
-        private string ReadStringFromMemory(IntPtr address)
-        {
-            IntPtr str_base = (IntPtr)ReadIntFromMemory(address);
-            uint len = (uint)ReadIntFromMemory(str_base + 0x4)*2;
-            byte [] buf = new byte[len];
-            if (SigScan.ReadProcessMemory(m_osu_process.Handle, str_base + 0x8,buf,len,out int ret_size_ptr))
+            string artist = str.Substring(0, pos1);
+
+            if (artist.Contains("(") && artist.Contains(")"))
             {
-                return Encoding.Unicode.GetString(buf);
+                int pos3 = artist.LastIndexOf('(');
+                artist = artist.Substring(pos3 + 1, artist.Length - pos3 - 2);
             }
-            return string.Empty;
+
+            var tuple = new Tuple<string, string, string>(
+                artist,
+                str.Substring(pos1+3,pos2-(pos1+3)),
+                str.Substring(pos2+1,str.Length-pos2-2));
+
+            return tuple;
         }
     }
 
