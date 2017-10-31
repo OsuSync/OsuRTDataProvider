@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using static MemoryReader.DefaultLanguage;
 
 namespace MemoryReader.BeatmapInfo
@@ -11,6 +7,7 @@ namespace MemoryReader.BeatmapInfo
     public class BeatmapSet
     {
         public int BeatmapSetID { get; private set; }
+
         public string DownloadLink
         {
             get
@@ -25,17 +22,17 @@ namespace MemoryReader.BeatmapInfo
 
         private string Encode(string str)
         {
-            return str.Replace("*", "-").Replace(".","");
+            return str.Replace("*", "-").Replace(".", "");
         }
 
         private bool SongPathExists(string songs)
         {
-            if (songs.Contains("\"")|| songs.Contains("<")|| songs.Contains(">")) return false;
+            if (songs.Contains("\"") || songs.Contains("<") || songs.Contains(">")) return false;
             string path = Path.Combine(Setting.SongsPath, songs);
             return Directory.Exists(path);
         }
 
-        private static string[] s_replace_list=new string[] { "*",".",":","?","\"","<",">","/"};
+        private static string[] s_replace_list = new string[] { "*", ".", ":", "?", "\"", "<", ">", "/" };
 
         private string ObscurePath(string path)
         {
@@ -66,30 +63,21 @@ namespace MemoryReader.BeatmapInfo
                 var dir_info = new System.IO.DirectoryInfo(Setting.SongsPath);
                 DirectoryInfo[] dir_list;
 
-                if (BeatmapSetID == -1)
+                dir_list = dir_info.GetDirectories(ObscurePath($"{BeatmapSetID} {Artist} - {Title}"));
+                if (dir_list.Length == 0)
                 {
-                    if (Setting.EnableDirectoryImprecisionSearch)
-                    {
-                        dir_list = dir_info.GetDirectories(ObscurePath($"{Artist} - {Title}"));
-                        if(dir_list.Length==0)
-                        {
-                            dir_list = dir_info.GetDirectories(ObscurePath($" - {Title}"));//inso mirror bug
-                        }
-                    }
-                    else
-                    {
-                        return string.Empty;
-                    }
+                    dir_list = dir_info.GetDirectories(ObscurePath($"{BeatmapSetID}  - {Title}"));//inso mirror bug
                 }
-                else
+
+                if (dir_list.Length == 0 && Setting.EnableDirectoryImprecisionSearch)
                 {
-                    dir_list = dir_info.GetDirectories(ObscurePath($"{BeatmapSetID} {Artist} - {Title}"));
+                    dir_list = dir_info.GetDirectories(ObscurePath($"*{Artist} - {Title}"));
                     if (dir_list.Length == 0)
                     {
-                        dir_list = dir_info.GetDirectories(ObscurePath($"{BeatmapSetID}  - {Title}"));//inso mirror bug
+                        dir_list = dir_info.GetDirectories(ObscurePath($"* - {Title}"));//inso mirror bug
                     }
                 }
-                
+
 #if DEBUG
                 Sync.Tools.IO.CurrentIO.Write($"[MemoryReader]找到的{dir_list.Length}个文件夹路径分别为:");
                 int _i = 0;
@@ -99,7 +87,7 @@ namespace MemoryReader.BeatmapInfo
                 }
 #endif
 
-                if(dir_list.Length!=0)
+                if (dir_list.Length != 0)
                 {
                     _path = dir_list[0].FullName;
                     return _path;

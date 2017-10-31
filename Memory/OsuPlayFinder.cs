@@ -217,7 +217,7 @@ namespace MemoryReader.Memory
 
             var tuple = new Tuple<string, string, string>(
                 artist,
-                str.Substring(pos1+3,pos2-(pos1+3)),
+                str.Substring(pos1+3,pos2-(pos1+4)),
                 str.Substring(pos2+1,str.Length-pos2-2));
 
             return tuple;
