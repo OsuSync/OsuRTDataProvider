@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using static MemoryReader.DefaultLanguage;
 
@@ -20,21 +21,9 @@ namespace MemoryReader.BeatmapInfo
         public string Artist { get; set; }
         public string Title { get; set; }
 
-        private string Encode(string str)
-        {
-            return str.Replace("*", "-").Replace(".", "");
-        }
+        private static string[] s_replace_list = new string[] { "*", ".", ":", "?", "\"", "<", ">", "/","~"};
 
-        private bool SongPathExists(string songs)
-        {
-            if (songs.Contains("\"") || songs.Contains("<") || songs.Contains(">")) return false;
-            string path = Path.Combine(Setting.SongsPath, songs);
-            return Directory.Exists(path);
-        }
-
-        private static string[] s_replace_list = new string[] { "*", ".", ":", "?", "\"", "<", ">", "/" };
-
-        private string ObscurePath(string path)
+        public static string ObscureString(string path)
         {
             StringBuilder builder = new StringBuilder(path);
 
@@ -49,32 +38,32 @@ namespace MemoryReader.BeatmapInfo
             return builder.ToString();
         }
 
-        private string _path;
+        private LinkedList<string> _paths;
 
-        public string LocationPath
+        public LinkedList<string> AllLocationPath
         {
             get
             {
-                if (Artist == null || Artist == string.Empty) return string.Empty;
-                if (Title == null || Title == string.Empty) return string.Empty;
+                if (Artist == null || Artist == string.Empty) return null;
+                if (Title == null || Title == string.Empty) return null;
 
-                if (_path != null) return _path;
+                if (_paths != null) return _paths;
 
                 var dir_info = new System.IO.DirectoryInfo(Setting.SongsPath);
                 DirectoryInfo[] dir_list;
 
-                dir_list = dir_info.GetDirectories(ObscurePath($"{BeatmapSetID} {Artist} - {Title}"));
+                dir_list = dir_info.GetDirectories(ObscureString($"{BeatmapSetID} {Artist} - {Title}"));
                 if (dir_list.Length == 0)
                 {
-                    dir_list = dir_info.GetDirectories(ObscurePath($"{BeatmapSetID}  - {Title}"));//inso mirror bug
+                    dir_list = dir_info.GetDirectories(ObscureString($"{BeatmapSetID}  - {Title}"));//inso mirror bug
                 }
 
                 if (dir_list.Length == 0 && Setting.EnableDirectoryImprecisionSearch)
                 {
-                    dir_list = dir_info.GetDirectories(ObscurePath($"*{Artist} - {Title}"));
+                    dir_list = dir_info.GetDirectories(ObscureString($"*{Artist} - {Title}"));
                     if (dir_list.Length == 0)
                     {
-                        dir_list = dir_info.GetDirectories(ObscurePath($"* - {Title}"));//inso mirror bug
+                        dir_list = dir_info.GetDirectories(ObscureString($"* - {Title}"));//inso mirror bug
                     }
                 }
 
@@ -89,11 +78,24 @@ namespace MemoryReader.BeatmapInfo
 
                 if (dir_list.Length != 0)
                 {
-                    _path = dir_list[0].FullName;
-                    return _path;
+                    _paths = new LinkedList<string>();
+                    foreach (var d in dir_list)
+                    {
+                        _paths.AddLast(d.FullName);
+                    }
+                    return _paths;
                 }
+                return null;
+            }
+        }
 
-                return string.Empty;
+        public string LocationPath
+        {
+            get
+            {
+                var list = AllLocationPath;
+                if (list == null) return string.Empty;
+                return list.First.Value;
             }
         }
 

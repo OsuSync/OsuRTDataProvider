@@ -46,7 +46,7 @@ namespace MemoryReader
         public static bool EnableTourneyMode = false;
         public static int TeamSize = 1;
 
-        public static string SongsPath = "";//不保存
+        public static string SongsPath = string.Empty;//不保存
 
         private static SettingIni setting_output = new SettingIni();
         private static PluginConfiuration plugin_config = null;

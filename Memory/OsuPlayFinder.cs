@@ -187,12 +187,13 @@ namespace MemoryReader.Memory
             {
                 var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
 
-                str = ReadStringFromMemory(cur_beatmap_address + s_title_offset);
+                bool success=TryReadStringFromMemory(cur_beatmap_address + s_title_offset,out str);
 
-                if (OsuProcess.HasExited) return "";
-                if (string.IsNullOrEmpty(str)||
-                    (!Regex.IsMatch(str, @".+\(.+\) - .+ \[.+\]") && 
-                    !Regex.IsMatch(str, @".+ - .+ \[.+\]"))) Thread.Sleep(33);
+                if (OsuProcess.HasExited) return string.Empty;
+
+                if (!success||
+                    string.IsNullOrEmpty(str)||
+                    (!Regex.IsMatch(str, @".+\(.+\) - .+ \[.+\]") && !Regex.IsMatch(str, @".+ - .+ \[.+\]"))) Thread.Sleep(33);
                 else break;
             } while (true);
 

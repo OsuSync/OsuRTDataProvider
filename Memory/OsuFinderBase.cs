@@ -12,20 +12,32 @@ namespace MemoryReader.Memory
         protected SigScan SigScan { get; private set; }
         protected Process OsuProcess { get; private set; }
 
+        private int _read_max_string_length = 4096;
+        public int ReadMaxStringLength {
+            get => _read_max_string_length;
+            set
+            {
+                _read_max_string_length = value;
+                _str_buf = new byte[_read_max_string_length];
+            }
+        }
+
         public OsuFinderBase(Process process)
         {
             OsuProcess = process;
             SigScan = new SigScan(OsuProcess);
+
+            _str_buf = new byte[ReadMaxStringLength];
         }
+
+        byte[] _number_buf = new byte[8];
 
         protected int ReadIntFromMemory(IntPtr address)
         {
-            uint size = 4;
-            byte[] buf = new byte[size];
             int ret_size_ptr = 0;
-            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, buf, size, out ret_size_ptr))
+            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(int), out ret_size_ptr))
             {
-                return BitConverter.ToInt32(buf, 0);
+                return BitConverter.ToInt32(_number_buf, 0);
             }
             return 0;
             //throw new ArgumentException();
@@ -33,12 +45,10 @@ namespace MemoryReader.Memory
 
         protected int ReadShortFromMemory(IntPtr address)
         {
-            uint size = 2;
-            byte[] buf = new byte[size];
             int ret_size_ptr = 0;
-            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, buf, size, out ret_size_ptr))
+            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(short), out ret_size_ptr))
             {
-                return BitConverter.ToUInt16(buf, 0);
+                return BitConverter.ToUInt16(_number_buf, 0);
             }
             return 0;
             //throw new ArgumentException();
@@ -46,37 +56,38 @@ namespace MemoryReader.Memory
 
         protected double ReadDoubleFromMemory(IntPtr address)
         {
-            uint size = 8;
-            byte[] buf = new byte[size];
             int ret_size_ptr = 0;
-            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, buf, size, out ret_size_ptr))
+            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(double), out ret_size_ptr))
             {
-                return BitConverter.ToDouble(buf, 0);
+                return BitConverter.ToDouble(_number_buf, 0);
             }
             return 0.0;
         }
 
-        protected string ReadStringFromMemory(IntPtr address)
+        byte[] _str_buf;
+
+        protected bool TryReadStringFromMemory(IntPtr address,out string str)
         {
+            str = null;
             IntPtr str_base = (IntPtr)ReadIntFromMemory(address);
             try
             {
-                uint len = (uint)ReadIntFromMemory(str_base + 0x4) * 2;
+                int len = ReadIntFromMemory(str_base + 0x4) * 2;
 
-                if (len == 0) return string.Empty;
-                if(len>65535)return string.Empty;
-                byte[] buf = new byte[len];
-                if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, buf, len, out int ret_size_ptr))
+                if (len > ReadMaxStringLength || len<=0) return false;
+
+                if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, _str_buf, (uint)len, out int ret_size_ptr))
                 {
-                    return Encoding.Unicode.GetString(buf);
+                    str = Encoding.Unicode.GetString(_str_buf,0,len);
+                    return true;
                 }
             }
             catch(Exception e)
             {
-                return string.Empty;
+                return false;
             }
 
-            return string.Empty;
+            return false;
         }
     }
 }
