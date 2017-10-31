@@ -211,7 +211,7 @@ namespace MemoryReader.Memory
 
             if (artist.Contains("(") && artist.Contains(")"))
             {
-                int pos3 = artist.LastIndexOf('(');
+                int pos3 = artist.IndexOf('(');
                 artist = artist.Substring(pos3 + 1, artist.Length - pos3 - 2);
             }
 
