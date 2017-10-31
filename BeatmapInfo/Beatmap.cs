@@ -22,10 +22,9 @@ namespace MemoryReader.BeatmapInfo
         public BeatmapSet Set { get; set; }
         public string Diff { get; set; }
 
-        private static string[] s_replace_list = new string[] { "*", ".", ":", "?", "\"", "<", ">" };
-        private static string[] s_replace_target_list = new string[] { "", "-" };
+        private static string[] s_replace_list = new string[] { "*", ".", ":", "?", "\"", "<", ">" ,"/"};
 
-        private List<string> _GenDiff(string diff, int startindex)
+       /* private List<string> _GenDiff(string diff, int startindex)
         {
             List<string> ret = new List<string>();
             StringBuilder builder = new StringBuilder(diff);
@@ -45,7 +44,7 @@ namespace MemoryReader.BeatmapInfo
                 }
 
             return ret;
-        }
+        }*/
 
         private string ObscureDiff(string path)
         {

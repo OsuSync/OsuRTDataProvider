@@ -35,7 +35,7 @@ namespace MemoryReader.BeatmapInfo
             return Directory.Exists(path);
         }
 
-        private static string[] s_replace_list=new string[] { "*",".",":","?","\"","<",">"};
+        private static string[] s_replace_list=new string[] { "*",".",":","?","\"","<",">","/"};
 
         private string ObscurePath(string path)
         {

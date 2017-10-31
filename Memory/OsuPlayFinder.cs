@@ -85,9 +85,15 @@ namespace MemoryReader.Memory
 
         public BeatmapSet GetCurrentBeatmapSet()
         {
-            var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
-
-            var set = new BeatmapSet(ReadIntFromMemory(cur_beatmap_address + s_beatmap_set_offset));
+            int id = 0;
+            do
+            {
+                var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
+                id = ReadIntFromMemory(cur_beatmap_address + s_beatmap_set_offset);
+                if (id == 0) Thread.Sleep(33);
+                else break;
+            } while (true);
+            var set = new BeatmapSet(id);
             var info = GetBeatmapInfo();
             set.Artist = info.Item1;
             set.Title = info.Item2;
@@ -173,12 +179,12 @@ namespace MemoryReader.Memory
 
         private string GetTitleFullName()
         {
-            var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
-
             string str;
 
             do
             {
+                var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
+
                 str = ReadStringFromMemory(cur_beatmap_address + s_title_offset);
 
                 if (OsuProcess.HasExited) return "";

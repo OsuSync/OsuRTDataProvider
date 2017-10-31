@@ -63,6 +63,8 @@ namespace MemoryReader.Memory
             {
                 uint len = (uint)ReadIntFromMemory(str_base + 0x4) * 2;
 
+                if (len == 0) return string.Empty;
+
                 byte[] buf = new byte[len];
                 if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, buf, len, out int ret_size_ptr))
                 {
