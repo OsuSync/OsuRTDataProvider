@@ -90,9 +90,11 @@ namespace MemoryReader.Memory
             {
                 var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
                 id = ReadIntFromMemory(cur_beatmap_address + s_beatmap_set_offset);
+                if (OsuProcess.HasExited) break;
                 if (id == 0) Thread.Sleep(33);
                 else break;
             } while (true);
+
             var set = new BeatmapSet(id);
             var info = GetBeatmapInfo();
             set.Artist = info.Item1;
