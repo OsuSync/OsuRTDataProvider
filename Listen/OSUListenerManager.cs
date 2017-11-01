@@ -101,7 +101,7 @@ namespace MemoryReader.Listen
 
         public OSUListenerManager(bool tourney = false, int osuid = 0)
         {
-            m_is_tourney = false;
+            m_is_tourney = tourney;
             m_osu_id = osuid;
         }
 
@@ -176,7 +176,7 @@ namespace MemoryReader.Listen
                         {
                             foreach (var p in process_list)
                             {
-                                if (p.MainWindowTitle.Contains(m_osu_id.ToString()))
+                                if (p.MainWindowTitle.Contains($"Client {m_osu_id}"))
                                 {
                                     m_osu_process = p;
                                     break;
