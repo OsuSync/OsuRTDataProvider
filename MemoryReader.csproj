@@ -67,13 +67,15 @@
     <Compile Include="BeatmapInfo\BeatmapSet.cs" />
     <Compile Include="DefaultLanguage.cs" />
     <Compile Include="Listen\Interface\IOSUListener.cs" />
-    <Compile Include="Listen\OSUTestListener.cs" />
     <Compile Include="Listen\OSUListenerManager.cs" />
+    <Compile Include="Memory\OsuFinderBase.cs" />
+    <Compile Include="Memory\OsuModes.cs" />
     <Compile Include="MemoryReader.cs" />
+    <Compile Include="Memory\OsuModesFinder.cs" />
     <Compile Include="Memory\SigScan.cs" />
     <Compile Include="Mods\ModsInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Memory\MemoryFinder.cs" />
+    <Compile Include="Memory\OsuPlayFinder.cs" />
     <Compile Include="Setting.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -82,15 +84,8 @@
       <Name>Sync</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\osuSync\OfficalPlugins\NowPlaying\NowPlaying.csproj">
-      <Project>{91ed3fe1-b0f7-44b4-8ab2-a3f6825eea60}</Project>
-      <Name>NowPlaying</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Pool\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /y $(TargetPath) $(SolutionDir)\Sync\bin\$(ConfigurationName)\Plugins</PostBuildEvent>

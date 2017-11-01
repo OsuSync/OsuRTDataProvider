@@ -92,7 +92,7 @@ namespace MemoryReader.Mods
         {
             get
             {
-                return Mod.ToString().Replace(" ","");
+                return Mod.ToString().Replace(" ",string.Empty);
             }
         }
 
@@ -100,9 +100,9 @@ namespace MemoryReader.Mods
         {
             get
             {
-                string ret = "";
+                string ret = string.Empty;
                 string mods_str = Name;
-                string[] mods_arr = mods_str.Replace(" ", "").Split(',');
+                string[] mods_arr = mods_str.Replace(" ", string.Empty).Split(',');
                 foreach (var str in mods_arr)
                 {
                     if (mod_map.ContainsKey(str))

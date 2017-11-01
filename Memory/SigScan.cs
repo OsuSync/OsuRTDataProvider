@@ -92,6 +92,11 @@ namespace MemoryReader.Memory
         }
         #endregion
 
+        public void Reload()
+        {
+            InitMemoryRegionInfo();
+        }
+
         private List<MemoryRegion> m_memoryRegionList = new List<MemoryRegion>();
         const int PROCESS_QUERY_INFORMATION = 0x0400;
         const int MEM_COMMIT = 0x00001000;

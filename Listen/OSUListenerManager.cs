@@ -1,7 +1,6 @@
 ﻿using MemoryReader.BeatmapInfo;
 using MemoryReader.Memory;
 using MemoryReader.Mods;
-using NowPlaying;
 using Sync;
 using System;
 using System.Diagnostics;
@@ -18,10 +17,11 @@ namespace MemoryReader.Listen
         public enum OsuStatus
         {
             NoFoundProcess,
-            Unkonw,
+            Unkonwn,
             Listening,
             Playing,
-            Editing
+            Editing,
+            Rank
         }
 
         #region Event
@@ -72,11 +72,13 @@ namespace MemoryReader.Listen
 
         private Process m_osu_process;
 
-        private MemoryFinder m_memory_finder = null;
+        private OsuPlayFinder m_memory_finder = null;
 
-        private OsuStatus m_last_osu_status = OsuStatus.Unkonw;
-        private OSUStatus m_now_player_status = new OSUStatus();
+        private OsuStatus m_last_osu_status = OsuStatus.Unkonwn;
+
+        //  private OSUStatus m_now_player_status = new OSUStatus();
         private bool m_stop = false;
+
         private Task m_listen_task;
 
         private BeatmapSet m_last_beatmapset = BeatmapSet.Empty;
@@ -94,19 +96,28 @@ namespace MemoryReader.Listen
 
         private string m_prev_status = string.Empty;
 
+        private bool m_is_tourney = false;
+        private int m_osu_id = 0;
+
+        public OSUListenerManager(bool tourney = false, int osuid = 0)
+        {
+            m_is_tourney = tourney;
+            m_osu_id = osuid;
+        }
+
         public void Init(SyncHost host)
         {
-            foreach (var t in host.EnumPluings())
-            {
-                if (t.getName() == "Now Playing")
-                {
-                    NowPlayingEvents.Instance.BindEvent<StatusChangeEvent>(p =>
-                    {
-                        m_now_player_status = p.CurrentStatus;
-                    });
-                    break;
-                }
-            }
+            /* foreach (var t in host.EnumPluings())
+             {
+                 if (t.getName() == "Now Playing")
+                 {
+                     NowPlayingEvents.Instance.BindEvent<StatusChangeEvent>(p =>
+                     {
+                         m_now_player_status = p.CurrentStatus;
+                     });
+                     break;
+                 }
+             }*/
         }
 
         public void Start()
@@ -118,25 +129,37 @@ namespace MemoryReader.Listen
         public void Stop()
         {
             m_stop = true;
+            m_listen_task.Wait();
         }
 
         private void LoadMemorySearch(Process osu)
         {
-            m_memory_finder = new MemoryFinder(osu);
+            m_memory_finder = new OsuPlayFinder(osu);
+
+            while (!m_memory_finder.TryInit())
+            {
+                if (m_osu_process.HasExited)
+                {
+                    m_memory_finder = null;
+                    return;
+                }
+                Thread.Sleep(500);
+            }
         }
 
         private void ListenLoop()
         {
-            Thread.CurrentThread.Name = "MemoryReaderListenThread";
+            Thread.CurrentThread.Name = $"MemoryReaderListenThread-{m_osu_id}";
 
             while (!m_stop)
             {
                 OsuStatus status = GetCurrentOsuStatus();
 
-                if (status == OsuStatus.NoFoundProcess || status == OsuStatus.Unkonw)
+                if (status == OsuStatus.NoFoundProcess || status == OsuStatus.Unkonwn)
                 {
                     m_osu_process = null;
                     m_memory_finder = null;
+                    m_modes_finder = null;
 
                     if (status == OsuStatus.NoFoundProcess)
                         Sync.Tools.IO.CurrentIO.WriteColor(LANG_OSU_NOT_FOUND, ConsoleColor.Red);
@@ -144,15 +167,31 @@ namespace MemoryReader.Listen
                     Process[] process_list;
                     do
                     {
-                        process_list = Process.GetProcessesByName("osu!");
                         Thread.Sleep(500);
+                        process_list = Process.GetProcessesByName("osu!");
+
+                        if (process_list.Length == 0) continue;
+
+                        if (m_is_tourney)
+                        {
+                            foreach (var p in process_list)
+                            {
+                                if (p.MainWindowTitle.Contains($"Client {m_osu_id}"))
+                                {
+                                    m_osu_process = p;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            m_osu_process = process_list[0];
+                        }
                     }
                     while (process_list.Length == 0);
-
-                    m_osu_process = process_list[0];
                 }
 
-                if (status != OsuStatus.NoFoundProcess && status != OsuStatus.Unkonw)
+                if (status != OsuStatus.NoFoundProcess && status != OsuStatus.Unkonwn)
                 {
                     if (status == OsuStatus.Playing)
                     {
@@ -195,8 +234,6 @@ namespace MemoryReader.Listen
 
                         try
                         {
-                            beatmapset.Artist = m_now_player_status.Artist;
-                            beatmapset.Title = m_now_player_status.Title;
                             if (beatmapset.BeatmapSetID != m_last_beatmapset.BeatmapSetID)
                             {
                                 OnBeatmapSetChanged?.Invoke(beatmapset);
@@ -210,15 +247,6 @@ namespace MemoryReader.Listen
 
                             if (status == OsuStatus.Playing)
                             {
-                                if (m_last_osu_status == OsuStatus.Listening || m_last_osu_status == OsuStatus.Unkonw ||
-                                m_last_osu_status == OsuStatus.NoFoundProcess)
-                                {
-                                    if (!string.IsNullOrWhiteSpace(m_now_player_status.Diff))
-                                        beatmap.Diff = m_now_player_status.Diff;
-                                    beatmap.Set = beatmapset;
-                                    OnBeatmapChanged?.Invoke(beatmap);
-                                }
-
                                 if (mods.Mod != m_last_mods.Mod)
                                     OnCurrentMods?.Invoke(mods);
 
@@ -285,20 +313,38 @@ namespace MemoryReader.Listen
             }
         }
 
+        private OsuModesFinder m_modes_finder;
+
         private OsuStatus GetCurrentOsuStatus()
         {
             if (m_osu_process == null) return OsuStatus.NoFoundProcess;
             if (m_osu_process.HasExited == true) return OsuStatus.NoFoundProcess;
 
-            //string osu_title = m_osu_process != null ? m_osu_process.MainWindowTitle : "unknown title";
+            if (m_modes_finder == null)
+            {
+                m_modes_finder = new OsuModesFinder(m_osu_process);
+                while (!m_modes_finder.TryInit())
+                {
+                    if (m_osu_process.HasExited)
+                    {
+                        m_modes_finder = null;
+                        return OsuStatus.Unkonwn;
+                    }
+                    Thread.Sleep(500);
+                }
+            }
 
-            if (m_now_player_status.Status == null) return OsuStatus.Unkonw;
+            OsuModes mode = m_modes_finder.GetCurrentOsuModes();
 
-            if (m_now_player_status.Status == "Editing") return OsuStatus.Editing;
+            if (mode == OsuModes.Unknown) return OsuStatus.Unkonwn;
 
-            if (m_now_player_status.Status == "Playing") return OsuStatus.Playing;
+            if (mode == OsuModes.Edit) return OsuStatus.Editing;
 
-            if (m_now_player_status.Status == "Watching") return OsuStatus.Playing;
+            if (mode == OsuModes.Play) return OsuStatus.Playing;
+
+            if (mode == OsuModes.Rank) return OsuStatus.Rank;
+
+            // if (mode == OsuModes.Play) return OsuStatus.Playing;
             return OsuStatus.Listening;
         }
     }

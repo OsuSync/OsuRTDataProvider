@@ -7,6 +7,8 @@ namespace MemoryReader
     {
         public ConfigurationElement ListenInterval { set; get; }
         public ConfigurationElement EnableDirectoryImprecisionSearch { get; set; }
+        public ConfigurationElement EnableTourneyMode { get; set; }
+        public ConfigurationElement TeamSize { get; set; }
 
         public void onConfigurationLoad()
         {
@@ -14,6 +16,13 @@ namespace MemoryReader
             {
                 Setting.ListenInterval = int.Parse(ListenInterval);
                 Setting.EnableDirectoryImprecisionSearch = bool.Parse(EnableDirectoryImprecisionSearch);
+                Setting.EnableTourneyMode = bool.Parse(EnableTourneyMode);
+                Setting.TeamSize = int.Parse(TeamSize);
+                if(Setting.TeamSize>8 || Setting.TeamSize<1)
+                {
+                    Setting.TeamSize = 1;
+                    Sync.Tools.IO.CurrentIO.Write("TeameSize∈[1,8]");
+                }
             }
             catch(Exception e)
             {
@@ -25,6 +34,8 @@ namespace MemoryReader
         {
             ListenInterval = Setting.ListenInterval.ToString();
             EnableDirectoryImprecisionSearch = Setting.EnableDirectoryImprecisionSearch.ToString();
+            EnableTourneyMode = Setting.EnableTourneyMode.ToString();
+            TeamSize = Setting.TeamSize.ToString();
         }
     }
 
@@ -32,8 +43,10 @@ namespace MemoryReader
     {
         public static int ListenInterval = 33;//ms
         public static bool EnableDirectoryImprecisionSearch = true;
+        public static bool EnableTourneyMode = false;
+        public static int TeamSize = 1;
 
-        public static string SongsPath = "";//不保存
+        public static string SongsPath = string.Empty;//不保存
 
         private static SettingIni setting_output = new SettingIni();
         private static PluginConfiuration plugin_config = null;
