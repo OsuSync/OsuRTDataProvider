@@ -1,5 +1,4 @@
 ﻿using MemoryReader.Listen;
-using MemoryReader.Listen.Interface;
 using Sync;
 using Sync.Plugins;
 using Sync.Tools;
@@ -9,16 +8,18 @@ namespace MemoryReader
 {
     public class MemoryReader : Plugin
     {
+        private SyncHost m_host;
+
         public const string PLUGIN_NAME = "MemoryReader";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
 
         private int m_listener_managers_count = 0;
         public int TourneyListenerManagersCount { get => Setting.EnableTourneyMode ? m_listener_managers_count : 0; }
 
-        private OSUListenerManager[] m_listener_managers=new OSUListenerManager[16];
+        private OSUListenerManager[] m_listener_managers = new OSUListenerManager[16];
         public OSUListenerManager ListenerManager { get => m_listener_managers[0]; }
 
-        public OSUListenerManager[] TourneyListenerManagers { get => Setting.EnableTourneyMode? m_listener_managers : null; }
+        public OSUListenerManager[] TourneyListenerManagers { get => Setting.EnableTourneyMode ? m_listener_managers : null; }
 
         public MemoryReader() : base(PLUGIN_NAME, PLUGIN_AUTHOR)
         {
@@ -35,52 +36,61 @@ namespace MemoryReader
         private void OnLoadComplete(PluginEvents.LoadCompleteEvent ev)
         {
             Setting.PluginInstance = this;
+            m_host = ev.Host;
 
-            if(Setting.EnableTourneyMode)
+            if (Setting.EnableTourneyMode)
             {
                 m_listener_managers_count = Setting.TeamSize * 2;
-                for (int i=0;i< m_listener_managers_count; i++)
-                {
-                    m_listener_managers[i] = new OSUListenerManager(true, i);
-
-#if DEBUG
-                    m_listener_managers[i].OnStatusChanged +=(l,c) => Sync.Tools.IO.CurrentIO.Write($"[{i}]当前状态:" + c);
-                    m_listener_managers[i].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write($"[{i}]Mods:" + m);
-#endif
-
-                    try
-                    {
-                        m_listener_managers[i].Init(ev.Host);
-                    }
-                    catch (Exception e)
-                    {
-                        Sync.Tools.IO.CurrentIO.WriteColor(e.Message, ConsoleColor.Red);
-                        Sync.Tools.IO.CurrentIO.WriteColor(e.StackTrace, ConsoleColor.Red);
-                    }
-
-                    m_listener_managers[i].Start();
-                }
+                for (int i = 0; i < m_listener_managers_count; i++)
+                    InitTourneyManager(i);
             }
             else
             {
-                m_listener_managers[0] = new OSUListenerManager();
-
-                try
-                {
-                    m_listener_managers[0].Init(ev.Host);
-#if DEBUG
-                    m_listener_managers[0].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write("当前状态:" + c);
-                    m_listener_managers[0].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write("Mods:" + m);
-#endif
-                }
-                catch (Exception e)
-                {
-                    Sync.Tools.IO.CurrentIO.WriteColor(e.Message, ConsoleColor.Red);
-                    Sync.Tools.IO.CurrentIO.WriteColor(e.StackTrace, ConsoleColor.Red);
-                }
-
-                m_listener_managers[0].Start();
+                InitManager();
             }
+        }
+
+        private void InitTourneyManager(int id)
+        {
+            m_listener_managers[id] = new OSUListenerManager(true, id);
+
+#if DEBUG
+            m_listener_managers[id].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write($"[{id}]当前状态:" + c);
+            m_listener_managers[id].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write($"[{id}]Mods:" + m);
+#endif
+
+            try
+            {
+                m_listener_managers[id].Init(m_host);
+            }
+            catch (Exception e)
+            {
+                Sync.Tools.IO.CurrentIO.WriteColor(e.Message, ConsoleColor.Red);
+                Sync.Tools.IO.CurrentIO.WriteColor(e.StackTrace, ConsoleColor.Red);
+            }
+
+            m_listener_managers[id].Start();
+        }
+
+        private void InitManager()
+        {
+            m_listener_managers[0] = new OSUListenerManager();
+
+            try
+            {
+                m_listener_managers[0].Init(m_host);
+#if DEBUG
+                m_listener_managers[0].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write("当前状态:" + c);
+                m_listener_managers[0].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write("Mods:" + m);
+#endif
+            }
+            catch (Exception e)
+            {
+                Sync.Tools.IO.CurrentIO.WriteColor(e.Message, ConsoleColor.Red);
+                Sync.Tools.IO.CurrentIO.WriteColor(e.StackTrace, ConsoleColor.Red);
+            }
+
+            m_listener_managers[0].Start();
         }
     }
 }
