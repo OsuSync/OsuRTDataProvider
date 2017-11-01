@@ -11,7 +11,11 @@ namespace MemoryReader
     {
         public const string PLUGIN_NAME = "MemoryReader";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
-        private OSUListenerManager[] m_listener_managers=new OSUListenerManager[8];
+
+        private int m_listener_managers_count = 0;
+        public int TourneyListenerManagersCount { get => Setting.EnableTourneyMode ? m_listener_managers_count : 0; }
+
+        private OSUListenerManager[] m_listener_managers=new OSUListenerManager[16];
         public OSUListenerManager ListenerManager { get => m_listener_managers[0]; }
 
         public OSUListenerManager[] TourneyListenerManagers { get => Setting.EnableTourneyMode? m_listener_managers : null; }
@@ -34,7 +38,8 @@ namespace MemoryReader
 
             if(Setting.EnableTourneyMode)
             {
-                for(int i=0;i<Setting.TeamSize*2;i++)
+                m_listener_managers_count = Setting.TeamSize * 2;
+                for (int i=0;i< m_listener_managers_count; i++)
                 {
                     m_listener_managers[i] = new OSUListenerManager(true, i);
 
