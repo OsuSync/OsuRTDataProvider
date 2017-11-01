@@ -14,10 +14,10 @@ namespace MemoryReader.Memory
         #region Address Arguments
 
         private static readonly byte[] s_beatmap_pattern = new byte[] {
-            0x8b,0xf1,0x8b,0xfa,0x8b,0x0d,0x0,0x0,0x0,0x0,0x85,0xc9,0x74,0x35
+            0x83,0x3d,0x0,0x0,0x0,0x0,0x01,0x74,0x0a,0x8b,0x35,0x0,0x0,0x0,0x0,0x85,0xf6,0x75,0x04
         };
-
-        private static readonly string s_beatmap_mask = "xxxxxx????xxxx";
+        //0x8b,0xf1,0x8b,0xfa,0x8b,0x0d,0x0,0x0,0x0,0x0,0x85,0xc9,0x74,0x35 "xxxxxx????xxxx"
+        private static readonly string s_beatmap_mask = "xx????xxxxx????xxxx";
 
         private static readonly int s_beatmap_offset = 0xc0;
         private static readonly int s_beatmap_set_offset = 0xc4;
@@ -44,10 +44,16 @@ namespace MemoryReader.Memory
         private IntPtr m_time_address;
 
 
-        public OsuPlayFinder(Process osu):base(osu)
+        public OsuPlayFinder(Process osu) : base(osu)
+        {
+        }
+
+
+
+        public bool TryInit()
         {
             //Find Beatmap ID Address
-            m_beatmap_address = SigScan.FindPattern(s_beatmap_pattern, s_beatmap_mask, 6);
+            m_beatmap_address = SigScan.FindPattern(s_beatmap_pattern, s_beatmap_mask, 11);
             m_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
 
             //Find acc Address
@@ -68,8 +74,10 @@ namespace MemoryReader.Memory
 #endif
             if (m_time_address == IntPtr.Zero || m_acc_address == IntPtr.Zero || m_beatmap_address == IntPtr.Zero)
             {
-                throw new NoFoundAddressException();
+                return false;
             }
+
+            return true;
         }
 
         public Beatmap GetCurrentBeatmap()
@@ -222,28 +230,6 @@ namespace MemoryReader.Memory
                 str.Substring(pos2+1,str.Length-pos2-2));
 
             return tuple;
-        }
-    }
-
-    internal class OsuProcessNoFoundException : Exception
-    {
-        public override string Message
-        {
-            get
-            {
-                return LANG_OSU_NOT_FOUND;
-            }
-        }
-    }
-
-    internal class NoFoundAddressException : Exception
-    {
-        public override string Message
-        {
-            get
-            {
-                return LANG_ADDRESS_NOT_FOUND;
-            }
         }
     }
 }
