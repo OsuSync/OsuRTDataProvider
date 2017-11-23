@@ -52,6 +52,8 @@ namespace MemoryReader.Memory
 
         public bool TryInit()
         {
+            SigScan.Reload();
+
             //Find Beatmap ID Address
             m_beatmap_address = SigScan.FindPattern(s_beatmap_pattern, s_beatmap_mask, 11);
             m_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);

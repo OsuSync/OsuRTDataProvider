@@ -76,7 +76,6 @@ namespace MemoryReader.Listen
 
         private OsuStatus m_last_osu_status = OsuStatus.Unkonwn;
 
-        //  private OSUStatus m_now_player_status = new OSUStatus();
         private bool m_stop = false;
 
         private Task m_listen_task;
@@ -103,21 +102,6 @@ namespace MemoryReader.Listen
         {
             m_is_tourney = tourney;
             m_osu_id = osuid;
-        }
-
-        public void Init(SyncHost host)
-        {
-            /* foreach (var t in host.EnumPluings())
-             {
-                 if (t.getName() == "Now Playing")
-                 {
-                     NowPlayingEvents.Instance.BindEvent<StatusChangeEvent>(p =>
-                     {
-                         m_now_player_status = p.CurrentStatus;
-                     });
-                     break;
-                 }
-             }*/
         }
 
         public void Start()
@@ -187,6 +171,9 @@ namespace MemoryReader.Listen
                         {
                             m_osu_process = process_list[0];
                         }
+
+                        if (m_osu_process!=null)
+                            Sync.Tools.IO.CurrentIO.WriteColor(LANG_OSU_FOUND, ConsoleColor.Green);
                     }
                     while (process_list.Length == 0);
                 }
@@ -344,7 +331,6 @@ namespace MemoryReader.Listen
 
             if (mode == OsuModes.Rank) return OsuStatus.Rank;
 
-            // if (mode == OsuModes.Play) return OsuStatus.Playing;
             return OsuStatus.Listening;
         }
     }

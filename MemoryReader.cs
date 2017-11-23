@@ -59,16 +59,6 @@ namespace MemoryReader
             m_listener_managers[id].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write($"[{id}]Mods:" + m);
 #endif
 
-            try
-            {
-                m_listener_managers[id].Init(m_host);
-            }
-            catch (Exception e)
-            {
-                Sync.Tools.IO.CurrentIO.WriteColor(e.Message, ConsoleColor.Red);
-                Sync.Tools.IO.CurrentIO.WriteColor(e.StackTrace, ConsoleColor.Red);
-            }
-
             m_listener_managers[id].Start();
         }
 
@@ -76,19 +66,10 @@ namespace MemoryReader
         {
             m_listener_managers[0] = new OSUListenerManager();
 
-            try
-            {
-                m_listener_managers[0].Init(m_host);
 #if DEBUG
-                m_listener_managers[0].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write("当前状态:" + c);
-                m_listener_managers[0].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write("Mods:" + m);
+            m_listener_managers[0].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write("当前状态:" + c);
+            m_listener_managers[0].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write("Mods:" + m);
 #endif
-            }
-            catch (Exception e)
-            {
-                Sync.Tools.IO.CurrentIO.WriteColor(e.Message, ConsoleColor.Red);
-                Sync.Tools.IO.CurrentIO.WriteColor(e.StackTrace, ConsoleColor.Red);
-            }
 
             m_listener_managers[0].Start();
         }
