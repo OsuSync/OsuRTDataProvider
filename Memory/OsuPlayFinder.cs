@@ -25,16 +25,16 @@ namespace MemoryReader.Memory
 
         private static readonly byte[] s_acc_patterm = new byte[]
         {
-            0x73,0x7a,0x8b,0x0d,0x0,0x0,0x0,0x0,0x85,0xc9,0x74,0x1f
+            0xbf,0x01,0x00,0x00,0x00,0xeb,0x03,0x83,0xcf,0xff,0xa1,0,0,0,0,0x83,0x3d,0,0,0,0,0x02,0x0f,0x85
         };
-
-        private static readonly string s_acc_mask = "xxxx????xxxx";
+        //
+        private static readonly string s_acc_mask = "xxxxxxxxxxx????xx????xxx";
 
         private static readonly byte[] s_time_patterm = new byte[]
 {
             0x5e,0x5f,0x5d,0xc3,0xa1,0x0,0x0,0x0,0x0,0x89,0x0,0x04
 };
-
+        
         private static readonly string s_time_mask = "xxxxx????x?x";
 
         #endregion Address Arguments
@@ -59,7 +59,7 @@ namespace MemoryReader.Memory
             m_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
 
             //Find acc Address
-            m_acc_address = SigScan.FindPattern(s_acc_patterm, s_acc_mask, 4);
+            m_acc_address = SigScan.FindPattern(s_acc_patterm, s_acc_mask, 11);
             m_acc_address = (IntPtr)ReadIntFromMemory(m_acc_address);
 
             //Find Time Address
@@ -116,6 +116,7 @@ namespace MemoryReader.Memory
         public double GetCurrentAccuracy()
         {
             var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
+            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
             tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x48) + 0x14;
 
             return ReadDoubleFromMemory(tmp_ptr);
@@ -124,6 +125,7 @@ namespace MemoryReader.Memory
         public int GetCurrentCombo()
         {
             var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
+            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
             tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x34) + 0x18;
 
             return ReadIntFromMemory(tmp_ptr);
@@ -132,6 +134,7 @@ namespace MemoryReader.Memory
         public int GetMissCount()
         {
             var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
+            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
             tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x38) + 0x8e;
 
             return ReadShortFromMemory(tmp_ptr);
@@ -140,6 +143,7 @@ namespace MemoryReader.Memory
         public int Get300Count()
         {
             var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
+            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
             tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x38) + 0x86;
 
             return ReadShortFromMemory(tmp_ptr);
@@ -148,6 +152,7 @@ namespace MemoryReader.Memory
         public int Get100Count()
         {
             var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
+            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
             tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x38) + 0x84;
 
             return ReadShortFromMemory(tmp_ptr);
@@ -156,6 +161,7 @@ namespace MemoryReader.Memory
         public int Get50Count()
         {
             var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
+            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
             tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x38) + 0x88;
 
             return ReadShortFromMemory(tmp_ptr);
@@ -169,6 +175,7 @@ namespace MemoryReader.Memory
         public double GetCurrentHP()
         {
             var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
+            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
             tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x40) + 0x1c;
 
             return ReadDoubleFromMemory(tmp_ptr);
@@ -177,6 +184,7 @@ namespace MemoryReader.Memory
         public ModsInfo GetCurrentMods()
         {
             var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
+            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
             tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x38);
             IntPtr salt_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x1c) + 0x8;
             IntPtr mods_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x1c) + 0xc;
