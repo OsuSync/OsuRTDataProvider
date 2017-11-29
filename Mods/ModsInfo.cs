@@ -46,7 +46,7 @@ namespace MemoryReader.Mods
         }
 
         static private List<string> mod_short_str = new List<string>()
-        {"","NF","EZ","HD","HR","SD","DT","RL","HT","NC","FL","AP","SO","RL2","PF","1K","2K","3K","4K","5K","6K","7K","8K","9K","KC",
+        {"","NF","EZ","HD","HR","SD","DT","RX","HT","NC","FL","AP","SO","RX2","PF","1K","2K","3K","4K","5K","6K","7K","8K","9K","KC",
          "FI","RD","CE","TG","V2"};
 
         static private Dictionary<string, string> mod_map = new Dictionary<string, string>();
