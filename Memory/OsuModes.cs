@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MemoryReader.Memory
 {
-    public enum OsuModes
+    enum OsuModes
     {
         Menu,
         Edit,
