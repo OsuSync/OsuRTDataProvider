@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MemoryReader.Memory
 {
-    class OsuFinderBase
+    internal class OsuFinderBase
     {
         protected SigScan SigScan { get; private set; }
         protected Process OsuProcess { get; private set; }
 
         private int _read_max_string_length = 4096;
-        public int ReadMaxStringLength {
+
+        public int ReadMaxStringLength
+        {
             get => _read_max_string_length;
             set
             {
@@ -30,7 +30,16 @@ namespace MemoryReader.Memory
             _str_buf = new byte[ReadMaxStringLength];
         }
 
-        byte[] _number_buf = new byte[8];
+        private List<byte> _a = new List<byte>(64);
+
+        protected byte[] StringToByte(string s)
+        {
+            _a.Clear();
+            foreach (var c in s) _a.Add((byte)c);
+            return _a.ToArray();
+        }
+
+        private byte[] _number_buf = new byte[8];
 
         protected int ReadIntFromMemory(IntPtr address)
         {
@@ -64,9 +73,9 @@ namespace MemoryReader.Memory
             return 0.0;
         }
 
-        byte[] _str_buf;
+        private byte[] _str_buf;
 
-        protected bool TryReadStringFromMemory(IntPtr address,out string str)
+        protected bool TryReadStringFromMemory(IntPtr address, out string str)
         {
             str = null;
             IntPtr str_base = (IntPtr)ReadIntFromMemory(address);
@@ -74,15 +83,15 @@ namespace MemoryReader.Memory
             {
                 int len = ReadIntFromMemory(str_base + 0x4) * 2;
 
-                if (len > ReadMaxStringLength || len<=0) return false;
+                if (len > ReadMaxStringLength || len <= 0) return false;
 
                 if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, _str_buf, (uint)len, out int ret_size_ptr))
                 {
-                    str = Encoding.Unicode.GetString(_str_buf,0,len);
+                    str = Encoding.Unicode.GetString(_str_buf, 0, len);
                     return true;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return false;
             }
