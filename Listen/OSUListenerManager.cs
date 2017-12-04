@@ -203,13 +203,9 @@ namespace MemoryReader.Listen
                         double hp = 0.0;
                         double acc = 0.0;
 
-                        #region if listen
-
                         if (OnBeatmapSetChanged != null || OnBeatmapChanged != null) beatmapset = m_memory_finder.GetCurrentBeatmapSet();
                         if (OnBeatmapChanged != null) beatmap = m_memory_finder.GetCurrentBeatmap();
                         if (OnPlayingTimeChanged != null) pt = m_memory_finder.GetPlayingTime();
-
-                        #endregion if listen
 
                         try
                         {
@@ -234,18 +230,6 @@ namespace MemoryReader.Listen
                                 if (OnMissHitChanged != null) nmiss = m_memory_finder.GetMissCount();
                                 if (OnAccuracyChanged != null) acc = m_memory_finder.GetCurrentAccuracy();
                                 if (OnHealthPointChanged != null) hp = m_memory_finder.GetCurrentHP();
-                            }
-                            else
-                            {
-                                mods = null;
-                                cb = 0;
-                                n300 = 0;
-                                n100 = 0;
-                                n50 = 0;
-                                nmiss = 0;
-                                acc = 0.0;
-                                hp = 0.0;
-                                pt = 0;
                             }
 
                             if (mods?.Mod != m_last_mods?.Mod)
