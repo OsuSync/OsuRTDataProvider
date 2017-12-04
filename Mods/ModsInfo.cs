@@ -83,11 +83,6 @@ namespace MemoryReader.Mods
             Mod = Mods.None;
         }
 
-        public void Reset()
-        {
-            Mod = Mods.None;
-        }
-
         public string Name
         {
             get

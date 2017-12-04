@@ -205,17 +205,9 @@ namespace MemoryReader.Listen
 
                         #region if listen
 
-                        if (OnCurrentMods != null) mods = m_memory_finder.GetCurrentMods();
                         if (OnBeatmapSetChanged != null || OnBeatmapChanged != null) beatmapset = m_memory_finder.GetCurrentBeatmapSet();
                         if (OnBeatmapChanged != null) beatmap = m_memory_finder.GetCurrentBeatmap();
                         if (OnPlayingTimeChanged != null) pt = m_memory_finder.GetPlayingTime();
-                        if (OnComboChanged != null) cb = m_memory_finder.GetCurrentCombo();
-                        if (On300HitChanged != null) n300 = m_memory_finder.Get300Count();
-                        if (On100HitChanged != null) n100 = m_memory_finder.Get100Count();
-                        if (On50HitChanged != null) n50 = m_memory_finder.Get50Count();
-                        if (OnMissHitChanged != null) nmiss = m_memory_finder.GetMissCount();
-                        if (OnAccuracyChanged != null) acc = m_memory_finder.GetCurrentAccuracy();
-                        if (OnHealthPointChanged != null) hp = m_memory_finder.GetCurrentHP();
 
                         #endregion if listen
 
@@ -234,44 +226,54 @@ namespace MemoryReader.Listen
 
                             if (status == OsuStatus.Playing)
                             {
-                                if (mods.Mod != m_last_mods.Mod)
-                                    OnCurrentMods?.Invoke(mods);
-
-                                if (hp != m_last_hp)
-                                    OnHealthPointChanged?.Invoke(hp);
-
-                                if (acc != m_last_acc)
-                                    OnAccuracyChanged?.Invoke(acc);
-
-                                if (n300 != m_last_300)
-                                    On300HitChanged?.Invoke(n300);
-
-                                if (n100 != m_last_100)
-                                    On100HitChanged?.Invoke(n100);
-
-                                if (n50 != m_last_50)
-                                    On50HitChanged?.Invoke(n50);
-
-                                if (nmiss != m_last_miss)
-                                    OnMissHitChanged?.Invoke(nmiss);
-
-                                if (cb != m_last_combo)
-                                    OnComboChanged?.Invoke(cb);
-
-                                if (pt != m_playing_time)
-                                    OnPlayingTimeChanged?.Invoke(pt);
+                                if (OnCurrentMods != null) mods = m_memory_finder.GetCurrentMods();
+                                if (OnComboChanged != null) cb = m_memory_finder.GetCurrentCombo();
+                                if (On300HitChanged != null) n300 = m_memory_finder.Get300Count();
+                                if (On100HitChanged != null) n100 = m_memory_finder.Get100Count();
+                                if (On50HitChanged != null) n50 = m_memory_finder.Get50Count();
+                                if (OnMissHitChanged != null) nmiss = m_memory_finder.GetMissCount();
+                                if (OnAccuracyChanged != null) acc = m_memory_finder.GetCurrentAccuracy();
+                                if (OnHealthPointChanged != null) hp = m_memory_finder.GetCurrentHP();
                             }
                             else
                             {
-                                acc = 0;
-                                hp = 0;
-                                nmiss = 0;
+                                mods = null;
+                                cb = 0;
                                 n300 = 0;
                                 n100 = 0;
                                 n50 = 0;
-                                mods.Reset();
-                                cb = 0;
+                                nmiss = 0;
+                                acc = 0;
+                                hp = 0;
+                                pt = 0;
                             }
+
+                            if (mods?.Mod != m_last_mods?.Mod)
+                                OnCurrentMods?.Invoke(mods);
+
+                            if (hp != m_last_hp)
+                                OnHealthPointChanged?.Invoke(hp);
+
+                            if (acc != m_last_acc)
+                                OnAccuracyChanged?.Invoke(acc);
+
+                            if (n300 != m_last_300)
+                                On300HitChanged?.Invoke(n300);
+
+                            if (n100 != m_last_100)
+                                On100HitChanged?.Invoke(n100);
+
+                            if (n50 != m_last_50)
+                                On50HitChanged?.Invoke(n50);
+
+                            if (nmiss != m_last_miss)
+                                OnMissHitChanged?.Invoke(nmiss);
+
+                            if (cb != m_last_combo)
+                                OnComboChanged?.Invoke(cb);
+
+                            if (pt != m_playing_time)
+                                OnPlayingTimeChanged?.Invoke(pt);
 
                             if (status != m_last_osu_status)
                                 OnStatusChanged?.Invoke(m_last_osu_status, status);
