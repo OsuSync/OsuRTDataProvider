@@ -3,7 +3,7 @@ using System;
 
 namespace MemoryReader
 {
-    internal class SettingIni : IConfigurable
+    public class SettingIni : IConfigurable
     {
         public ConfigurationElement ListenInterval { set; get; }
         public ConfigurationElement EnableDirectoryImprecisionSearch { get; set; }
