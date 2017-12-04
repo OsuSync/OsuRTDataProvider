@@ -82,7 +82,7 @@ namespace MemoryReader.Listen
 
         private BeatmapSet m_last_beatmapset = BeatmapSet.Empty;
         private Beatmap m_last_beatmap = Beatmap.Empty;
-        private ModsInfo m_last_mods = ModsInfo.Empty;
+        private ModsInfo m_last_mods = null;
 
         private double m_last_hp = 0;
         private double m_last_acc = 0;
@@ -193,7 +193,7 @@ namespace MemoryReader.Listen
                     {
                         BeatmapSet beatmapset = BeatmapSet.Empty;
                         Beatmap beatmap = Beatmap.Empty;
-                        ModsInfo mods = ModsInfo.Empty;
+                        ModsInfo mods = null;
                         int cb = 0;
                         int pt = 0;
                         int n300 = 0;
@@ -201,7 +201,7 @@ namespace MemoryReader.Listen
                         int n50 = 0;
                         int nmiss = 0;
                         double hp = 0.0;
-                        double acc = 0.0f;
+                        double acc = 0.0;
 
                         #region if listen
 
@@ -243,8 +243,8 @@ namespace MemoryReader.Listen
                                 n100 = 0;
                                 n50 = 0;
                                 nmiss = 0;
-                                acc = 0;
-                                hp = 0;
+                                acc = 0.0;
+                                hp = 0.0;
                                 pt = 0;
                             }
 
