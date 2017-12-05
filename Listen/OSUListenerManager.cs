@@ -122,7 +122,7 @@ namespace MemoryReader.Listen
 
             while (!m_memory_finder.TryInit())
             {
-                if (m_osu_process.HasExited)
+                if (m_osu_process.HasExited||m_last_osu_status!=OsuStatus.Playing)
                 {
                     m_memory_finder = null;
                     return;
