@@ -232,7 +232,7 @@ namespace MemoryReader.Listen
                                 if (OnHealthPointChanged != null) hp = m_memory_finder.GetCurrentHP();
                             }
 
-                            if (mods.Mod != m_last_mods.Mod)
+                            if (mods != m_last_mods)
                                 OnCurrentMods?.Invoke(mods);
 
                             if (hp != m_last_hp)

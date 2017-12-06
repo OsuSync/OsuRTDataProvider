@@ -115,5 +115,44 @@ namespace MemoryReader.Mods
         {
             return ShortName;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is ModsInfo))
+            {
+                return false;
+            }
+
+            var info = (ModsInfo)obj;
+            return m_mod == info.m_mod;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -801518429;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + m_mod.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator!=(ModsInfo a,ModsInfo b)
+        {
+            return a.Mod != b.Mod;
+        }
+
+        public static bool operator==(ModsInfo a, ModsInfo b)
+        {
+            return a.Mod == b.Mod;
+        }
+
+        public static bool operator !=(ModsInfo a, Mods b)
+        {
+            return a.Mod != b;
+        }
+
+        public static bool operator ==(ModsInfo a, Mods b)
+        {
+            return a.Mod == b;
+        }
     }
 }
