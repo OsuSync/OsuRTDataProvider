@@ -82,7 +82,7 @@ namespace MemoryReader.Listen
 
         private BeatmapSet m_last_beatmapset = BeatmapSet.Empty;
         private Beatmap m_last_beatmap = Beatmap.Empty;
-        private ModsInfo m_last_mods = null;
+        private ModsInfo m_last_mods = ModsInfo.Empty;
 
         private double m_last_hp = 0;
         private double m_last_acc = 0;
@@ -193,7 +193,7 @@ namespace MemoryReader.Listen
                     {
                         BeatmapSet beatmapset = BeatmapSet.Empty;
                         Beatmap beatmap = Beatmap.Empty;
-                        ModsInfo mods = null;
+                        ModsInfo mods = ModsInfo.Empty;
                         int cb = 0;
                         int pt = 0;
                         int n300 = 0;
@@ -232,7 +232,7 @@ namespace MemoryReader.Listen
                                 if (OnHealthPointChanged != null) hp = m_memory_finder.GetCurrentHP();
                             }
 
-                            if (mods?.Mod != m_last_mods?.Mod)
+                            if (mods.Mod != m_last_mods.Mod)
                                 OnCurrentMods?.Invoke(mods);
 
                             if (hp != m_last_hp)

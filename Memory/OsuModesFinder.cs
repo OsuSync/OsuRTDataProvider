@@ -24,7 +24,7 @@ namespace MemoryReader.Memory
             m_game_modes_address = SigScan.FindPattern(StringToByte(s_game_modes_patterm), s_game_modes_mask, 10);
             if (m_game_modes_address == IntPtr.Zero) return false;
 
-            m_game_modes_address = (IntPtr)ReadIntFromMemory(m_game_modes_address);
+            TryReadIntPtrFromMemory(m_game_modes_address,out m_game_modes_address);
 
             SigScan.ResetRegion();
 
@@ -36,7 +36,9 @@ namespace MemoryReader.Memory
 
         public OsuModes GetCurrentOsuModes()
         {
-            return (OsuModes)ReadIntFromMemory(m_game_modes_address);
+            TryReadIntFromMemory(m_game_modes_address, out int value);
+
+            return (OsuModes)value;
         }
     }
 }

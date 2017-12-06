@@ -46,15 +46,15 @@ namespace MemoryReader.Memory
 
             //Find Beatmap ID Address
             m_beatmap_address = SigScan.FindPattern(StringToByte(s_beatmap_pattern), s_beatmap_mask, 11);
-            m_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
+            TryReadIntPtrFromMemory(m_beatmap_address,out m_beatmap_address);
 
             //Find acc Address
             m_acc_address = SigScan.FindPattern(StringToByte(s_acc_patterm), s_acc_mask, 11);
-            m_acc_address = (IntPtr)ReadIntFromMemory(m_acc_address);
+            TryReadIntPtrFromMemory(m_acc_address,out m_acc_address);
 
             //Find Time Address
             m_time_address = SigScan.FindPattern(StringToByte(s_time_patterm), s_time_mask, 5);
-            m_time_address = (IntPtr)ReadIntFromMemory(m_time_address);
+            TryReadIntPtrFromMemory(m_time_address,out m_time_address);
 
             SigScan.ResetRegion();
 
@@ -74,9 +74,10 @@ namespace MemoryReader.Memory
 
         public Beatmap GetCurrentBeatmap()
         {
-            var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
+            TryReadIntPtrFromMemory(m_beatmap_address, out IntPtr cur_beatmap_address);
+            TryReadIntFromMemory(cur_beatmap_address + s_beatmap_offset, out int value);
 
-            var beatmap = new Beatmap(ReadIntFromMemory(cur_beatmap_address + s_beatmap_offset));
+            var beatmap = new Beatmap(value);
             var info = GetBeatmapInfo();
             beatmap.Diff = info.Item3;
 
@@ -88,10 +89,12 @@ namespace MemoryReader.Memory
             int id = 0;
             do
             {
-                var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
-                id = ReadIntFromMemory(cur_beatmap_address + s_beatmap_set_offset);
+                TryReadIntPtrFromMemory(m_beatmap_address,out IntPtr cur_beatmap_address);
+                TryReadIntFromMemory(cur_beatmap_address + s_beatmap_set_offset,out id);
+
                 if (OsuProcess.HasExited) break;
                 if (id == 0) Thread.Sleep(500);
+
                 else break;
             } while (true);
 
@@ -105,86 +108,98 @@ namespace MemoryReader.Memory
 
         public double GetCurrentAccuracy()
         {
-            var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x48) + 0x14;
+            TryReadIntPtrFromMemory(m_acc_address,out IntPtr tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x58,out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x48,out tmp_ptr);
 
-            return ReadDoubleFromMemory(tmp_ptr);
+            TryReadDoubleFromMemory(tmp_ptr +0x14,out double value);
+            return value;
         }
 
         public int GetCurrentCombo()
         {
-            var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x34) + 0x18;
+            TryReadIntPtrFromMemory(m_acc_address, out IntPtr tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x58, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x34,out tmp_ptr);
 
-            return ReadIntFromMemory(tmp_ptr);
+            TryReadIntFromMemory(tmp_ptr + 0x18,out int value);
+            return value;
         }
 
         public int GetMissCount()
         {
-            var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x38) + 0x8e;
+            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x58,out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
 
-            return ReadShortFromMemory(tmp_ptr);
+            TryReadShortFromMemory(tmp_ptr + 0x8e,out var value);
+            return value;
         }
 
         public int Get300Count()
         {
-            var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x38) + 0x86;
+            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x58, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
 
-            return ReadShortFromMemory(tmp_ptr);
+            TryReadShortFromMemory(tmp_ptr + 0x86,out ushort value);
+            return value;
         }
 
         public int Get100Count()
         {
-            var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x38) + 0x84;
+            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x58, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x38,out tmp_ptr);
 
-            return ReadShortFromMemory(tmp_ptr);
+            TryReadShortFromMemory(tmp_ptr + 0x84,out var value);
+            return value;
         }
 
         public int Get50Count()
         {
-            var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x38) + 0x88;
+            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x58, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
 
-            return ReadShortFromMemory(tmp_ptr);
+            TryReadShortFromMemory(tmp_ptr + +0x88, out var value);
+            return value;
         }
 
         public int GetPlayingTime()
         {
-            return ReadIntFromMemory(m_time_address);
+            TryReadIntFromMemory(m_time_address,out int value);
+            return value;
         }
 
         public double GetCurrentHP()
         {
-            var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x40) + 0x1c;
+            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x58, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x40,out tmp_ptr);
 
-            return ReadDoubleFromMemory(tmp_ptr);
+            TryReadDoubleFromMemory(tmp_ptr + 0x1c,out double value);
+            return value;
         }
 
         public ModsInfo GetCurrentMods()
         {
-            var tmp_ptr = (IntPtr)ReadIntFromMemory(m_acc_address);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x58);
-            tmp_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x38);
-            IntPtr salt_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x1c) + 0x8;
-            IntPtr mods_ptr = (IntPtr)ReadIntFromMemory(tmp_ptr + 0x1c) + 0xc;
-            int salt = ReadIntFromMemory(salt_ptr);
-            int mods = ReadIntFromMemory(mods_ptr);
+            TryReadIntPtrFromMemory(m_acc_address,out var tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x58,out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x38,out tmp_ptr);
 
-            return new ModsInfo()
+            TryReadIntPtrFromMemory(tmp_ptr + 0x1c,out var salt_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x1c,out var mods_ptr);
+
+            if(TryReadIntFromMemory(salt_ptr + 0x8,out int salt)&&
+                TryReadIntFromMemory(mods_ptr + 0xc,out int mods))
             {
-                Mod = (ModsInfo.Mods)(mods ^ salt)
-            };
+                return new ModsInfo()
+                {
+                    Mod = (ModsInfo.Mods)(mods ^ salt)
+                };
+            }
+            return ModsInfo.Empty;
         }
 
         private string GetTitleFullName()
@@ -193,7 +208,7 @@ namespace MemoryReader.Memory
 
             do
             {
-                var cur_beatmap_address = (IntPtr)ReadIntFromMemory(m_beatmap_address);
+                TryReadIntPtrFromMemory(m_beatmap_address,out var cur_beatmap_address);
 
                 bool success = TryReadStringFromMemory(cur_beatmap_address + s_title_offset, out str);
 

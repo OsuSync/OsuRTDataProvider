@@ -55,8 +55,8 @@ namespace MemoryReader
             m_listener_managers[id] = new OSUListenerManager(true, id);
 
 #if DEBUG
-            m_listener_managers[id].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write($"[{id}]当前状态:" + c);
-            m_listener_managers[id].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write($"[{id}]Mods:" + m);
+            m_listener_managers[id].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write($"[{id}]当前状态:{c}");
+            m_listener_managers[id].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write($"[{id}]Mods:{m}(0x{(uint)m.Mod:X8})");
 #endif
 
             m_listener_managers[id].Start();
@@ -67,8 +67,8 @@ namespace MemoryReader
             m_listener_managers[0] = new OSUListenerManager();
 
 #if DEBUG
-            m_listener_managers[0].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write("当前状态:" + c);
-            m_listener_managers[0].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write("Mods:" + m);
+            m_listener_managers[0].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write($"当前状态:{c}");
+            m_listener_managers[0].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write($"Mods:{m}(0x{(uint)m.Mod:X8})");
 #endif
 
             m_listener_managers[0].Start();

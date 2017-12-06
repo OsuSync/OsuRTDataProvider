@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MemoryReader.Mods
 {
-    public class ModsInfo
+    public struct ModsInfo
     {
         [Flags]
-        public enum Mods:uint
+        public enum Mods : uint
         {
             None = 0u,
             NoFail = 1u << 0,
@@ -43,16 +40,28 @@ namespace MemoryReader.Mods
             Key3 = 1u << 27,
             Key2 = 1u << 28,
             ScoreV2 = 1u << 29,
+
+            Unknown = 0xFFFFFFFFu
         }
 
         static private List<string> mod_short_str = new List<string>()
         {"","NF","EZ","HD","HR","SD","DT","RX","HT","NC","FL","AP","SO","RX2","PF","1K","2K","3K","4K","5K","6K","7K","8K","9K","KC",
-         "FI","RD","CE","TG","V2"};
+         "FI","RD","CE","TG","V2","Unknown"};
 
         static private Dictionary<string, string> mod_map = new Dictionary<string, string>();
 
+        static public ModsInfo Empty {
+            get {
+                ModsInfo m;
+                m.m_mod = Mods.Unknown;
+                return m;
+            }
+        }
+
         private Mods m_mod;
-        public Mods Mod {
+
+        public Mods Mod
+        {
             set
             {
                 if ((value & Mods.Nightcore) == Mods.Nightcore)
@@ -63,29 +72,24 @@ namespace MemoryReader.Mods
                     value &= ~Mods.SuddenDeath;
                 m_mod = value;
             }
-            get=>m_mod;
+            get => m_mod;
         }
 
         static ModsInfo()
         {
             int i = 0;
             var fields = typeof(Mods).GetFields(BindingFlags.Static | BindingFlags.Public);
-            foreach(var fi in fields)
+            foreach (var fi in fields)
             {
                 mod_map.Add(fi.Name, mod_short_str[i++]);
             }
-        }
-
-        public ModsInfo()
-        {
-            Mod = Mods.None;
         }
 
         public string Name
         {
             get
             {
-                return Mod.ToString().Replace(" ",string.Empty);
+                return Mod.ToString().Replace(" ", string.Empty);
             }
         }
 

@@ -41,36 +41,56 @@ namespace MemoryReader.Memory
 
         private byte[] _number_buf = new byte[8];
 
-        protected int ReadIntFromMemory(IntPtr address)
+        protected bool TryReadIntPtrFromMemory(IntPtr address, out IntPtr value)
         {
             int ret_size_ptr = 0;
+            value = IntPtr.Zero;
+
             if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(int), out ret_size_ptr))
             {
-                return BitConverter.ToInt32(_number_buf, 0);
+                value = (IntPtr)BitConverter.ToInt32(_number_buf, 0);
+                return true;
             }
-            return 0;
-            //throw new ArgumentException();
+            return false;
         }
 
-        protected int ReadShortFromMemory(IntPtr address)
+        protected bool TryReadIntFromMemory(IntPtr address,out int value)
         {
             int ret_size_ptr = 0;
-            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(short), out ret_size_ptr))
+            value = 0;
+
+            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(int), out ret_size_ptr))
             {
-                return BitConverter.ToUInt16(_number_buf, 0);
+                value = BitConverter.ToInt32(_number_buf, 0);
+                return true;
             }
-            return 0;
-            //throw new ArgumentException();
+            return false;
         }
 
-        protected double ReadDoubleFromMemory(IntPtr address)
+        protected bool TryReadShortFromMemory(IntPtr address, out ushort value)
         {
             int ret_size_ptr = 0;
+            value = 0;
+
+            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(ushort), out ret_size_ptr))
+            {
+                value = BitConverter.ToUInt16(_number_buf, 0);
+                return true;
+            }
+            return false;
+        }
+
+        protected bool TryReadDoubleFromMemory(IntPtr address,out double value)
+        {
+            int ret_size_ptr = 0;
+            value = double.NaN;
+
             if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(double), out ret_size_ptr))
             {
-                return BitConverter.ToDouble(_number_buf, 0);
+                value = BitConverter.ToDouble(_number_buf, 0);
+                return true;
             }
-            return 0.0;
+            return false;
         }
 
         private byte[] _str_buf;
@@ -78,10 +98,12 @@ namespace MemoryReader.Memory
         protected bool TryReadStringFromMemory(IntPtr address, out string str)
         {
             str = null;
-            IntPtr str_base = (IntPtr)ReadIntFromMemory(address);
+            TryReadIntPtrFromMemory(address,out IntPtr str_base);
+
             try
             {
-                int len = ReadIntFromMemory(str_base + 0x4) * 2;
+                TryReadIntFromMemory(str_base + 0x4, out int len);
+                len*= 2;
 
                 if (len > ReadMaxStringLength || len <= 0) return false;
 
