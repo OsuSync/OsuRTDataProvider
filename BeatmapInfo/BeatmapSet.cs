@@ -8,6 +8,10 @@ namespace MemoryReader.BeatmapInfo
     public class BeatmapSet
     {
         private int m_beatmap_id=-1;
+        /// <summary>
+        /// Return set id.
+        /// If no found return -1;
+        /// </summary>
         public int BeatmapSetID {
             get
             {
@@ -27,6 +31,9 @@ namespace MemoryReader.BeatmapInfo
             private set=>m_beatmap_id=value;
         }
 
+        /// <summary>
+        /// If BeatmapSetID > 0. Return beatmap's download link.
+        /// </summary>
         public string DownloadLink
         {
             get
@@ -36,7 +43,14 @@ namespace MemoryReader.BeatmapInfo
             }
         }
 
+        /// <summary>
+        /// Return the beatmap's artist.
+        /// </summary>
         public string Artist { get; set; }
+
+        /// <summary>
+        /// Return the beatmap's title.
+        /// </summary>
         public string Title { get; set; }
 
         private static string[] s_replace_list = new string[] { "*", ".", ":", "?", "\"", "<", ">", "/","~"};
@@ -89,6 +103,10 @@ namespace MemoryReader.BeatmapInfo
             return dir_list;
         }
 
+        /// <summary>
+        /// Return all possible beatmap set paths.
+        /// /// If not found.return null;
+        /// </summary>
         public LinkedList<string> AllLocationPath
         {
             get
@@ -122,6 +140,10 @@ namespace MemoryReader.BeatmapInfo
             }
         }
 
+        /// <summary>
+        /// Return the first of all possible beatmap set paths.
+        /// If not found.return string.Empty.
+        /// </summary>
         public string LocationPath
         {
             get

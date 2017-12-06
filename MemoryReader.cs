@@ -13,12 +13,25 @@ namespace MemoryReader
         public const string PLUGIN_NAME = "MemoryReader";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
 
-        private int m_listener_managers_count = 0;
-        public int TourneyListenerManagersCount { get => Setting.EnableTourneyMode ? m_listener_managers_count : 0; }
 
         private OSUListenerManager[] m_listener_managers = new OSUListenerManager[16];
+        private int m_listener_managers_count = 0;
+
+        /// <summary>
+        /// If EnableTourneyMode = false in config.ini, return 0.
+        /// If EnableTourneyMode = true in config.ini, return TeamSize * 2.
+        /// </summary>
+        public int TourneyListenerManagersCount { get => Setting.EnableTourneyMode ? m_listener_managers_count : 0; }
+
+        /// <summary>
+        /// return a ListenerManager.
+        /// </summary>
         public OSUListenerManager ListenerManager { get => m_listener_managers[0]; }
 
+        /// <summary>
+        /// If EnableTourneyMode = false in config.ini, return null.
+        /// If EnableTourneyMode = true in config.ini, return all ListenerManagers.
+        /// </summary>
         public OSUListenerManager[] TourneyListenerManagers { get => Setting.EnableTourneyMode ? m_listener_managers : null; }
 
         public MemoryReader() : base(PLUGIN_NAME, PLUGIN_AUTHOR)
@@ -55,8 +68,8 @@ namespace MemoryReader
             m_listener_managers[id] = new OSUListenerManager(true, id);
 
 #if DEBUG
-            m_listener_managers[id].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write($"[{id}]当前状态:{c}");
-            m_listener_managers[id].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write($"[{id}]Mods:{m}(0x{(uint)m.Mod:X8})");
+            m_listener_managers[id].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write($"[{id}]Current Game Status:{c}");
+            m_listener_managers[id].OnModsChanged += m => Sync.Tools.IO.CurrentIO.Write($"[{id}]Mods:{m}(0x{(uint)m.Mod:X8})");
 #endif
 
             m_listener_managers[id].Start();
@@ -67,8 +80,8 @@ namespace MemoryReader
             m_listener_managers[0] = new OSUListenerManager();
 
 #if DEBUG
-            m_listener_managers[0].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write($"当前状态:{c}");
-            m_listener_managers[0].OnCurrentMods += m => Sync.Tools.IO.CurrentIO.Write($"Mods:{m}(0x{(uint)m.Mod:X8})");
+            m_listener_managers[0].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write($"Current Game Status:{c}");
+            m_listener_managers[0].OnModsChanged += m => Sync.Tools.IO.CurrentIO.Write($"Mods:{m}(0x{(uint)m.Mod:X8})");
 #endif
 
             m_listener_managers[0].Start();

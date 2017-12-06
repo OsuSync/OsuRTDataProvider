@@ -44,7 +44,7 @@ namespace MemoryReader.Mods
             Unknown = 0xFFFFFFFFu
         }
 
-        static private List<string> mod_short_str = new List<string>()
+        static private string[] mod_short_str = new string[]
         {"","NF","EZ","HD","HR","SD","DT","RX","HT","NC","FL","AP","SO","RX2","PF","1K","2K","3K","4K","5K","6K","7K","8K","9K","KC",
          "FI","RD","CE","TG","V2","Unknown"};
 
@@ -60,6 +60,9 @@ namespace MemoryReader.Mods
 
         private Mods m_mod;
 
+        /// <summary>
+        /// Get Mods
+        /// </summary>
         public Mods Mod
         {
             set
@@ -85,6 +88,9 @@ namespace MemoryReader.Mods
             }
         }
 
+        /// <summary>
+        /// Get Mods Name
+        /// </summary>
         public string Name
         {
             get
@@ -93,6 +99,9 @@ namespace MemoryReader.Mods
             }
         }
 
+        /// <summary>
+        /// Get Short Mods Name
+        /// </summary>
         public string ShortName
         {
             get

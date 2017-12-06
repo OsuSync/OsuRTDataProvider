@@ -27,45 +27,76 @@ namespace MemoryReader.Listen
         #region Event
 
         public delegate void OnBeatmapChangedEvt(Beatmap map);
-
         public delegate void OnBeatmapSetChangedEvt(BeatmapSet set);
-
         public delegate void OnHealthPointChangedEvt(double hp);
-
         public delegate void OnAccuracyChangedEvt(double acc);
-
         public delegate void OnComboChangedEvt(int combo);
-
-        public delegate void OnCurrentModsEvt(ModsInfo mods);
-
+        public delegate void OnModsChangedEvt(ModsInfo mods);
         public delegate void OnPlayingTimeChangedEvt(int ms);
-
         public delegate void OnHitCountChangedEvt(int hit);
-
         public delegate void OnStatusChangedEvt(OsuStatus last_status, OsuStatus status);
 
+        /// <summary>
+        /// Available in Playing and Linsten.
+        /// If too old beatmap, map.ID = -1.
+        /// </summary>
         public event OnBeatmapChangedEvt OnBeatmapChanged;
 
+        /// <summary>
+        /// Available in Playing and Linsten.
+        /// If too old beatmap, set.ID = -1.
+        /// </summary>
         public event OnBeatmapSetChangedEvt OnBeatmapSetChanged;
 
+        /// <summary>
+        /// Available in Playing.
+        /// </summary>
         public event OnHealthPointChangedEvt OnHealthPointChanged;
 
+        /// <summary>
+        /// Available in Playing.
+        /// </summary>
         public event OnAccuracyChangedEvt OnAccuracyChanged;
 
+        /// <summary>
+        /// Available in Playing.
+        /// </summary>
         public event OnComboChangedEvt OnComboChanged;
 
-        public event OnCurrentModsEvt OnCurrentMods;
+        /// <summary>
+        /// Available in Playing.
+        /// if OsuStatus turns Listen , mods = Mods.Unknown
+        /// </summary>
+        public event OnModsChangedEvt OnModsChanged;
 
+        /// <summary>
+        /// Available in Playing and Listen.
+        /// </summary>
         public event OnPlayingTimeChangedEvt OnPlayingTimeChanged;
 
+        /// <summary>
+        /// Available in Playing.
+        /// </summary>
         public event OnHitCountChangedEvt On300HitChanged;
 
+        /// <summary>
+        /// Available in Playing.
+        /// </summary>
         public event OnHitCountChangedEvt On100HitChanged;
 
+        /// <summary>
+        /// Available in Playing.
+        /// </summary>
         public event OnHitCountChangedEvt On50HitChanged;
 
+        /// <summary>
+        /// Available in Playing.
+        /// </summary>
         public event OnHitCountChangedEvt OnMissHitChanged;
 
+        /// <summary>
+        /// Get Game Status.
+        /// </summary>
         public event OnStatusChangedEvt OnStatusChanged;
 
         #endregion Event
@@ -222,7 +253,7 @@ namespace MemoryReader.Listen
 
                             if (status == OsuStatus.Playing)
                             {
-                                if (OnCurrentMods != null) mods = m_memory_finder.GetCurrentMods();
+                                if (OnModsChanged != null) mods = m_memory_finder.GetCurrentMods();
                                 if (OnComboChanged != null) cb = m_memory_finder.GetCurrentCombo();
                                 if (On300HitChanged != null) n300 = m_memory_finder.Get300Count();
                                 if (On100HitChanged != null) n100 = m_memory_finder.Get100Count();
@@ -233,7 +264,7 @@ namespace MemoryReader.Listen
                             }
 
                             if (mods != m_last_mods)
-                                OnCurrentMods?.Invoke(mods);
+                                OnModsChanged?.Invoke(mods);
 
                             if (hp != m_last_hp)
                                 OnHealthPointChanged?.Invoke(hp);

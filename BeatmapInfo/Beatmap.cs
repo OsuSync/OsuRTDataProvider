@@ -16,11 +16,22 @@ namespace MemoryReader.BeatmapInfo
             }
         }
 
+        /// <summary>
+        /// Return the beatmap's set;
+        /// </summary>
         public BeatmapSet Set { get; set; }
+
+        /// <summary>
+        /// Return the beatmap's difficulty.
+        /// </summary>
         public string Diff { get; set; }
 
         private string _path;
 
+        /// <summary>
+        /// Return the possible beatmap paths.
+        /// If not found.return string.Empty.
+        /// </summary>
         public string LocationFile
         {
             get
