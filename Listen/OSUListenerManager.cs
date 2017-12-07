@@ -1,10 +1,11 @@
 ﻿using MemoryReader.BeatmapInfo;
 using MemoryReader.Memory;
 using MemoryReader.Mods;
-using Sync;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static MemoryReader.DefaultLanguage;
@@ -24,16 +25,28 @@ namespace MemoryReader.Listen
             Rank
         }
 
+        static private LinkedList<Tuple<int, Action>> m_action_list = new LinkedList<Tuple<int, Action>>();
+        static private Task m_listen_task;
+        static private bool m_stop = false;
+
         #region Event
 
         public delegate void OnBeatmapChangedEvt(Beatmap map);
+
         public delegate void OnBeatmapSetChangedEvt(BeatmapSet set);
+
         public delegate void OnHealthPointChangedEvt(double hp);
+
         public delegate void OnAccuracyChangedEvt(double acc);
+
         public delegate void OnComboChangedEvt(int combo);
+
         public delegate void OnModsChangedEvt(ModsInfo mods);
+
         public delegate void OnPlayingTimeChangedEvt(int ms);
+
         public delegate void OnHitCountChangedEvt(int hit);
+
         public delegate void OnStatusChangedEvt(OsuStatus last_status, OsuStatus status);
 
         /// <summary>
@@ -107,10 +120,6 @@ namespace MemoryReader.Listen
 
         private OsuStatus m_last_osu_status = OsuStatus.Unkonwn;
 
-        private bool m_stop = false;
-
-        private Task m_listen_task;
-
         private BeatmapSet m_last_beatmapset = BeatmapSet.Empty;
         private Beatmap m_last_beatmap = Beatmap.Empty;
         private ModsInfo m_last_mods = ModsInfo.Empty;
@@ -129,6 +138,21 @@ namespace MemoryReader.Listen
         private bool m_is_tourney = false;
         private int m_osu_id = 0;
 
+        static OSUListenerManager()
+        {
+            m_stop = false;
+            m_listen_task = Task.Run(() =>
+            {
+                Thread.CurrentThread.Name = "MemoryReaderListenThread";
+                while (!m_stop)
+                {
+                    foreach (var action in m_action_list)
+                        action.Item2();
+                    Thread.Sleep(Setting.ListenInterval);
+                }
+            });
+        }
+
         public OSUListenerManager(bool tourney = false, int osuid = 0)
         {
             m_is_tourney = tourney;
@@ -137,14 +161,19 @@ namespace MemoryReader.Listen
 
         public void Start()
         {
-            m_stop = false;
-            m_listen_task = Task.Run(new Action(ListenLoop));
+            m_action_list.AddLast(new Tuple<int, Action>(m_osu_id, ListenLoop));
         }
 
         public void Stop()
         {
-            m_stop = true;
-            m_listen_task.Wait();
+            var tuple = m_action_list.Where(t => t.Item1 == m_osu_id).FirstOrDefault();
+            m_action_list.Remove(tuple);
+
+            if (m_action_list.Count == 0)
+            {
+                m_stop = true;
+                m_listen_task.Wait();
+            }
         }
 
         private void LoadMemorySearch(Process osu)
@@ -153,7 +182,7 @@ namespace MemoryReader.Listen
 
             while (!m_memory_finder.TryInit())
             {
-                if (m_osu_process.HasExited||m_last_osu_status!=OsuStatus.Playing)
+                if (m_osu_process.HasExited || m_last_osu_status != OsuStatus.Playing)
                 {
                     m_memory_finder = null;
                     return;
@@ -164,156 +193,149 @@ namespace MemoryReader.Listen
 
         private void ListenLoop()
         {
-            Thread.CurrentThread.Name = $"MemoryReaderListenThread-{m_osu_id}";
+            OsuStatus status = GetCurrentOsuStatus();
 
-            while (!m_stop)
+            if (status == OsuStatus.NoFoundProcess || status == OsuStatus.Unkonwn)
             {
-                OsuStatus status = GetCurrentOsuStatus();
+                m_osu_process = null;
+                m_memory_finder = null;
+                m_modes_finder = null;
 
-                if (status == OsuStatus.NoFoundProcess || status == OsuStatus.Unkonwn)
+                if (status == OsuStatus.NoFoundProcess)
+                    Sync.Tools.IO.CurrentIO.WriteColor(LANG_OSU_NOT_FOUND, ConsoleColor.Red);
+
+                Process[] process_list;
+                do
                 {
-                    m_osu_process = null;
-                    m_memory_finder = null;
-                    m_modes_finder = null;
+                    Thread.Sleep(500);
+                    process_list = Process.GetProcessesByName("osu!");
 
-                    if (status == OsuStatus.NoFoundProcess)
-                        Sync.Tools.IO.CurrentIO.WriteColor(LANG_OSU_NOT_FOUND, ConsoleColor.Red);
+                    if (process_list.Length == 0) continue;
 
-                    Process[] process_list;
-                    do
+                    if (m_is_tourney)
                     {
-                        Thread.Sleep(500);
-                        process_list = Process.GetProcessesByName("osu!");
-
-                        if (process_list.Length == 0) continue;
-
-                        if (m_is_tourney)
+                        foreach (var p in process_list)
                         {
-                            foreach (var p in process_list)
+                            if (p.MainWindowTitle.Contains($"Client {m_osu_id}"))
                             {
-                                if (p.MainWindowTitle.Contains($"Client {m_osu_id}"))
-                                {
-                                    m_osu_process = p;
-                                    break;
-                                }
+                                m_osu_process = p;
+                                break;
                             }
                         }
-                        else
-                        {
-                            m_osu_process = process_list[0];
-                        }
-
-                        if (m_osu_process!=null)
-                            Sync.Tools.IO.CurrentIO.WriteColor(LANG_OSU_FOUND, ConsoleColor.Green);
                     }
-                    while (process_list.Length == 0);
+                    else
+                    {
+                        m_osu_process = process_list[0];
+                    }
+
+                    if (m_osu_process != null)
+                        Sync.Tools.IO.CurrentIO.WriteColor(LANG_OSU_FOUND, ConsoleColor.Green);
+                }
+                while (process_list.Length == 0);
+            }
+
+            if (status != OsuStatus.NoFoundProcess && status != OsuStatus.Unkonwn)
+            {
+                if (status == OsuStatus.Playing)
+                {
+                    if (m_memory_finder == null)
+                    {
+                        Setting.SongsPath = Path.Combine(Path.GetDirectoryName(m_osu_process.MainModule.FileName), "Songs");
+                        LoadMemorySearch(m_osu_process);
+                    }
                 }
 
-                if (status != OsuStatus.NoFoundProcess && status != OsuStatus.Unkonwn)
+                if (m_memory_finder != null)
                 {
-                    if (status == OsuStatus.Playing)
+                    BeatmapSet beatmapset = BeatmapSet.Empty;
+                    Beatmap beatmap = Beatmap.Empty;
+                    ModsInfo mods = ModsInfo.Empty;
+                    int cb = 0;
+                    int pt = 0;
+                    int n300 = 0;
+                    int n100 = 0;
+                    int n50 = 0;
+                    int nmiss = 0;
+                    double hp = 0.0;
+                    double acc = 0.0;
+
+                    if (OnBeatmapSetChanged != null || OnBeatmapChanged != null) beatmapset = m_memory_finder.GetCurrentBeatmapSet();
+                    if (OnBeatmapChanged != null) beatmap = m_memory_finder.GetCurrentBeatmap();
+                    if (OnPlayingTimeChanged != null) pt = m_memory_finder.GetPlayingTime();
+
+                    try
                     {
-                        if (m_memory_finder == null)
+                        if (beatmapset.BeatmapSetID != m_last_beatmapset.BeatmapSetID)
                         {
-                            Setting.SongsPath = Path.Combine(Path.GetDirectoryName(m_osu_process.MainModule.FileName), "Songs");
-                            LoadMemorySearch(m_osu_process);
+                            OnBeatmapSetChanged?.Invoke(beatmapset);
                         }
+
+                        if (beatmap.BeatmapID != m_last_beatmap.BeatmapID)
+                        {
+                            beatmap.Set = beatmapset;
+                            OnBeatmapChanged?.Invoke(beatmap);
+                        }
+
+                        if (status == OsuStatus.Playing)
+                        {
+                            if (OnModsChanged != null) mods = m_memory_finder.GetCurrentMods();
+                            if (OnComboChanged != null) cb = m_memory_finder.GetCurrentCombo();
+                            if (On300HitChanged != null) n300 = m_memory_finder.Get300Count();
+                            if (On100HitChanged != null) n100 = m_memory_finder.Get100Count();
+                            if (On50HitChanged != null) n50 = m_memory_finder.Get50Count();
+                            if (OnMissHitChanged != null) nmiss = m_memory_finder.GetMissCount();
+                            if (OnAccuracyChanged != null) acc = m_memory_finder.GetCurrentAccuracy();
+                            if (OnHealthPointChanged != null) hp = m_memory_finder.GetCurrentHP();
+                        }
+
+                        if (mods != m_last_mods)
+                            OnModsChanged?.Invoke(mods);
+
+                        if (hp != m_last_hp)
+                            OnHealthPointChanged?.Invoke(hp);
+
+                        if (acc != m_last_acc)
+                            OnAccuracyChanged?.Invoke(acc);
+
+                        if (n300 != m_last_300)
+                            On300HitChanged?.Invoke(n300);
+
+                        if (n100 != m_last_100)
+                            On100HitChanged?.Invoke(n100);
+
+                        if (n50 != m_last_50)
+                            On50HitChanged?.Invoke(n50);
+
+                        if (nmiss != m_last_miss)
+                            OnMissHitChanged?.Invoke(nmiss);
+
+                        if (cb != m_last_combo)
+                            OnComboChanged?.Invoke(cb);
+
+                        if (pt != m_playing_time)
+                            OnPlayingTimeChanged?.Invoke(pt);
+
+                        if (status != m_last_osu_status)
+                            OnStatusChanged?.Invoke(m_last_osu_status, status);
+                    }
+                    catch (Exception e)
+                    {
+                        Sync.Tools.IO.CurrentIO.WriteColor(e.ToString(), ConsoleColor.Red);
                     }
 
-                    if (m_memory_finder != null)
-                    {
-                        BeatmapSet beatmapset = BeatmapSet.Empty;
-                        Beatmap beatmap = Beatmap.Empty;
-                        ModsInfo mods = ModsInfo.Empty;
-                        int cb = 0;
-                        int pt = 0;
-                        int n300 = 0;
-                        int n100 = 0;
-                        int n50 = 0;
-                        int nmiss = 0;
-                        double hp = 0.0;
-                        double acc = 0.0;
-
-                        if (OnBeatmapSetChanged != null || OnBeatmapChanged != null) beatmapset = m_memory_finder.GetCurrentBeatmapSet();
-                        if (OnBeatmapChanged != null) beatmap = m_memory_finder.GetCurrentBeatmap();
-                        if (OnPlayingTimeChanged != null) pt = m_memory_finder.GetPlayingTime();
-
-                        try
-                        {
-                            if (beatmapset.BeatmapSetID != m_last_beatmapset.BeatmapSetID)
-                            {
-                                OnBeatmapSetChanged?.Invoke(beatmapset);
-                            }
-
-                            if (beatmap.BeatmapID != m_last_beatmap.BeatmapID)
-                            {
-                                beatmap.Set = beatmapset;
-                                OnBeatmapChanged?.Invoke(beatmap);
-                            }
-
-                            if (status == OsuStatus.Playing)
-                            {
-                                if (OnModsChanged != null) mods = m_memory_finder.GetCurrentMods();
-                                if (OnComboChanged != null) cb = m_memory_finder.GetCurrentCombo();
-                                if (On300HitChanged != null) n300 = m_memory_finder.Get300Count();
-                                if (On100HitChanged != null) n100 = m_memory_finder.Get100Count();
-                                if (On50HitChanged != null) n50 = m_memory_finder.Get50Count();
-                                if (OnMissHitChanged != null) nmiss = m_memory_finder.GetMissCount();
-                                if (OnAccuracyChanged != null) acc = m_memory_finder.GetCurrentAccuracy();
-                                if (OnHealthPointChanged != null) hp = m_memory_finder.GetCurrentHP();
-                            }
-
-                            if (mods != m_last_mods)
-                                OnModsChanged?.Invoke(mods);
-
-                            if (hp != m_last_hp)
-                                OnHealthPointChanged?.Invoke(hp);
-
-                            if (acc != m_last_acc)
-                                OnAccuracyChanged?.Invoke(acc);
-
-                            if (n300 != m_last_300)
-                                On300HitChanged?.Invoke(n300);
-
-                            if (n100 != m_last_100)
-                                On100HitChanged?.Invoke(n100);
-
-                            if (n50 != m_last_50)
-                                On50HitChanged?.Invoke(n50);
-
-                            if (nmiss != m_last_miss)
-                                OnMissHitChanged?.Invoke(nmiss);
-
-                            if (cb != m_last_combo)
-                                OnComboChanged?.Invoke(cb);
-
-                            if (pt != m_playing_time)
-                                OnPlayingTimeChanged?.Invoke(pt);
-
-                            if (status != m_last_osu_status)
-                                OnStatusChanged?.Invoke(m_last_osu_status, status);
-                        }
-                        catch (Exception e)
-                        {
-                            Sync.Tools.IO.CurrentIO.WriteColor(e.ToString(), ConsoleColor.Red);
-                        }
-
-                        m_last_beatmapset = beatmapset;
-                        m_last_beatmap = beatmap;
-                        m_last_mods = mods;
-                        m_last_hp = hp;
-                        m_last_acc = acc;
-                        m_last_combo = cb;
-                        m_playing_time = pt;
-                        m_last_300 = n300;
-                        m_last_100 = n100;
-                        m_last_50 = n50;
-                        m_last_miss = nmiss;
-                    }
-                    m_last_osu_status = status;
+                    m_last_beatmapset = beatmapset;
+                    m_last_beatmap = beatmap;
+                    m_last_mods = mods;
+                    m_last_hp = hp;
+                    m_last_acc = acc;
+                    m_last_combo = cb;
+                    m_playing_time = pt;
+                    m_last_300 = n300;
+                    m_last_100 = n100;
+                    m_last_50 = n50;
+                    m_last_miss = nmiss;
                 }
-
-                Thread.Sleep(Setting.ListenInterval);
+                m_last_osu_status = status;
             }
         }
 
