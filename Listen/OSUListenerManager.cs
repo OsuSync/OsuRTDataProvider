@@ -78,7 +78,7 @@ namespace MemoryReader.Listen
 
         /// <summary>
         /// Available in Playing.
-        /// if OsuStatus turns Listen , mods = Mods.Unknown
+        /// if OsuStatus turns Listen , mods = ModsInfo.Empty
         /// </summary>
         public event OnModsChangedEvt OnModsChanged;
 
