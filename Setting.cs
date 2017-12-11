@@ -1,5 +1,7 @@
-﻿using Sync.Tools;
+﻿using MemoryReader.Handler;
+using Sync.Tools;
 using System;
+using System.IO;
 
 namespace MemoryReader
 {
@@ -57,6 +59,11 @@ namespace MemoryReader
             {
                 plugin_config = new PluginConfiuration(value, setting_output);
             }
+        }
+
+        static Setting()
+        {
+            ExitHandler.OnConsloeExit += ()=>plugin_config?.ForceSave();
         }
     }
 }
