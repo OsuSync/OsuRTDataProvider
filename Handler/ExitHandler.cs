@@ -34,12 +34,9 @@ namespace MemoryReader.Handler
 
         private static bool Handler(CtrlType sig)
         {
-            if(sig == CtrlType.CTRL_CLOSE_EVENT)
-            {
-                OnConsloeExit?.Invoke();
-                return true;
-            }
-            return false;
+            OnConsloeExit?.Invoke();
+            Environment.Exit(-1);
+            return true;
         }
     }
 }
