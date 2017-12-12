@@ -39,7 +39,7 @@ namespace MemoryReader.BeatmapInfo
             get
             {
                 if (BeatmapSetID > 0) return $"http://osu.ppy.sh/s/{BeatmapSetID}";
-                return LANG_NOT_FOUND;
+                return LANG_BEATMAP_NOT_FOUND;
             }
         }
 

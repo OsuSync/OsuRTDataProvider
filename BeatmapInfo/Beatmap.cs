@@ -12,7 +12,7 @@ namespace MemoryReader.BeatmapInfo
             get
             {
                 if (BeatmapID != 0) return @"http://osu.ppy.sh/b/" + BeatmapID;
-                return LANG_NOT_FOUND;
+                return LANG_BEATMAP_NOT_FOUND;
             }
         }
 
