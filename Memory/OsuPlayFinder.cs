@@ -109,7 +109,7 @@ namespace MemoryReader.Memory
         public double GetCurrentAccuracy()
         {
             TryReadIntPtrFromMemory(m_acc_address,out IntPtr tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x58,out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x60,out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x48,out tmp_ptr);
 
             TryReadDoubleFromMemory(tmp_ptr +0x14,out double value);
@@ -119,17 +119,17 @@ namespace MemoryReader.Memory
         public int GetCurrentCombo()
         {
             TryReadIntPtrFromMemory(m_acc_address, out IntPtr tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x58, out tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x34,out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x38,out tmp_ptr);
 
-            TryReadIntFromMemory(tmp_ptr + 0x18,out int value);
+            TryReadShortFromMemory(tmp_ptr + 0x90,out var value);
             return value;
         }
 
         public int GetMissCount()
         {
             TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x58,out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x60,out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
 
             TryReadShortFromMemory(tmp_ptr + 0x8e,out var value);
@@ -139,7 +139,7 @@ namespace MemoryReader.Memory
         public int Get300Count()
         {
             TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x58, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
 
             TryReadShortFromMemory(tmp_ptr + 0x86,out ushort value);
@@ -149,7 +149,7 @@ namespace MemoryReader.Memory
         public int Get100Count()
         {
             TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x58, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38,out tmp_ptr);
 
             TryReadShortFromMemory(tmp_ptr + 0x84,out var value);
@@ -159,7 +159,7 @@ namespace MemoryReader.Memory
         public int Get50Count()
         {
             TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x58, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
 
             TryReadShortFromMemory(tmp_ptr + +0x88, out var value);
@@ -175,7 +175,7 @@ namespace MemoryReader.Memory
         public double GetCurrentHP()
         {
             TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x58, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x40,out tmp_ptr);
 
             TryReadDoubleFromMemory(tmp_ptr + 0x1c,out double value);
@@ -185,7 +185,7 @@ namespace MemoryReader.Memory
         public ModsInfo GetCurrentMods()
         {
             TryReadIntPtrFromMemory(m_acc_address,out var tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x58,out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x60,out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38,out tmp_ptr);
 
             TryReadIntPtrFromMemory(tmp_ptr + 0x1c,out var salt_ptr);
