@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace MemoryReader.Memory
+namespace OsuListenEssential.Memory
 {
     internal class OsuFinderBase
     {

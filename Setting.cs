@@ -1,9 +1,9 @@
-﻿using MemoryReader.Handler;
+﻿using OsuListenEssential.Handler;
 using Sync.Tools;
 using System;
 using System.IO;
 
-namespace MemoryReader
+namespace OsuListenEssential
 {
     public class SettingIni : IConfigurable
     {
@@ -53,7 +53,7 @@ namespace MemoryReader
         private static SettingIni setting_output = new SettingIni();
         private static PluginConfiuration plugin_config = null;
 
-        public static MemoryReader PluginInstance
+        public static OsuListenEssentialPlugin PluginInstance
         {
             set
             {

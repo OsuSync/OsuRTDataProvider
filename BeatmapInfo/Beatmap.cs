@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using static MemoryReader.DefaultLanguage;
+using static OsuListenEssential.DefaultLanguage;
 
-namespace MemoryReader.BeatmapInfo
+namespace OsuListenEssential.BeatmapInfo
 {
     public class Beatmap
     {
@@ -49,11 +49,11 @@ namespace MemoryReader.BeatmapInfo
                     dir_info = new DirectoryInfo(path).GetFiles($"*[{BeatmapSet.ObscureString(Diff)}].osu");
 
 #if DEBUG
-                    Sync.Tools.IO.CurrentIO.Write($"[MemoryReader]找到的{dir_info.Length}个Map文件分别为:");
+                    Sync.Tools.IO.CurrentIO.Write($"[OsuListenEssential]找到的{dir_info.Length}个Map文件分别为:");
                     int _i = 0;
                     foreach (var dir in dir_info)
                     {
-                        Sync.Tools.IO.CurrentIO.Write($"[MemoryReader][{_i++}]{dir.FullName}");
+                        Sync.Tools.IO.CurrentIO.Write($"[OsuListenEssential][{_i++}]{dir.FullName}");
                     }
 #endif
 

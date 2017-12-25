@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace MemoryReader.Mods
+namespace OsuListenEssential.Mods
 {
     public struct ModsInfo
     {

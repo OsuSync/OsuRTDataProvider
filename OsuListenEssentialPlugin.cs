@@ -1,16 +1,16 @@
-﻿using MemoryReader.Listen;
+﻿using OsuListenEssential.Listen;
 using Sync;
 using Sync.Plugins;
 using Sync.Tools;
 using System;
 
-namespace MemoryReader
+namespace OsuListenEssential
 {
-    public class MemoryReader : Plugin
+    public class OsuListenEssentialPlugin : Plugin
     {
         private SyncHost m_host;
 
-        public const string PLUGIN_NAME = "MemoryReader";
+        public const string PLUGIN_NAME = "OsuListenEssential";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
 
 
@@ -34,7 +34,7 @@ namespace MemoryReader
         /// </summary>
         public OSUListenerManager[] TourneyListenerManagers { get => Setting.EnableTourneyMode ? m_listener_managers : null; }
 
-        public MemoryReader() : base(PLUGIN_NAME, PLUGIN_AUTHOR)
+        public OsuListenEssentialPlugin() : base(PLUGIN_NAME, PLUGIN_AUTHOR)
         {
             I18n.Instance.ApplyLanguage(new DefaultLanguage());
             base.EventBus.BindEvent<PluginEvents.LoadCompleteEvent>(OnLoadComplete);

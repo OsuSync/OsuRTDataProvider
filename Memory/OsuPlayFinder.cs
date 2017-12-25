@@ -1,11 +1,11 @@
-﻿using MemoryReader.BeatmapInfo;
-using MemoryReader.Mods;
+﻿using OsuListenEssential.BeatmapInfo;
+using OsuListenEssential.Mods;
 using System;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-namespace MemoryReader.Memory
+namespace OsuListenEssential.Memory
 {
     internal class OsuPlayFinder : OsuFinderBase
     {
@@ -59,9 +59,9 @@ namespace MemoryReader.Memory
             SigScan.ResetRegion();
 
 #if DEBUG
-            Sync.Tools.IO.CurrentIO.Write($"[MemoryReader]Playing Beatmap Base Address:0x{(int)m_beatmap_address:X8}");
-            Sync.Tools.IO.CurrentIO.Write($"[MemoryReader]Playing Accuracy Base Address:0x{(int)m_acc_address:X8}");
-            Sync.Tools.IO.CurrentIO.Write($"[MemoryReader]Playing Time Base Address:0x{(int)m_time_address:X8}");
+            Sync.Tools.IO.CurrentIO.Write($"[OsuListenEssential]Playing Beatmap Base Address:0x{(int)m_beatmap_address:X8}");
+            Sync.Tools.IO.CurrentIO.Write($"[OsuListenEssential]Playing Accuracy Base Address:0x{(int)m_acc_address:X8}");
+            Sync.Tools.IO.CurrentIO.Write($"[OsuListenEssential]Playing Time Base Address:0x{(int)m_time_address:X8}");
 
 #endif
             if (m_time_address == IntPtr.Zero || m_acc_address == IntPtr.Zero || m_beatmap_address == IntPtr.Zero)

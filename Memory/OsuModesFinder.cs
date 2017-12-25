@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace MemoryReader.Memory
+namespace OsuListenEssential.Memory
 {
     internal class OsuModesFinder : OsuFinderBase
     {
@@ -29,7 +29,7 @@ namespace MemoryReader.Memory
             SigScan.ResetRegion();
 
 #if DEBUG
-            Sync.Tools.IO.CurrentIO.Write($"[MemoryReader]Game Modes Address:0x{(int)m_game_modes_address:X8}");
+            Sync.Tools.IO.CurrentIO.Write($"[OsuListenEssential]Game Modes Address:0x{(int)m_game_modes_address:X8}");
 #endif
             return true;
         }

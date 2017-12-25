@@ -1,6 +1,6 @@
-﻿using MemoryReader.BeatmapInfo;
-using MemoryReader.Memory;
-using MemoryReader.Mods;
+﻿using OsuListenEssential.BeatmapInfo;
+using OsuListenEssential.Memory;
+using OsuListenEssential.Mods;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,9 +8,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static MemoryReader.DefaultLanguage;
+using static OsuListenEssential.DefaultLanguage;
 
-namespace MemoryReader.Listen
+namespace OsuListenEssential.Listen
 {
     public class OSUListenerManager
     {
@@ -143,7 +143,7 @@ namespace MemoryReader.Listen
             m_stop = false;
             m_listen_task = Task.Run(() =>
             {
-                Thread.CurrentThread.Name = "MemoryReaderListenThread";
+                Thread.CurrentThread.Name = "OsuListenEssentialThread";
                 while (!m_stop)
                 {
                     foreach (var action in m_action_list)

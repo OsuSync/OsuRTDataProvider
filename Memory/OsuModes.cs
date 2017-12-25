@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemoryReader.Memory
+namespace OsuListenEssential.Memory
 {
     enum OsuModes
     {

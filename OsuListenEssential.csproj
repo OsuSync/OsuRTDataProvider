@@ -7,8 +7,8 @@
     <ProjectGuid>{D518DC59-CC9A-4886-839F-7691D5EFAE56}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MemoryReader</RootNamespace>
-    <AssemblyName>MemoryReader</AssemblyName>
+    <RootNamespace>OsuListenEssential</RootNamespace>
+    <AssemblyName>OsuListenEssential</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

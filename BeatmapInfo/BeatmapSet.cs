@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using static MemoryReader.DefaultLanguage;
+using static OsuListenEssential.DefaultLanguage;
 
-namespace MemoryReader.BeatmapInfo
+namespace OsuListenEssential.BeatmapInfo
 {
     public class BeatmapSet
     {
@@ -119,11 +119,11 @@ namespace MemoryReader.BeatmapInfo
                 var dir_list=SearchSongs();
 
 #if DEBUG
-                Sync.Tools.IO.CurrentIO.Write($"[MemoryReader]找到的{dir_list.Length}个文件夹路径分别为:");
+                Sync.Tools.IO.CurrentIO.Write($"[OsuListenEssential]找到的{dir_list.Length}个文件夹路径分别为:");
                 int _i = 0;
                 foreach (var dir in dir_list)
                 {
-                    Sync.Tools.IO.CurrentIO.Write($"[MemoryReader][{_i++}]{dir.FullName}");
+                    Sync.Tools.IO.CurrentIO.Write($"[OsuListenEssential][{_i++}]{dir.FullName}");
                 }
 #endif
 

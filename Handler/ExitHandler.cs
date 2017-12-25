@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemoryReader.Handler
+namespace OsuListenEssential.Handler
 {
     public static class ExitHandler
     {
