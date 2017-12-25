@@ -1,9 +1,9 @@
-﻿using OsuListenEssential.Handler;
+﻿using OsuRTDataProvider.Handler;
 using Sync.Tools;
 using System;
 using System.IO;
 
-namespace OsuListenEssential
+namespace OsuRTDataProvider
 {
     public class SettingIni : IConfigurable
     {
@@ -53,7 +53,7 @@ namespace OsuListenEssential
         private static SettingIni setting_output = new SettingIni();
         private static PluginConfiuration plugin_config = null;
 
-        public static OsuListenEssentialPlugin PluginInstance
+        public static OsuRTDataProviderPlugin PluginInstance
         {
             set
             {

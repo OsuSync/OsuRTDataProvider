@@ -7,8 +7,8 @@
     <ProjectGuid>{D518DC59-CC9A-4886-839F-7691D5EFAE56}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OsuListenEssential</RootNamespace>
-    <AssemblyName>OsuListenEssential</AssemblyName>
+    <RootNamespace>OsuRTDataProvider</RootNamespace>
+    <AssemblyName>OsuRTDataProvider</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -70,7 +70,7 @@
     <Compile Include="Listen\OSUListenerManager.cs" />
     <Compile Include="Memory\OsuFinderBase.cs" />
     <Compile Include="Memory\OsuModes.cs" />
-    <Compile Include="MemoryReader.cs" />
+    <Compile Include="OsuRTDataProviderPlugin.cs" />
     <Compile Include="Memory\OsuModesFinder.cs" />
     <Compile Include="Memory\SigScan.cs" />
     <Compile Include="Mods\ModsInfo.cs" />

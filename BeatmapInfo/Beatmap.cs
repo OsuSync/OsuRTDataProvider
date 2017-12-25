@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using static OsuListenEssential.DefaultLanguage;
+using static OsuRTDataProvider.DefaultLanguage;
 
-namespace OsuListenEssential.BeatmapInfo
+namespace OsuRTDataProvider.BeatmapInfo
 {
     public class Beatmap
     {
@@ -49,11 +49,11 @@ namespace OsuListenEssential.BeatmapInfo
                     dir_info = new DirectoryInfo(path).GetFiles($"*[{BeatmapSet.ObscureString(Diff)}].osu");
 
 #if DEBUG
-                    Sync.Tools.IO.CurrentIO.Write($"[OsuListenEssential]找到的{dir_info.Length}个Map文件分别为:");
+                    Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]找到的{dir_info.Length}个Map文件分别为:");
                     int _i = 0;
                     foreach (var dir in dir_info)
                     {
-                        Sync.Tools.IO.CurrentIO.Write($"[OsuListenEssential][{_i++}]{dir.FullName}");
+                        Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider][{_i++}]{dir.FullName}");
                     }
 #endif
 

@@ -1,20 +1,20 @@
-﻿using OsuListenEssential.Listen;
+﻿using OsuRTDataProvider.Listen;
 using Sync;
 using Sync.Plugins;
 using Sync.Tools;
 using System;
 
-namespace OsuListenEssential
+namespace OsuRTDataProvider
 {
-    public class OsuListenEssentialPlugin : Plugin
+    public class OsuRTDataProviderPlugin : Plugin
     {
         private SyncHost m_host;
 
-        public const string PLUGIN_NAME = "OsuListenEssential";
+        public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
 
 
-        private OSUListenerManager[] m_listener_managers = new OSUListenerManager[16];
+        private OsuListenerManager[] m_listener_managers = new OsuListenerManager[16];
         private int m_listener_managers_count = 0;
 
         /// <summary>
@@ -26,15 +26,15 @@ namespace OsuListenEssential
         /// <summary>
         /// return a ListenerManager.
         /// </summary>
-        public OSUListenerManager ListenerManager { get => m_listener_managers[0]; }
+        public OsuListenerManager ListenerManager { get => m_listener_managers[0]; }
 
         /// <summary>
         /// If EnableTourneyMode = false in config.ini, return null.
         /// If EnableTourneyMode = true in config.ini, return all ListenerManagers.
         /// </summary>
-        public OSUListenerManager[] TourneyListenerManagers { get => Setting.EnableTourneyMode ? m_listener_managers : null; }
+        public OsuListenerManager[] TourneyListenerManagers { get => Setting.EnableTourneyMode ? m_listener_managers : null; }
 
-        public OsuListenEssentialPlugin() : base(PLUGIN_NAME, PLUGIN_AUTHOR)
+        public OsuRTDataProviderPlugin() : base(PLUGIN_NAME, PLUGIN_AUTHOR)
         {
             I18n.Instance.ApplyLanguage(new DefaultLanguage());
             base.EventBus.BindEvent<PluginEvents.LoadCompleteEvent>(OnLoadComplete);
@@ -65,7 +65,7 @@ namespace OsuListenEssential
 
         private void InitTourneyManager(int id)
         {
-            m_listener_managers[id] = new OSUListenerManager(true, id);
+            m_listener_managers[id] = new OsuListenerManager(true, id);
 
 #if DEBUG
             m_listener_managers[id].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write($"[{id}]Current Game Status:{c}");
@@ -77,7 +77,7 @@ namespace OsuListenEssential
 
         private void InitManager()
         {
-            m_listener_managers[0] = new OSUListenerManager();
+            m_listener_managers[0] = new OsuListenerManager();
 
 #if DEBUG
             m_listener_managers[0].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write($"Current Game Status:{c}");

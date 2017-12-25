@@ -1,6 +1,6 @@
-﻿using OsuListenEssential.BeatmapInfo;
-using OsuListenEssential.Memory;
-using OsuListenEssential.Mods;
+﻿using OsuRTDataProvider.BeatmapInfo;
+using OsuRTDataProvider.Memory;
+using OsuRTDataProvider.Mods;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,11 +8,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static OsuListenEssential.DefaultLanguage;
+using static OsuRTDataProvider.DefaultLanguage;
 
-namespace OsuListenEssential.Listen
+namespace OsuRTDataProvider.Listen
 {
-    public class OSUListenerManager
+    public class OsuListenerManager
     {
         [Flags]
         public enum OsuStatus
@@ -138,12 +138,12 @@ namespace OsuListenEssential.Listen
         private bool m_is_tourney = false;
         private int m_osu_id = 0;
 
-        static OSUListenerManager()
+        static OsuListenerManager()
         {
             m_stop = false;
             m_listen_task = Task.Run(() =>
             {
-                Thread.CurrentThread.Name = "OsuListenEssentialThread";
+                Thread.CurrentThread.Name = "OsuRTDataProviderThread";
                 while (!m_stop)
                 {
                     foreach (var action in m_action_list)
@@ -153,7 +153,7 @@ namespace OsuListenEssential.Listen
             });
         }
 
-        public OSUListenerManager(bool tourney = false, int osuid = 0)
+        public OsuListenerManager(bool tourney = false, int osuid = 0)
         {
             m_is_tourney = tourney;
             m_osu_id = osuid;

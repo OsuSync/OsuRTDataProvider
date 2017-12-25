@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OsuListenEssential.Memory
+namespace OsuRTDataProvider.Memory
 {
     enum OsuModes
     {

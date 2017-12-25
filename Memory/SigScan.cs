@@ -42,7 +42,7 @@ using System.Runtime.InteropServices;
 //      IntPtr pAddr = _sigScan.FindPattern(new byte[]{ 0xFF, 0xFF, 0xFF, 0xFF, 0x51, 0x55, 0xFC, 0x11 }, "xxxx?xx?", 12);
 //
 // ----------------------------------------------------------------------------------------
-namespace OsuListenEssential.Memory
+namespace OsuRTDataProvider.Memory
 {
     internal class SigScan
     {
@@ -177,7 +177,7 @@ namespace OsuListenEssential.Memory
             }
             catch (Exception ex)
             {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuListenEssential]:{ex.Message}", ConsoleColor.Red);
+                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]:{ex.Message}", ConsoleColor.Red);
                 return false;
             }
         }
@@ -254,7 +254,7 @@ namespace OsuListenEssential.Memory
             }
             catch (Exception ex)
             {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuListenEssential]:{ex.Message}", ConsoleColor.Red);
+                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]:{ex.Message}", ConsoleColor.Red);
                 return IntPtr.Zero;
             }
         }
