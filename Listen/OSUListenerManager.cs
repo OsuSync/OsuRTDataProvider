@@ -164,7 +164,7 @@ namespace OsuRTDataProvider.Listen
 
         public void Start()
         {
-            m_action_list.Insert(m_action_list.Count,new Tuple<int, Action>(m_osu_id, ListenLoopUpdate));
+            m_action_list.Add(new Tuple<int, Action>(m_osu_id, ListenLoopUpdate));
         }
 
         public void Stop()

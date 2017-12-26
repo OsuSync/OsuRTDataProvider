@@ -8,8 +8,6 @@ namespace OsuRTDataProvider
 {
     public class OsuRTDataProviderPlugin : Plugin
     {
-        private SyncHost m_host;
-
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
 
@@ -38,7 +36,6 @@ namespace OsuRTDataProvider
         public OsuRTDataProviderPlugin() : base(PLUGIN_NAME, PLUGIN_AUTHOR)
         {
             I18n.Instance.ApplyLanguage(new DefaultLanguage());
-            base.EventBus.BindEvent<PluginEvents.LoadCompleteEvent>(OnLoadComplete);
             base.EventBus.BindEvent<PluginEvents.InitPluginEvent>(OnInitPlugin);
         }
 
@@ -52,6 +49,8 @@ namespace OsuRTDataProvider
         {
             if (!m_is_init_plugin)
             {
+                Setting.PluginInstance = this;
+
                 m_is_init_plugin = true;
                 if (Setting.EnableTourneyMode)
                 {
@@ -64,12 +63,6 @@ namespace OsuRTDataProvider
                     InitManager();
                 }
             }
-        }
-
-        private void OnLoadComplete(PluginEvents.LoadCompleteEvent ev)
-        {
-            Setting.PluginInstance = this;
-            m_host = ev.Host;
         }
 
         private void InitTourneyManager(int id)
