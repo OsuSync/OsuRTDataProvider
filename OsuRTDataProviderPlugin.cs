@@ -13,6 +13,7 @@ namespace OsuRTDataProvider
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
 
+        private bool m_is_init_plugin = false;
 
         private OsuListenerManager[] m_listener_managers = new OsuListenerManager[16];
         private int m_listener_managers_count = 0;
@@ -38,6 +39,7 @@ namespace OsuRTDataProvider
         {
             I18n.Instance.ApplyLanguage(new DefaultLanguage());
             base.EventBus.BindEvent<PluginEvents.LoadCompleteEvent>(OnLoadComplete);
+            base.EventBus.BindEvent<PluginEvents.InitPluginEvent>(OnInitPlugin);
         }
 
         public override void OnEnable()
@@ -46,21 +48,28 @@ namespace OsuRTDataProvider
             Sync.Tools.IO.CurrentIO.WriteColor(PLUGIN_NAME + " By " + PLUGIN_AUTHOR, ConsoleColor.DarkCyan);
         }
 
+        private void OnInitPlugin(PluginEvents.InitPluginEvent e)
+        {
+            if (!m_is_init_plugin)
+            {
+                m_is_init_plugin = true;
+                if (Setting.EnableTourneyMode)
+                {
+                    m_listener_managers_count = Setting.TeamSize * 2;
+                    for (int i = 0; i < m_listener_managers_count; i++)
+                        InitTourneyManager(i);
+                }
+                else
+                {
+                    InitManager();
+                }
+            }
+        }
+
         private void OnLoadComplete(PluginEvents.LoadCompleteEvent ev)
         {
             Setting.PluginInstance = this;
             m_host = ev.Host;
-
-            if (Setting.EnableTourneyMode)
-            {
-                m_listener_managers_count = Setting.TeamSize * 2;
-                for (int i = 0; i < m_listener_managers_count; i++)
-                    InitTourneyManager(i);
-            }
-            else
-            {
-                InitManager();
-            }
         }
 
         private void InitTourneyManager(int id)

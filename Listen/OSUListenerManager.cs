@@ -25,7 +25,7 @@ namespace OsuRTDataProvider.Listen
             Rank
         }
 
-        static private LinkedList<Tuple<int, Action>> m_action_list = new LinkedList<Tuple<int, Action>>();
+        static private List<Tuple<int, Action>> m_action_list = new List<Tuple<int, Action>>();
         static private Task m_listen_task;
         static private bool m_stop = false;
 
@@ -146,8 +146,11 @@ namespace OsuRTDataProvider.Listen
                 Thread.CurrentThread.Name = "OsuRTDataProviderThread";
                 while (!m_stop)
                 {
-                    foreach (var action in m_action_list)
+                    for (int i = 0; i < m_action_list.Count; i++)
+                    {
+                        var action = m_action_list[i];
                         action.Item2();
+                    }
                     Thread.Sleep(Setting.ListenInterval);
                 }
             });
@@ -161,7 +164,7 @@ namespace OsuRTDataProvider.Listen
 
         public void Start()
         {
-            m_action_list.AddLast(new Tuple<int, Action>(m_osu_id, ListenLoopUpdate));
+            m_action_list.Insert(m_action_list.Count,new Tuple<int, Action>(m_osu_id, ListenLoopUpdate));
         }
 
         public void Stop()
