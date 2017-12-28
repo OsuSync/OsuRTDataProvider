@@ -42,25 +42,30 @@ namespace OsuRTDataProvider
         public override void OnEnable()
         {
             base.OnEnable();
-            Sync.Tools.IO.CurrentIO.WriteColor(PLUGIN_NAME + " By " + PLUGIN_AUTHOR, ConsoleColor.DarkCyan);
+            
         }
+
+        private object _mtx = new object();
 
         private void OnInitPlugin(PluginEvents.InitPluginEvent e)
         {
-            if (!m_is_init_plugin)
+            lock (_mtx)
             {
-                Setting.PluginInstance = this;
-
-                m_is_init_plugin = true;
-                if (Setting.EnableTourneyMode)
+                if (!m_is_init_plugin)
                 {
-                    m_listener_managers_count = Setting.TeamSize * 2;
-                    for (int i = 0; i < m_listener_managers_count; i++)
-                        InitTourneyManager(i);
-                }
-                else
-                {
-                    InitManager();
+                    Setting.PluginInstance = this;
+                    Sync.Tools.IO.CurrentIO.WriteColor(PLUGIN_NAME + " By " + PLUGIN_AUTHOR, ConsoleColor.DarkCyan);
+                    m_is_init_plugin = true;
+                    if (Setting.EnableTourneyMode)
+                    {
+                        m_listener_managers_count = Setting.TeamSize * 2;
+                        for (int i = 0; i < m_listener_managers_count; i++)
+                            InitTourneyManager(i);
+                    }
+                    else
+                    {
+                        InitManager();
+                    }
                 }
             }
         }
