@@ -189,16 +189,23 @@ namespace OsuRTDataProvider.Listen
             if (_sw.IsRunning)
                 _sw.Start();
 
-            if(_sw.ElapsedMilliseconds%_retry_time>= 0 && !m_play_finder.TryInit())
+            if(_sw.ElapsedMilliseconds%_retry_time>= 0)
             {
-                if (m_osu_process.HasExited || m_last_osu_status != OsuStatus.Playing)
+                if (!m_play_finder.TryInit())
                 {
-                    m_play_finder = null;
-                    return;
+                    if (m_osu_process.HasExited || m_last_osu_status != OsuStatus.Playing)
+                    {
+                        m_play_finder = null;
+                        return;
+                    }
+                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_PLAY_FINDER_FAILED, m_osu_id, _retry_time / 1000), ConsoleColor.Red);
+                    _sw.Stop();
+                    _sw.Reset();
                 }
-                Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_PLAY_FINDER_FAILED,m_osu_id, _retry_time/1000),ConsoleColor.Red);
-                _sw.Stop();
-                _sw.Reset();
+                else
+                {
+                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_PLAY_FINDER_SUCCESS, m_osu_id), ConsoleColor.Green);
+                }
             }
         }
 

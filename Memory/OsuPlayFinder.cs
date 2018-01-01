@@ -22,8 +22,13 @@ namespace OsuRTDataProvider.Memory
 
         //0xbf,0x01,0x00,0x00,0x00,0xeb,0x03,0x83,0xcf,0xff,0xa1,0,0,0,0,0x83,0x3d,0,0,0,0,0x02,0x0f,0x85
         private static readonly string s_acc_patterm = "\xbf\x01\x00\x00\x00\xeb\x03\x83\xcf\xff\xa1\x0\x0\x0\x0\x83\x3d\x0\x0\x0\x0\x02\x0f\x85";
+        //0x73,0x7a,0x8b,0x0d,0x0,0x0,0x0,0x0,0x85,0xc9,0x74,0x1f
+        private static readonly string s_acc_patterm2 = "\x73\x7a\x8b\x0d\x0\x0\x0\x0\x85\xc9\x74\x1f";
 
         private static readonly string s_acc_mask = "xxxxxxxxxxx????xx????xxx";
+        private static readonly string s_acc_mask2 = "xxxx????xxxx";
+
+        private bool m_use_acc_address2 = false;
 
         //0x5e,0x5f,0x5d,0xc3,0xa1,0x0,0x0,0x0,0x0,0x89,0x0,0x04
         private static readonly string s_time_patterm = "\x5e\x5f\x5d\xc3\xa1\x0\x0\x0\x0\x89\x0\x04";
@@ -36,6 +41,10 @@ namespace OsuRTDataProvider.Memory
         private IntPtr m_acc_address;//acc,combo,hp,mods,300hit,100hit,50hit,miss Base Address
         private IntPtr m_time_address;
 
+        public bool BeatmapAddressSuccess { get; private set; }
+        public bool AccuracyAddressSuccess  { get; private set; }
+        public bool TimeAddressSuccess  { get; private set; }
+
         public OsuPlayFinder(Process osu) : base(osu)
         {
         }
@@ -46,15 +55,21 @@ namespace OsuRTDataProvider.Memory
 
             //Find Beatmap ID Address
             m_beatmap_address = SigScan.FindPattern(StringToByte(s_beatmap_pattern), s_beatmap_mask, 11);
-            TryReadIntPtrFromMemory(m_beatmap_address,out m_beatmap_address);
+            BeatmapAddressSuccess = TryReadIntPtrFromMemory(m_beatmap_address,out m_beatmap_address);
 
             //Find acc Address
             m_acc_address = SigScan.FindPattern(StringToByte(s_acc_patterm), s_acc_mask, 11);
-            TryReadIntPtrFromMemory(m_acc_address,out m_acc_address);
+            AccuracyAddressSuccess = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
+            if (!AccuracyAddressSuccess)
+            {
+                m_acc_address = SigScan.FindPattern(StringToByte(s_acc_patterm2), s_acc_mask2, 4);
+                AccuracyAddressSuccess=TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
+                m_use_acc_address2 = true;
+            }
 
-            //Find Time Address
+        //Find Time Address
             m_time_address = SigScan.FindPattern(StringToByte(s_time_patterm), s_time_mask, 5);
-            TryReadIntPtrFromMemory(m_time_address,out m_time_address);
+            TimeAddressSuccess=TryReadIntPtrFromMemory(m_time_address,out m_time_address);
 
             SigScan.ResetRegion();
 
@@ -64,12 +79,7 @@ namespace OsuRTDataProvider.Memory
             Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Playing Time Base Address:0x{(int)m_time_address:X8}");
 
 #endif
-            if (m_time_address == IntPtr.Zero || m_acc_address == IntPtr.Zero || m_beatmap_address == IntPtr.Zero)
-            {
-                return false;
-            }
-
-            return true;
+            return TimeAddressSuccess && BeatmapAddressSuccess && AccuracyAddressSuccess;
         }
 
         public Beatmap GetCurrentBeatmap()
@@ -109,7 +119,8 @@ namespace OsuRTDataProvider.Memory
         public double GetCurrentAccuracy()
         {
             TryReadIntPtrFromMemory(m_acc_address,out IntPtr tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x60,out tmp_ptr);
+            if (!m_use_acc_address2)
+                TryReadIntPtrFromMemory(tmp_ptr + 0x60,out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x48,out tmp_ptr);
 
             TryReadDoubleFromMemory(tmp_ptr +0x14,out double value);
@@ -119,7 +130,7 @@ namespace OsuRTDataProvider.Memory
         public int GetCurrentCombo()
         {
             TryReadIntPtrFromMemory(m_acc_address, out IntPtr tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
+            if(!m_use_acc_address2)TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38,out tmp_ptr);
 
             TryReadShortFromMemory(tmp_ptr + 0x90,out var value);
@@ -129,7 +140,8 @@ namespace OsuRTDataProvider.Memory
         public int GetMissCount()
         {
             TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x60,out tmp_ptr);
+            if (!m_use_acc_address2)
+                TryReadIntPtrFromMemory(tmp_ptr + 0x60,out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
 
             TryReadShortFromMemory(tmp_ptr + 0x8e,out var value);
@@ -139,7 +151,8 @@ namespace OsuRTDataProvider.Memory
         public int Get300Count()
         {
             TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
+            if (!m_use_acc_address2)
+                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
 
             TryReadShortFromMemory(tmp_ptr + 0x86,out ushort value);
@@ -149,7 +162,8 @@ namespace OsuRTDataProvider.Memory
         public int Get100Count()
         {
             TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
+            if (!m_use_acc_address2)
+                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38,out tmp_ptr);
 
             TryReadShortFromMemory(tmp_ptr + 0x84,out var value);
@@ -159,7 +173,8 @@ namespace OsuRTDataProvider.Memory
         public int Get50Count()
         {
             TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
+            if (!m_use_acc_address2)
+                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
 
             TryReadShortFromMemory(tmp_ptr + +0x88, out var value);
@@ -175,7 +190,8 @@ namespace OsuRTDataProvider.Memory
         public double GetCurrentHP()
         {
             TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
+            if (!m_use_acc_address2)
+                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x40,out tmp_ptr);
 
             TryReadDoubleFromMemory(tmp_ptr + 0x1c,out double value);
@@ -185,7 +201,8 @@ namespace OsuRTDataProvider.Memory
         public ModsInfo GetCurrentMods()
         {
             TryReadIntPtrFromMemory(m_acc_address,out var tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x60,out tmp_ptr);
+            if (!m_use_acc_address2)
+                TryReadIntPtrFromMemory(tmp_ptr + 0x60,out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38,out tmp_ptr);
 
             TryReadIntPtrFromMemory(tmp_ptr + 0x1c,out var salt_ptr);
