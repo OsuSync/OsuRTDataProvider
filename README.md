@@ -1,9 +1,9 @@
+[中文](https://github.com/KedamaOvO/OsuRTDataProvider-Release/blob/master/README-CN.md)  
 # What is this?
-OsuRTDataProvider is an [OsuSync](https://github.com/Deliay/osuSync) plugin.(Experimental Support Tourney Mode)  
-
-OSU! Clinet Version Requirements: **b20171225.2 After**
-
-OsuRTDataProvider can be obtained from [OSU!](https://osu.ppy.sh):
+OsuRTDataProvider is an [OsuSync](https://github.com/Deliay/osuSync) plugin.  
+Experimental Support OSU!Tourney.  
+  
+OsuRTDataProvider can be obtained from [OSU!](https://osu.ppy.sh)(Std Only):
 * BeatmapID
 * Game Status
 * Accuracy
@@ -16,6 +16,8 @@ OsuRTDataProvider can be obtained from [OSU!](https://osu.ppy.sh):
 * Song Title
 * Mods
 * Playing Time
+
+OSU! Clinet Version Requirements: **b20171225.2 After**  
 
 # How to use?
 1. Download [OsuSync](https://github.com/Deliay/osuSync)
