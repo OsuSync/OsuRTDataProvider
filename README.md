@@ -1,5 +1,7 @@
 # What is this?
-OsuRTDataProvider is an [OsuSync](https://github.com/Deliay/osuSync) plugin.(Experimental Support Tourney Mode)
+OsuRTDataProvider is an [OsuSync](https://github.com/Deliay/osuSync) plugin.(Experimental Support Tourney Mode)  
+
+OSU! Clinet Version Requirements: **b20171225.2 After**
 
 OsuRTDataProvider can be obtained from [OSU!](https://osu.ppy.sh):
 * BeatmapID

@@ -1,7 +1,9 @@
 # 这是什么
 OsuRTDataProvider是一个 [OsuSync](https://github.com/Deliay/osuSync) 插件.(实验性的支持Tourney模式)。
 
-OsuRTDataProvider能从[OSU!](https://osu.ppy.sh)中获取以下内容:
+OSU!客户端版本要求: **b20171225.2 之后**
+
+OsuRTDataProvider能实时的从[OSU!](https://osu.ppy.sh)中获取以下内容:
 * BeatmapID
 * Game Status
 * Accuracy
