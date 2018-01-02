@@ -1,4 +1,4 @@
-[English](https://github.com/KedamaOvO/OsuRTDataProvider-Release/blob/master/README.md)
+[English](https://github.com/KedamaOvO/OsuRTDataProvider-Release/blob/master/README.md)  
 # 这是什么
 OsuRTDataProvider是一个 [OsuSync](https://github.com/Deliay/osuSync) 插件.  
 实验性的支持Osu!Tourney。  
@@ -31,6 +31,3 @@ ListenInterval=33 #单位毫秒
 EnableDirectoryImprecisionSearch=True #提升Songs文件夹搜索范围  
 EnableTourneyMode=False #启用Tourney模式?(实验性)  
 TeamSize=1 #Tourney client的队伍大小
-
-# 免责声明
-如果因使用本插件导致被banned,开发者不负任何责任.

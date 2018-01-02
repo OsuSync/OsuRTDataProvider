@@ -31,6 +31,3 @@ ListenInterval=33 #ms
 EnableDirectoryImprecisionSearch=True #Increase search range.  
 EnableTourneyMode=False #Is tourney client?(Experimental)  
 TeamSize=1 #Tourney client team size
-
-# Disclaimer
-If you are banned because of the use of this plug-in, the developer does not take any responsibility.
