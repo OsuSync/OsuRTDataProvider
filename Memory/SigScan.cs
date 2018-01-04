@@ -196,7 +196,7 @@ namespace OsuRTDataProvider.Memory
         private bool MaskCheck(MemoryRegion region,int nOffset, byte[] btPattern, string strMask)
         {
             // Loop the pattern and compare to the mask and dump.
-            for (int x = 0; x < btPattern.Length; x++)
+            for (int x = 0; x < btPattern.Length && (nOffset + x)<region.RegionSize; x++)
             {
                 // If the mask char is a wildcard, just continue.
                 if (strMask[x] == '?')
