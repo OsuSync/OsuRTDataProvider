@@ -1,4 +1,5 @@
 ﻿using OsuRTDataProvider.BeatmapInfo;
+using OsuRTDataProvider.Handler;
 using OsuRTDataProvider.Memory;
 using OsuRTDataProvider.Mods;
 using System;
@@ -154,6 +155,7 @@ namespace OsuRTDataProvider.Listen
                     Thread.Sleep(Setting.ListenInterval);
                 }
             });
+            ExitHandler.OnConsloeExit += () => m_stop = true;
         }
 
         public OsuListenerManager(bool tourney = false, int osuid = 0)
