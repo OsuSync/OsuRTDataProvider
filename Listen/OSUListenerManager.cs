@@ -260,7 +260,22 @@ namespace OsuRTDataProvider.Listen
                 {
                     if (m_play_finder == null)
                     {
-                        Setting.SongsPath = Path.Combine(Path.GetDirectoryName(m_osu_process.MainModule.FileName), "Songs");
+                        string osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
+                        string osu_config_file = Path.Combine(osu_path, $"osu!.{Environment.UserName}.cfg");
+                        var lines=File.ReadLines(osu_config_file);
+                        string song_path;
+                        foreach(var line in lines)
+                        {
+                            if(line.Contains("BeatmapDirectory"))
+                            {
+                                song_path=line.Split('=')[1].Trim();
+                                if(Path.IsPathRooted(song_path))
+                                    Setting.SongsPath = song_path;
+                                else
+                                    Setting.SongsPath = Path.Combine(osu_path, song_path);
+                            }
+                        }
+
                         LoadMemorySearch(m_osu_process);
                     }
                 }
