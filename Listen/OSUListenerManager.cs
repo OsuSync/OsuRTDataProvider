@@ -273,6 +273,7 @@ namespace OsuRTDataProvider.Listen
                                     Setting.SongsPath = song_path;
                                 else
                                     Setting.SongsPath = Path.Combine(osu_path, song_path);
+                                break;
                             }
                         }
 
