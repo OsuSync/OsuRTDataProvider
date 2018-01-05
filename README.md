@@ -56,65 +56,65 @@ TeamSize=1 #Tourney client team size
         public delegate void OnStatusChangedEvt(OsuStatus last_status, OsuStatus status);
 
         /// <summary>
-        /// Available in Playing and Linsten.
+        /// Available at Playing and Linsten.
         /// If too old beatmap, map.ID = -1.
         /// </summary>
         public event OnBeatmapChangedEvt OnBeatmapChanged;
 
         /// <summary>
-        /// Available in Playing and Linsten.
+        /// Available at Playing and Linsten.
         /// If too old beatmap, set.ID = -1.
         /// </summary>
         public event OnBeatmapSetChangedEvt OnBeatmapSetChanged;
 
         /// <summary>
-        /// Available in Playing.
+        /// Available at Playing.
         /// </summary>
         public event OnHealthPointChangedEvt OnHealthPointChanged;
 
         /// <summary>
-        /// Available in Playing.
+        /// Available at Playing.
         /// </summary>
         public event OnAccuracyChangedEvt OnAccuracyChanged;
 
         /// <summary>
-        /// Available in Playing.
+        /// Available at Playing.
         /// </summary>
         public event OnComboChangedEvt OnComboChanged;
 
         /// <summary>
-        /// Available in Playing.
+        /// Available at Playing.
         /// if OsuStatus turns Listen , mods = ModsInfo.Empty
         /// </summary>
         public event OnModsChangedEvt OnModsChanged;
 
         /// <summary>
-        /// Available in Playing and Listen.
+        /// Available at Playing and Listen.
         /// </summary>
         public event OnPlayingTimeChangedEvt OnPlayingTimeChanged;
 
         /// <summary>
-        /// Available in Playing.
+        /// Available at Playing.
         /// </summary>
         public event OnHitCountChangedEvt On300HitChanged;
 
         /// <summary>
-        /// Available in Playing.
+        /// Available at Playing.
         /// </summary>
         public event OnHitCountChangedEvt On100HitChanged;
 
         /// <summary>
-        /// Available in Playing.
+        /// Available at Playing.
         /// </summary>
         public event OnHitCountChangedEvt On50HitChanged;
 
         /// <summary>
-        /// Available in Playing.
+        /// Available at Playing.
         /// </summary>
         public event OnHitCountChangedEvt OnMissHitChanged;
 
         /// <summary>
-        /// Get Game Status.
+        /// Available at Any.
         /// </summary>
         public event OnStatusChangedEvt OnStatusChanged;
 ```
