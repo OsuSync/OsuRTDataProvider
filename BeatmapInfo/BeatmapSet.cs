@@ -21,10 +21,13 @@ namespace OsuRTDataProvider.BeatmapInfo
                     var dir_list=ImprecisionSearchSongs(new DirectoryInfo(Setting.SongsPath));
                     string name = dir_list[0].Name;
                     int len=name.IndexOf(' ');
-                    string id = name.Substring(0,len);
+                    if (len != -1)
+                    {
+                        string id = name.Substring(0, len);
 
-                    if (int.TryParse(id, out m_beatmap_id))
-                        return m_beatmap_id;
+                        if (int.TryParse(id, out m_beatmap_id))
+                            return m_beatmap_id;
+                    }
                 }
                 return -1;
             }
@@ -78,9 +81,11 @@ namespace OsuRTDataProvider.BeatmapInfo
             DirectoryInfo[] dir_list; 
             dir_list = dir_info.GetDirectories(ObscureString($"*{Artist} - {Title}*"));
             if (dir_list.Length == 0)
-            {
                 dir_list = dir_info.GetDirectories(ObscureString($"* - {Title}*"));//inso mirror bug
-            }
+
+            if (dir_list.Length == 0)
+                dir_list = dir_info.GetDirectories(ObscureString($"*{Title}*"));
+
             return dir_list;
         }
 
