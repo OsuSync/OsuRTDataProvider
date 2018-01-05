@@ -36,11 +36,11 @@ TeamSize=1 #Tourney client team size
 #### OsuRTDataProviderPlugin ***class***
 ##### Property
 ```csharp
-    public OsuListenerManager ListenerManager;
+        public OsuListenerManager ListenerManager;
 
-    //If EnableTourneyMode = false in config.ini, return null.
-    public OsuListenerManager[] TourneyListenerManagers;
-    public int TourneyListenerManagersCount;
+        //If EnableTourneyMode = false in config.ini, return null.
+        public OsuListenerManager[] TourneyListenerManagers;
+        public int TourneyListenerManagersCount;
 ```
 #### OsuListenerManager ***class***
 ##### Event

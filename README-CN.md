@@ -36,11 +36,11 @@ TeamSize=1 #Tourney client的队伍大小
 #### OsuRTDataProviderPlugin ***class***
 ##### Property
 ```csharp
-    public OsuListenerManager ListenerManager;
+        public OsuListenerManager ListenerManager;
 
-    //如果config.ini中的EnableTourneyMode = false,该属性为null.
-    public OsuListenerManager[] TourneyListenerManagers;
-    public int TourneyListenerManagersCount;
+        //如果config.ini中的EnableTourneyMode = false,该属性为null.
+        public OsuListenerManager[] TourneyListenerManagers;
+        public int TourneyListenerManagersCount;
 ```
 #### OsuListenerManager ***class***
 ##### Event
