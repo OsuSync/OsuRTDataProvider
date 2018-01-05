@@ -43,7 +43,7 @@ namespace OsuRTDataProvider
 
     internal static class Setting
     {
-        public static int ListenInterval = 33;//ms
+        public static int ListenInterval = 100;//ms
         public static bool EnableDirectoryImprecisionSearch = true;
         public static bool EnableTourneyMode = false;
         public static int TeamSize = 1;
