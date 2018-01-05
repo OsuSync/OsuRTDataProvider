@@ -15,7 +15,6 @@ namespace OsuRTDataProvider.Listen
 {
     public class OsuListenerManager
     {
-        [Flags]
         public enum OsuStatus
         {
             NoFoundProcess,
