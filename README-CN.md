@@ -26,11 +26,14 @@ OSU!客户端版本要求: **b20171225.2 之后**
 4. 运行 OsuSync。
 
 # Config.ini
-[OsuRTDataProvider.SettingIni]  
-ListenInterval=33 #单位毫秒  
-EnableDirectoryImprecisionSearch=True #提升Songs文件夹搜索范围  
-EnableTourneyMode=False #启用Tourney模式?(实验性)  
-TeamSize=1 #Tourney client的队伍大小
+[OsuRTDataProvider.SettingIni]
+
+|Setting Name|Default Value|Description|
+| ----- | ----- | ----- |
+| ListenInterval | 100 | 监听屙屎的间隔 |  
+| EnableDirectoryImprecisionSearch | True | 提升Songs文件夹搜索范围 |
+| EnableTourneyMode | False | 启用Tourney模式?(实验性) |
+| TeamSize | 1 | Tourney client的队伍大小|  
 
 # API
 #### OsuRTDataProviderPlugin ***class***

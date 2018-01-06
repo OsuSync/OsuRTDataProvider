@@ -26,11 +26,14 @@ OSU! Clinet Version Requirements: **b20171225.2 After**
 4. Run OsuSync.
 
 # Config.ini
-[OsuRTDataProvider.SettingIni]  
-ListenInterval=33 #ms  
-EnableDirectoryImprecisionSearch=True #Increase search range.  
-EnableTourneyMode=False #Is tourney client?(Experimental)  
-TeamSize=1 #Tourney client team size
+[OsuRTDataProvider.SettingIni]
+
+|Setting Name|Default Value|Description|
+| ----- | ----- | ----- |
+| ListenInterval | 100 | Listen data interval..(ms) |  
+| EnableDirectoryImprecisionSearch | True | Increase search range |
+| EnableTourneyMode | False | Is tourney client?(Experimental)|
+| TeamSize | 1 | Tourney client team size|
 
 # API
 #### OsuRTDataProviderPlugin ***class***
