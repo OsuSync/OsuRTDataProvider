@@ -30,7 +30,7 @@ OSU! Clinet Version Requirements: **b20171225.2 After**
 
 |Setting Name|Default Value|Description|
 | ----- | ----- | ----- |
-| ListenInterval | 100 | Listen data interval(ms) |  
+| ListenInterval | 100 | Listen data interval(ms). PS: If it is too small may lag. |  
 | EnableDirectoryImprecisionSearch | True | Increase search range |
 | EnableTourneyMode | False | Is tourney client?(Experimental)|
 | TeamSize | 1 | Tourney client team size|
