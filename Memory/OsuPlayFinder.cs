@@ -21,9 +21,9 @@ namespace OsuRTDataProvider.Memory
         private static readonly int s_title_offset = 0x7c;
 
         //0xbf,0x01,0x00,0x00,0x00,0xeb,0x03,0x83,0xcf,0xff,0xa1,0,0,0,0,0x83,0x3d,0,0,0,0,0x02,0x0f,0x85
-        private static readonly string s_acc_patterm = "\xbf\x01\x00\x00\x00\xeb\x03\x83\xcf\xff\xa1\x0\x0\x0\x0\x83\x3d\x0\x0\x0\x0\x02\x0f\x85";
+        private static readonly string s_acc_pattern = "\xbf\x01\x00\x00\x00\xeb\x03\x83\xcf\xff\xa1\x0\x0\x0\x0\x83\x3d\x0\x0\x0\x0\x02\x0f\x85";
         //0x73,0x7a,0x8b,0x0d,0x0,0x0,0x0,0x0,0x85,0xc9,0x74,0x1f
-        private static readonly string s_acc_patterm2 = "\x73\x7a\x8b\x0d\x0\x0\x0\x0\x85\xc9\x74\x1f";
+        private static readonly string s_acc_pattern2 = "\x73\x7a\x8b\x0d\x0\x0\x0\x0\x85\xc9\x74\x1f";
 
         private static readonly string s_acc_mask = "xxxxxxxxxxx????xx????xxx";
         private static readonly string s_acc_mask2 = "xxxx????xxxx";
@@ -31,7 +31,7 @@ namespace OsuRTDataProvider.Memory
         private bool m_use_acc_address2 = false;
 
         //0x5e,0x5f,0x5d,0xc3,0xa1,0x0,0x0,0x0,0x0,0x89,0x0,0x04
-        private static readonly string s_time_patterm = "\x5e\x5f\x5d\xc3\xa1\x0\x0\x0\x0\x89\x0\x04";
+        private static readonly string s_time_pattern = "\x5e\x5f\x5d\xc3\xa1\x0\x0\x0\x0\x89\x0\x04";
 
         private static readonly string s_time_mask = "xxxxx????x?x";
 
@@ -58,17 +58,17 @@ namespace OsuRTDataProvider.Memory
             BeatmapAddressSuccess = TryReadIntPtrFromMemory(m_beatmap_address,out m_beatmap_address);
 
             //Find acc Address
-            m_acc_address = SigScan.FindPattern(StringToByte(s_acc_patterm), s_acc_mask, 11);
+            m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern), s_acc_mask, 11);
             AccuracyAddressSuccess = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
             if (!AccuracyAddressSuccess)
             {
-                m_acc_address = SigScan.FindPattern(StringToByte(s_acc_patterm2), s_acc_mask2, 4);
+                m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern2), s_acc_mask2, 4);
                 AccuracyAddressSuccess=TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
                 m_use_acc_address2 = true;
             }
 
         //Find Time Address
-            m_time_address = SigScan.FindPattern(StringToByte(s_time_patterm), s_time_mask, 5);
+            m_time_address = SigScan.FindPattern(StringToByte(s_time_pattern), s_time_mask, 5);
             TimeAddressSuccess=TryReadIntPtrFromMemory(m_time_address,out m_time_address);
 
             SigScan.ResetRegion();

@@ -138,9 +138,13 @@ namespace OsuRTDataProvider.Listen
         private bool m_is_tourney = false;
         private int m_osu_id = 0;
 
+        private static bool s_random_interval=false;
+        private static Random s_random = new Random();
+
         static OsuListenerManager()
         {
             m_stop = false;
+
             m_listen_task = Task.Run(() =>
             {
                 Thread.CurrentThread.Name = "OsuRTDataProviderThread";
@@ -151,7 +155,10 @@ namespace OsuRTDataProvider.Listen
                         var action = m_action_list[i];
                         action.Item2();
                     }
-                    Thread.Sleep(Setting.ListenInterval);
+                    if(s_random_interval)
+                        Thread.Sleep(s_random.Next(300,700));
+                    else
+                        Thread.Sleep(Setting.ListenInterval);
                 }
             });
             ExitHandler.OnConsloeExit += () => m_stop = true;
@@ -352,6 +359,15 @@ namespace OsuRTDataProvider.Listen
 
                         if (status != m_last_osu_status)
                             OnStatusChanged?.Invoke(m_last_osu_status, status);
+
+                        if(!m_is_tourney)
+                        {
+                            if ((mods.Mod & ModsInfo.Mods.Hidden) == ModsInfo.Mods.Hidden ||
+                                (mods.Mod & ModsInfo.Mods.Flashlight) == ModsInfo.Mods.Flashlight)
+                                s_random_interval = true;
+                            else
+                                s_random_interval = false;
+                        }
                     }
                     catch (Exception e)
                     {
