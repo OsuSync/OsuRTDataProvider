@@ -9,13 +9,12 @@ OsuRTDataProvider can be obtained from [OSU!](https://osu.ppy.sh)(Std Only):
 * Accuracy
 * Health Point
 * Combo
-* Count 300
-* Count 100
-* Count 50
-* Count Miss
-* Song Title
+* 300  Count
+* 100  Count
+* 50   Count
+* Miss Count
 * Mods
-* Playing Time
+* Play Time
 
 OSU! Clinet Version Requirements: **b20171225.2 After**  
 

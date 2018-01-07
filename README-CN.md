@@ -5,17 +5,16 @@ OsuRTDataProvider是一个 [OsuSync](https://github.com/Deliay/osuSync) 插件.
   
 OsuRTDataProvider能实时的从[OSU!](https://osu.ppy.sh)中获取以下内容(只支持Std):
 * BeatmapID
-* Game Status
+* 游戏状态
 * Accuracy
-* Health Point
-* Combo
-* Count 300
-* Count 100
-* Count 50
-* Count Miss
-* Song Title
+* 生命值
+* 当前连击
+* 300数量
+* 100数量
+* 50数量
+* Miss数量
 * Mods
-* Playing Time
+* 播放时间
 
 OSU!客户端版本要求: **b20171225.2 之后**
 
