@@ -11,8 +11,6 @@ namespace OsuRTDataProvider
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
 
-        private bool m_is_init_plugin = false;
-
         private OsuListenerManager[] m_listener_managers = new OsuListenerManager[16];
         private int m_listener_managers_count = 0;
 
@@ -36,37 +34,22 @@ namespace OsuRTDataProvider
         public OsuRTDataProviderPlugin() : base(PLUGIN_NAME, PLUGIN_AUTHOR)
         {
             I18n.Instance.ApplyLanguage(new DefaultLanguage());
-            base.EventBus.BindEvent<PluginEvents.InitPluginEvent>(OnInitPlugin);
         }
 
         public override void OnEnable()
         {
-            base.OnEnable();
-            
-        }
+            Setting.PluginInstance = this;
+            Sync.Tools.IO.CurrentIO.WriteColor(PLUGIN_NAME + " By " + PLUGIN_AUTHOR, ConsoleColor.DarkCyan);
 
-        private object _mtx = new object();
-
-        private void OnInitPlugin(PluginEvents.InitPluginEvent e)
-        {
-            lock (_mtx)
+            if (Setting.EnableTourneyMode)
             {
-                if (!m_is_init_plugin)
-                {
-                    Setting.PluginInstance = this;
-                    Sync.Tools.IO.CurrentIO.WriteColor(PLUGIN_NAME + " By " + PLUGIN_AUTHOR, ConsoleColor.DarkCyan);
-                    m_is_init_plugin = true;
-                    if (Setting.EnableTourneyMode)
-                    {
-                        m_listener_managers_count = Setting.TeamSize * 2;
-                        for (int i = 0; i < m_listener_managers_count; i++)
-                            InitTourneyManager(i);
-                    }
-                    else
-                    {
-                        InitManager();
-                    }
-                }
+                m_listener_managers_count = Setting.TeamSize * 2;
+                for (int i = 0; i < m_listener_managers_count; i++)
+                    InitTourneyManager(i);
+            }
+            else
+            {
+                InitManager();
             }
         }
 
