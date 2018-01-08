@@ -19,14 +19,17 @@ namespace OsuRTDataProvider.BeatmapInfo
                 if (Setting.EnableDirectoryImprecisionSearch)
                 {
                     var dir_list=ImprecisionSearchSongs(new DirectoryInfo(Setting.SongsPath));
-                    string name = dir_list[0].Name;
-                    int len=name.IndexOf(' ');
-                    if (len != -1)
+                    if (dir_list.Length > 0)
                     {
-                        string id = name.Substring(0, len);
+                        string name = dir_list[0].Name;
+                        int len = name.IndexOf(' ');
+                        if (len != -1)
+                        {
+                            string id = name.Substring(0, len);
 
-                        if (int.TryParse(id, out m_beatmap_id))
-                            return m_beatmap_id;
+                            if (int.TryParse(id, out m_beatmap_id))
+                                return m_beatmap_id;
+                        }
                     }
                 }
                 return -1;
