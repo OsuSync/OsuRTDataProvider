@@ -6,10 +6,12 @@ using System;
 
 namespace OsuRTDataProvider
 {
+    [SyncPluginID("18d8a3eb-d8d7-4c6c-9d8b-901b9957d6b0", VERSION)]
     public class OsuRTDataProviderPlugin : Plugin
     {
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
+        public const string VERSION = "1.1.0";
 
         private OsuListenerManager[] m_listener_managers = new OsuListenerManager[16];
         private int m_listener_managers_count = 0;
