@@ -11,11 +11,13 @@ namespace OsuRTDataProvider
         public ConfigurationElement EnableDirectoryImprecisionSearch { get; set; }
         public ConfigurationElement EnableTourneyMode { get; set; }
         public ConfigurationElement TeamSize { get; set; }
+        public ConfigurationElement DebugMode { get; set; }
 
         public void onConfigurationLoad()
         {
             try
             {
+                Setting.DebugMode = bool.Parse(DebugMode);
                 Setting.ListenInterval = int.Parse(ListenInterval);
                 Setting.EnableDirectoryImprecisionSearch = bool.Parse(EnableDirectoryImprecisionSearch);
                 Setting.EnableTourneyMode = bool.Parse(EnableTourneyMode);
@@ -34,6 +36,7 @@ namespace OsuRTDataProvider
 
         public void onConfigurationSave()
         {
+            DebugMode = Setting.DebugMode.ToString();
             ListenInterval = Setting.ListenInterval.ToString();
             EnableDirectoryImprecisionSearch = Setting.EnableDirectoryImprecisionSearch.ToString();
             EnableTourneyMode = Setting.EnableTourneyMode.ToString();
@@ -43,6 +46,7 @@ namespace OsuRTDataProvider
 
     internal static class Setting
     {
+        public static bool DebugMode = false;
         public static int ListenInterval = 100;//ms
         public static bool EnableDirectoryImprecisionSearch = true;
         public static bool EnableTourneyMode = false;

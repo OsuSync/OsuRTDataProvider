@@ -1,17 +1,20 @@
 ﻿using OsuRTDataProvider.Listen;
+using OsuRTDataProvider.Mods;
 using Sync;
+using Sync.Command;
 using Sync.Plugins;
 using Sync.Tools;
 using System;
+using static OsuRTDataProvider.Listen.OsuListenerManager;
 
 namespace OsuRTDataProvider
 {
-    [SyncPluginID("18d8a3eb-d8d7-4c6c-9d8b-901b9957d6b0", VERSION)]
+    [SyncPluginID("7216787b-507b-4eef-96fb-e993722acf2e", VERSION)]
     public class OsuRTDataProviderPlugin : Plugin
     {
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
-        public const string VERSION = "1.1.0";
+        public const string VERSION = "1.1.1";
 
         private OsuListenerManager[] m_listener_managers = new OsuListenerManager[16];
         private int m_listener_managers_count = 0;
@@ -36,6 +39,7 @@ namespace OsuRTDataProvider
         public OsuRTDataProviderPlugin() : base(PLUGIN_NAME, PLUGIN_AUTHOR)
         {
             I18n.Instance.ApplyLanguage(new DefaultLanguage());
+            base.EventBus.BindEvent<PluginEvents.InitCommandEvent>(InitCommand);
         }
 
         public override void OnEnable()
@@ -59,10 +63,7 @@ namespace OsuRTDataProvider
         {
             m_listener_managers[id] = new OsuListenerManager(true, id);
 
-#if DEBUG
-            m_listener_managers[id].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write($"[{id}]Current Game Status:{c}");
-            m_listener_managers[id].OnModsChanged += m => Sync.Tools.IO.CurrentIO.Write($"[{id}]Mods:{m}(0x{(uint)m.Mod:X8})");
-#endif
+            DebugOutput(Setting.DebugMode,true);
 
             m_listener_managers[id].Start();
         }
@@ -71,12 +72,77 @@ namespace OsuRTDataProvider
         {
             m_listener_managers[0] = new OsuListenerManager();
 
-#if DEBUG
-            m_listener_managers[0].OnStatusChanged += (l, c) => Sync.Tools.IO.CurrentIO.Write($"Current Game Status:{c}");
-            m_listener_managers[0].OnModsChanged += m => Sync.Tools.IO.CurrentIO.Write($"Mods:{m}(0x{(uint)m.Mod:X8})");
-#endif
+            DebugOutput(Setting.DebugMode,true);
 
             m_listener_managers[0].Start();
+        }
+
+        private void InitCommand(PluginEvents.InitCommandEvent @e)
+        {
+            @e.Commands.Dispatch.bind("ortdp",(args)=>
+            {
+                if (args.Count >= 2)
+                {
+                    if (args[0] == "debug")
+                    {
+                        if (bool.TryParse(args[1], out bool f))
+                        {
+                            DebugOutput(f);
+                            Sync.Tools.IO.CurrentIO.WriteColor($"Debug mode = {Setting.DebugMode}", ConsoleColor.Green);
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            },"OsuRTDataProvider control panel");
+        }
+
+
+
+        private void DebugOutput(bool enable,bool first=false)
+        {
+            if (!first&&Setting.DebugMode == enable) return;
+
+            if(Setting.EnableTourneyMode)
+            {
+                for (int i = 0; i < TourneyListenerManagersCount; i++)
+                {
+                    void OnTourneyStatusChanged(OsuStatus l, OsuStatus c) =>
+                        IO.FileLogger.WriteColor($"[OsuRTDataProvider][{i}]Current Game Status:{c}", ConsoleColor.Blue);
+                    void OnTourneyModsChanged(ModsInfo m) =>
+                        IO.FileLogger.WriteColor($"[OsuRTDataProvider][{i}]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
+                    if (enable)
+                    {
+                        m_listener_managers[i].OnStatusChanged += OnTourneyStatusChanged;
+                        m_listener_managers[i].OnModsChanged += OnTourneyModsChanged;
+                    }
+                    else
+                    {
+                        m_listener_managers[i].OnStatusChanged -= OnTourneyStatusChanged;
+                        m_listener_managers[i].OnModsChanged -= OnTourneyModsChanged;
+                    }
+                }
+            }
+            else
+            {
+                void OnStatusChanged(OsuStatus l, OsuStatus c) =>
+                    IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Current Game Status:{c}", ConsoleColor.Blue);
+                void OnModsChanged(ModsInfo m) =>
+                    IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
+
+                if(enable)
+                {
+                    m_listener_managers[0].OnStatusChanged += OnStatusChanged;
+                    m_listener_managers[0].OnModsChanged += OnModsChanged;
+                }
+                else
+                {
+                    m_listener_managers[0].OnStatusChanged -= OnStatusChanged;
+                    m_listener_managers[0].OnModsChanged -= OnModsChanged;
+                }
+            }
+
+            Setting.DebugMode = enable;
         }
     }
 }

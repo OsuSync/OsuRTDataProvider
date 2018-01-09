@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using static OsuRTDataProvider.DefaultLanguage;
 
 namespace OsuRTDataProvider.BeatmapInfo
@@ -47,17 +48,16 @@ namespace OsuRTDataProvider.BeatmapInfo
                 foreach (var path in Set.AllLocationPath)
                 {
                     dir_info = new DirectoryInfo(path).GetFiles($"*[{BeatmapSet.ObscureString(Diff)}].osu");
-
-#if DEBUG
-                    Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]找到的{dir_info.Length}个Map文件分别为:");
-                    int _i = 0;
-                    foreach (var dir in dir_info)
+                    if (Setting.DebugMode)
                     {
-                        Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider][{_i++}]{dir.FullName}");
+                        Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{Set.OsuClientID}]Found {dir_info.Length} beatmap(s):",ConsoleColor.Blue);
+                        for (int i=0;i<dir_info.Length;i++)
+                        {
+                            Sync.Tools.IO.CurrentIO.WriteColor($"\t({i}){dir_info[i].FullName}", ConsoleColor.Blue);
+                        }
                     }
-#endif
 
-                    if (dir_info.Length > 0)
+                        if (dir_info.Length > 0)
                     {
                         _path = dir_info[0].FullName;
                         return _path;

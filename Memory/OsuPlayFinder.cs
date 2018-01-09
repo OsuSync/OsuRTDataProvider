@@ -94,7 +94,7 @@ namespace OsuRTDataProvider.Memory
             return beatmap;
         }
 
-        public BeatmapSet GetCurrentBeatmapSet()
+        public BeatmapSet GetCurrentBeatmapSet(int client_id)
         {
             int id = 0;
             do
@@ -108,7 +108,7 @@ namespace OsuRTDataProvider.Memory
                 else break;
             } while (true);
 
-            var set = new BeatmapSet(id);
+            var set = new BeatmapSet(id, client_id);
             var info = GetBeatmapInfo();
             set.Artist = info.Item1;
             set.Title = info.Item2;

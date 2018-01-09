@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using static OsuRTDataProvider.DefaultLanguage;
@@ -126,14 +127,14 @@ namespace OsuRTDataProvider.BeatmapInfo
 
                 var dir_list=SearchSongs();
 
-#if DEBUG
-                Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]找到的{dir_list.Length}个文件夹路径分别为:");
-                int _i = 0;
-                foreach (var dir in dir_list)
+                if (Setting.DebugMode)
                 {
-                    Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider][{_i++}]{dir.FullName}");
+                    Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{OsuClientID}]Found {dir_list.Length} folder(s):",ConsoleColor.Blue);
+                    for(int i=0;i<dir_list?.Length;i++)
+                    {
+                        Sync.Tools.IO.CurrentIO.WriteColor($"\t({i}){dir_list[i].FullName}", ConsoleColor.Blue);
+                    }
                 }
-#endif
 
                 if (dir_list.Length != 0)
                 {
@@ -162,11 +163,13 @@ namespace OsuRTDataProvider.BeatmapInfo
             }
         }
 
-        public static BeatmapSet Empty = new BeatmapSet(-1);
+        public static BeatmapSet Empty = new BeatmapSet(-1,0);
+        public int OsuClientID { get;private set;}
 
-        public BeatmapSet(int id)
+        public BeatmapSet(int id,int osu_id)
         {
             BeatmapSetID = id;
+            OsuClientID = osu_id;
         }
     }
 }

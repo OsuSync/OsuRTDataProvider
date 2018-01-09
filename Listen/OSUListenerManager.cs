@@ -301,7 +301,7 @@ namespace OsuRTDataProvider.Listen
                     double hp = 0.0;
                     double acc = 0.0;
 
-                    if (OnBeatmapSetChanged != null || OnBeatmapChanged != null) beatmapset = m_play_finder.GetCurrentBeatmapSet();
+                    if (OnBeatmapSetChanged != null || OnBeatmapChanged != null) beatmapset = m_play_finder.GetCurrentBeatmapSet(m_osu_id);
                     if (OnBeatmapChanged != null) beatmap = m_play_finder.GetCurrentBeatmap();
                     if (OnPlayingTimeChanged != null) pt = m_play_finder.GetPlayingTime();
 
