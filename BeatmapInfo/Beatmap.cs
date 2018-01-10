@@ -50,14 +50,14 @@ namespace OsuRTDataProvider.BeatmapInfo
                     dir_info = new DirectoryInfo(path).GetFiles($"*[{BeatmapSet.ObscureString(Diff)}].osu");
                     if (Setting.DebugMode)
                     {
-                        Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{Set.OsuClientID}]Found {dir_info.Length} beatmap(s):",ConsoleColor.Blue);
-                        for (int i=0;i<dir_info.Length;i++)
+                        Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{Set.OsuClientID}]Found {dir_info.Length} beatmap(s):", ConsoleColor.Blue);
+                        for (int i = 0; i < dir_info.Length; i++)
                         {
                             Sync.Tools.IO.CurrentIO.WriteColor($"\t({i}){dir_info[i].FullName}", ConsoleColor.Blue);
                         }
                     }
 
-                        if (dir_info.Length > 0)
+                    if (dir_info.Length > 0)
                     {
                         _path = dir_info[0].FullName;
                         return _path;
