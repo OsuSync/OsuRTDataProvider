@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace OsuRTDataProvider.Mods
 {
@@ -74,7 +76,9 @@ namespace OsuRTDataProvider.Mods
             ["Random"] = "RD",
             ["Cinema"] = "CN",
             ["Target"] = "TP",
-            ["ScoreV2"] = "V2"
+            ["ScoreV2"] = "V2",
+
+            ["Unknown"] = "Unknown"
         };
 
         static public ModsInfo Empty {
@@ -123,17 +127,18 @@ namespace OsuRTDataProvider.Mods
         {
             get
             {
-                string ret = string.Empty;
                 string mods_str = Name;
                 string[] mods_arr = mods_str.Replace(" ", string.Empty).Split(',');
+                StringBuilder b = new StringBuilder(128);
+
                 foreach (var str in mods_arr)
                 {
                     if (s_name_to_sname.ContainsKey(str))
-                        ret += s_name_to_sname[str];
+                        b.Append(s_name_to_sname[str]);
                     else return "Error";
-                    ret += ",";
+                    b.Append(',');
                 }
-                return ret.Remove(ret.Length - 1);
+                return b.Remove(b.Length-1,1).ToString();
             }
         }
 
