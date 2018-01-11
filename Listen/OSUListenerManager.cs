@@ -307,7 +307,7 @@ namespace OsuRTDataProvider.Listen
 
                     try
                     {
-                        if (beatmapset?.BeatmapSetID != m_last_beatmapset.BeatmapSetID)
+                        if (beatmapset?.BeatmapSetID != m_last_beatmapset?.BeatmapSetID)
                         {
                             OnBeatmapSetChanged?.Invoke(beatmapset);
                         }
