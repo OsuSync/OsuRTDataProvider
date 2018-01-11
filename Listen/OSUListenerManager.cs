@@ -390,7 +390,7 @@ namespace OsuRTDataProvider.Listen
             }
         }
 
-        private OsuModesFinder m_modes_finder;
+        private OsuStatusFinder m_modes_finder;
         private int _status_finder_timer = 3000;
 
         private OsuStatus GetCurrentOsuStatus()
@@ -400,7 +400,7 @@ namespace OsuRTDataProvider.Listen
 
             if (m_modes_finder == null)
             {
-                m_modes_finder = new OsuModesFinder(m_osu_process);
+                m_modes_finder = new OsuStatusFinder(m_osu_process);
                 bool success = false;
                 while (!success)
                 {
@@ -427,15 +427,15 @@ namespace OsuRTDataProvider.Listen
                
             }
 
-            OsuModes mode = m_modes_finder.GetCurrentOsuModes();
+            OsuInternalStatus mode = m_modes_finder.GetCurrentOsuModes();
 
-            if (mode == OsuModes.Unknown) return OsuStatus.Unkonwn;
+            if (mode == OsuInternalStatus.Unknown) return OsuStatus.Unkonwn;
 
-            if (mode == OsuModes.Edit) return OsuStatus.Editing;
+            if (mode == OsuInternalStatus.Edit) return OsuStatus.Editing;
 
-            if (mode == OsuModes.Play) return OsuStatus.Playing;
+            if (mode == OsuInternalStatus.Play) return OsuStatus.Playing;
 
-            if (mode == OsuModes.Rank) return OsuStatus.Rank;
+            if (mode == OsuInternalStatus.Rank) return OsuStatus.Rank;
 
             return OsuStatus.Listening;
         }

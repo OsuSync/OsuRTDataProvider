@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OsuRTDataProvider.Memory
 {
-    enum OsuModes
+    enum OsuInternalStatus
     {
         Menu,
         Edit,
