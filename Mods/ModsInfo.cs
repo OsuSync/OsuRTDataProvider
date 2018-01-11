@@ -44,11 +44,38 @@ namespace OsuRTDataProvider.Mods
             Unknown = 0xFFFFFFFFu
         }
 
-        static private string[] mod_short_str = new string[]
-        {"","NF","EZ","HD","HR","SD","DT","RX","HT","NC","FL","AP","SO","RX2","PF","1K","2K","3K","4K","5K","6K","7K","8K","9K","KC",
-         "FI","RD","CE","TG","V2","Unknown"};
-
-        static private Dictionary<string, string> mod_map = new Dictionary<string, string>();
+        private static Dictionary<string, string> s_name_to_sname = new Dictionary<string, string>
+        {
+            ["None"] ="",
+            ["NoFail"] = "NF",
+            ["Hidden"] = "HD",
+            ["HardRock"] = "HR",
+            ["SuddenDeath"] = "SD",
+            ["DoubleTime"] = "DT",
+            ["Relax"] = "RL",
+            ["HalfTime"] = "HT",
+            ["Nightcore"] = "NC",
+            ["Flashlight"] = "FL",
+            ["Autoplay"] = "AP",
+            ["SpunOut"] = "SO",
+            ["Relax2"] = "RL2",
+            ["Perfect"] = "PF",
+            ["Key1"] = "1K",
+            ["Key2"] = "2K",
+            ["Key3"] = "3K",
+            ["Key4"] = "4K",
+            ["Key5"] = "5K",
+            ["Key6"] = "6K",
+            ["Key7"] = "7K",
+            ["Key8"] = "8K",
+            ["Key9"] = "9K",
+            ["KeyCoop"] = "Co-op",
+            ["FadeIn"] = "FI",
+            ["Random"] = "RD",
+            ["Cinema"] = "CN",
+            ["Target"] = "TP",
+            ["ScoreV2"] = "V2"
+        };
 
         static public ModsInfo Empty {
             get {
@@ -78,16 +105,6 @@ namespace OsuRTDataProvider.Mods
             get => m_mod;
         }
 
-        static ModsInfo()
-        {
-            int i = 0;
-            var fields = typeof(Mods).GetFields(BindingFlags.Static | BindingFlags.Public);
-            foreach (var fi in fields)
-            {
-                mod_map.Add(fi.Name, mod_short_str[i++]);
-            }
-        }
-
         /// <summary>
         /// Get Mods Name
         /// </summary>
@@ -111,8 +128,8 @@ namespace OsuRTDataProvider.Mods
                 string[] mods_arr = mods_str.Replace(" ", string.Empty).Split(',');
                 foreach (var str in mods_arr)
                 {
-                    if (mod_map.ContainsKey(str))
-                        ret += mod_map[str];
+                    if (s_name_to_sname.ContainsKey(str))
+                        ret += s_name_to_sname[str];
                     else return "Error";
                     ret += ",";
                 }
