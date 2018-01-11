@@ -74,11 +74,15 @@ namespace OsuRTDataProvider.Memory
             SigScan.ResetRegion();
 
 #if DEBUG
+            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Use Accuracy Address2={m_use_acc_address2}");
             Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Playing Beatmap Base Address:0x{(int)m_beatmap_address:X8}");
             Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Playing Accuracy Base Address:0x{(int)m_acc_address:X8}");
             Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Playing Time Base Address:0x{(int)m_time_address:X8}");
-
 #endif
+
+            if (m_beatmap_address == IntPtr.Zero ||m_acc_address == IntPtr.Zero ||m_time_address == IntPtr.Zero)
+                return false;
+
             return TimeAddressSuccess && BeatmapAddressSuccess && AccuracyAddressSuccess;
         }
 
@@ -94,18 +98,34 @@ namespace OsuRTDataProvider.Memory
             return beatmap;
         }
 
+        private const int MAX_RETRY_COUNT = 10;
+
+
         public BeatmapSet GetCurrentBeatmapSet(int client_id)
         {
             int id = 0;
+            int try_count = 0;
             do
             {
-                TryReadIntPtrFromMemory(m_beatmap_address,out IntPtr cur_beatmap_address);
-                TryReadIntFromMemory(cur_beatmap_address + s_beatmap_set_offset,out id);
+                bool s = true;
+                s=TryReadIntPtrFromMemory(m_beatmap_address,out IntPtr cur_beatmap_address);
+                s=s&&TryReadIntFromMemory(cur_beatmap_address + s_beatmap_set_offset,out id);
 
                 if (OsuProcess.HasExited) break;
-                if (id == 0) Thread.Sleep(500);
-
+                if (id == 0||!s)
+                {
+                    if (try_count < MAX_RETRY_COUNT)
+                    {
+                        Thread.Sleep(500);
+                        try_count++;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
                 else break;
+
             } while (true);
 
             var set = new BeatmapSet(id, client_id);

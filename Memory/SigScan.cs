@@ -116,9 +116,14 @@ namespace OsuRTDataProvider.Memory
             IntPtr handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_WM_READ, false, m_vProcess.Id);
             MEMORY_BASIC_INFORMATION mem_basic_info = new MEMORY_BASIC_INFORMATION();
 
+            int mem_info_size = Marshal.SizeOf<MEMORY_BASIC_INFORMATION>();
+
             while (proc_min_address_l < proc_max_address_l)
             {
-                VirtualQueryEx(handle, proc_min_address, out mem_basic_info, 28);
+                int size=VirtualQueryEx(handle, proc_min_address, out mem_basic_info, 28);
+
+                if (size != mem_info_size) break;
+
                 if (mem_basic_info.Protect == AllocationProtect.PAGE_EXECUTE_READWRITE && mem_basic_info.State == MEM_COMMIT)
                 {
                     var region = new MemoryRegion()

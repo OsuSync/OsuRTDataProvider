@@ -307,7 +307,7 @@ namespace OsuRTDataProvider.Listen
 
                     try
                     {
-                        if (beatmapset.BeatmapSetID != m_last_beatmapset.BeatmapSetID)
+                        if (beatmapset?.BeatmapSetID != m_last_beatmapset.BeatmapSetID)
                         {
                             OnBeatmapSetChanged?.Invoke(beatmapset);
                         }
@@ -391,6 +391,7 @@ namespace OsuRTDataProvider.Listen
         }
 
         private OsuModesFinder m_modes_finder;
+        private int _status_finder_timer = 3000;
 
         private OsuStatus GetCurrentOsuStatus()
         {
@@ -400,15 +401,30 @@ namespace OsuRTDataProvider.Listen
             if (m_modes_finder == null)
             {
                 m_modes_finder = new OsuModesFinder(m_osu_process);
-                while (!m_modes_finder.TryInit())
+                bool success = false;
+                while (!success)
                 {
-                    if (m_osu_process.HasExited)
+                    if (_status_finder_timer >= 3000)
                     {
-                        m_modes_finder = null;
-                        return OsuStatus.Unkonwn;
+                        success = m_modes_finder.TryInit();
+                        if (m_osu_process.HasExited)
+                        {
+                            m_modes_finder = null;
+                            return OsuStatus.Unkonwn;
+                        }
+
+                        if (success)
+                        {
+                            Sync.Tools.IO.CurrentIO.WriteColor(string.Format(DefaultLanguage.LANG_INIT_STATUS_FINDER_SUCCESS, m_osu_id, 3), ConsoleColor.Green);
+                            break;
+                        }
+                        Sync.Tools.IO.CurrentIO.WriteColor(string.Format(DefaultLanguage.LANG_INIT_STATUS_FINDER_FAILED, m_osu_id, 3), ConsoleColor.Red);
+                        _status_finder_timer = 0;
                     }
                     Thread.Sleep(500);
+                    _status_finder_timer += 500;
                 }
+               
             }
 
             OsuModes mode = m_modes_finder.GetCurrentOsuModes();

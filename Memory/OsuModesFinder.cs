@@ -11,6 +11,7 @@ namespace OsuRTDataProvider.Memory
         private static readonly string s_game_modes_mask = "xx????xxxx????xxxxx";
 
         private IntPtr m_game_modes_address;
+        private bool success = false;
 
         public OsuModesFinder(Process osu) : base(osu)
         {
@@ -22,16 +23,15 @@ namespace OsuRTDataProvider.Memory
 
             //Find Game Modes
             m_game_modes_address = SigScan.FindPattern(StringToByte(s_game_modes_pattern), s_game_modes_mask, 10);
+            success=TryReadIntPtrFromMemory(m_game_modes_address,out m_game_modes_address);
             if (m_game_modes_address == IntPtr.Zero) return false;
-
-            TryReadIntPtrFromMemory(m_game_modes_address,out m_game_modes_address);
 
             SigScan.ResetRegion();
 
 #if DEBUG
             Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Game Modes Address:0x{(int)m_game_modes_address:X8}");
 #endif
-            return true;
+            return success;
         }
 
         public OsuModes GetCurrentOsuModes()
