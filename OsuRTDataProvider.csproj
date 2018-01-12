@@ -69,9 +69,9 @@
     <Compile Include="Handler\ExitHandler.cs" />
     <Compile Include="Listen\OSUListenerManager.cs" />
     <Compile Include="Memory\OsuFinderBase.cs" />
-    <Compile Include="Memory\OsuModes.cs" />
+    <Compile Include="Memory\OsuInternalStatus.cs" />
+    <Compile Include="Memory\OsuStatusFinder.cs" />
     <Compile Include="OsuRTDataProviderPlugin.cs" />
-    <Compile Include="Memory\OsuModesFinder.cs" />
     <Compile Include="Memory\SigScan.cs" />
     <Compile Include="Mods\ModsInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
