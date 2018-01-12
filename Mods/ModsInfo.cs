@@ -50,6 +50,7 @@ namespace OsuRTDataProvider.Mods
         {
             ["None"] ="",
             ["NoFail"] = "NF",
+            ["Easy"] = "EZ",
             ["Hidden"] = "HD",
             ["HardRock"] = "HR",
             ["SuddenDeath"] = "SD",
