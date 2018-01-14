@@ -57,23 +57,19 @@ namespace OsuRTDataProvider
             {
                 InitManager();
             }
+
+            DebugOutput(Setting.DebugMode, true);
         }
 
         private void InitTourneyManager(int id)
         {
             m_listener_managers[id] = new OsuListenerManager(true, id);
-
-            DebugOutput(Setting.DebugMode,true);
-
             m_listener_managers[id].Start();
         }
 
         private void InitManager()
         {
             m_listener_managers[0] = new OsuListenerManager();
-
-            DebugOutput(Setting.DebugMode,true);
-
             m_listener_managers[0].Start();
         }
 
