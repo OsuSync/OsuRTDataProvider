@@ -60,7 +60,7 @@ namespace OsuRTDataProvider.BeatmapInfo
         /// </summary>
         public string Title { get; set; }
 
-        private static string[] s_replace_list = new string[] { "*", ".", ":", "?", "\"", "<", ">", "/","~"};
+        private static string[] s_replace_list = new string[] { "*", ".", ":", "?", "\"", "<", ">", "/","~","!","+"};
 
         public static string ObscureString(string path)
         {
@@ -84,11 +84,20 @@ namespace OsuRTDataProvider.BeatmapInfo
         {
             DirectoryInfo[] dir_list; 
             dir_list = dir_info.GetDirectories(ObscureString($"*{Artist} - {Title}*"));
+
+            /* Equal with "*{Title}*"
             if (dir_list.Length == 0)
                 dir_list = dir_info.GetDirectories(ObscureString($"* - {Title}*"));//inso mirror bug
+                */
 
             if (dir_list.Length == 0)
                 dir_list = dir_info.GetDirectories(ObscureString($"*{Title}*"));
+            
+            if (dir_list.Length == 0)
+                dir_list = dir_info.GetDirectories(ObscureString($"*{Artist}*"));
+
+            if (dir_list.Length == 0)
+                dir_list = dir_info.GetDirectories(ObscureString($"*{BeatmapSetID}*"));
 
             return dir_list;
         }
@@ -120,9 +129,6 @@ namespace OsuRTDataProvider.BeatmapInfo
         {
             get
             {
-                if (Artist == null || Artist == string.Empty) return null;
-                if (Title == null || Title == string.Empty) return null;
-
                 if (_paths != null) return _paths;
 
                 var dir_list=SearchSongs();

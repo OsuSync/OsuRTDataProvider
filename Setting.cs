@@ -12,6 +12,7 @@ namespace OsuRTDataProvider
         public ConfigurationElement EnableTourneyMode { get; set; }
         public ConfigurationElement TeamSize { get; set; }
         public ConfigurationElement DebugMode { get; set; }
+        public ConfigurationElement EnableOsuFileContentCompareSearch { get; set; }
 
         public void onConfigurationLoad()
         {
@@ -20,6 +21,7 @@ namespace OsuRTDataProvider
                 Setting.DebugMode = bool.Parse(DebugMode);
                 Setting.ListenInterval = int.Parse(ListenInterval);
                 Setting.EnableDirectoryImprecisionSearch = bool.Parse(EnableDirectoryImprecisionSearch);
+                Setting.EnableOsuFileContentCompareSearch = bool.Parse(EnableOsuFileContentCompareSearch);
                 Setting.EnableTourneyMode = bool.Parse(EnableTourneyMode);
                 Setting.TeamSize = int.Parse(TeamSize);
                 if(Setting.TeamSize>8 || Setting.TeamSize<1)
@@ -39,6 +41,7 @@ namespace OsuRTDataProvider
             DebugMode = Setting.DebugMode.ToString();
             ListenInterval = Setting.ListenInterval.ToString();
             EnableDirectoryImprecisionSearch = Setting.EnableDirectoryImprecisionSearch.ToString();
+            EnableOsuFileContentCompareSearch = Setting.EnableOsuFileContentCompareSearch.ToString();
             EnableTourneyMode = Setting.EnableTourneyMode.ToString();
             TeamSize = Setting.TeamSize.ToString();
         }
@@ -51,6 +54,7 @@ namespace OsuRTDataProvider
         public static bool EnableDirectoryImprecisionSearch = true;
         public static bool EnableTourneyMode = false;
         public static int TeamSize = 1;
+        public static bool EnableOsuFileContentCompareSearch = true;
 
         public static string SongsPath = string.Empty;//不保存
 
