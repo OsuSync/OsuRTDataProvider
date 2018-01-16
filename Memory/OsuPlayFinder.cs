@@ -242,8 +242,11 @@ namespace OsuRTDataProvider.Memory
             return ModsInfo.Empty;
         }
 
+
+        #region Beatmap Info
         private string GetTitleFullName()
         {
+            int try_count = 0;
             string str;
 
             do
@@ -254,9 +257,11 @@ namespace OsuRTDataProvider.Memory
 
                 if (OsuProcess.HasExited) return string.Empty;
 
-                if (!success ||
-                    string.IsNullOrEmpty(str))
+                if ((!success || string.IsNullOrEmpty(str)) && try_count < MAX_RETRY_COUNT)
+                {
+                    try_count++;
                     Thread.Sleep(100);
+                }
                 else break;
             } while (true);
 
@@ -265,6 +270,7 @@ namespace OsuRTDataProvider.Memory
 
         private string GetCurrentBeatmapFolder()
         {
+            int try_count = 0;
             string str;
 
             do
@@ -275,8 +281,11 @@ namespace OsuRTDataProvider.Memory
 
                 if (OsuProcess.HasExited) return string.Empty;
 
-                if (!success ||
-                    string.IsNullOrEmpty(str))Thread.Sleep(100);
+                if ((!success || string.IsNullOrEmpty(str))&& try_count < MAX_RETRY_COUNT)
+                {
+                    try_count++;
+                    Thread.Sleep(100);
+                }
                 else break;
             } while (true);
 
@@ -285,6 +294,7 @@ namespace OsuRTDataProvider.Memory
 
         private string GetCurrentBeatmapFilename()
         {
+            int try_count = 0;
             string str;
 
             do
@@ -295,10 +305,11 @@ namespace OsuRTDataProvider.Memory
 
                 if (OsuProcess.HasExited) return string.Empty;
 
-                if (!success ||
-                    string.IsNullOrEmpty(str) ||
-                    (!Regex.IsMatch(str, @".+\(.+\) - .+ \[.+\]") && !Regex.IsMatch(str, @".+ - .+ \[.+\]")))
+                if ((!success || string.IsNullOrEmpty(str)) && try_count < MAX_RETRY_COUNT)
+                {
+                    try_count++;
                     Thread.Sleep(100);
+                }
                 else break;
             } while (true);
 
@@ -328,5 +339,6 @@ namespace OsuRTDataProvider.Memory
 
             return tuple;
         }
+        #endregion
     }
 }
