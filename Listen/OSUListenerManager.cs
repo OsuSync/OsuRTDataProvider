@@ -117,9 +117,13 @@ namespace OsuRTDataProvider.Listen
         private Process m_osu_process;
 
         private OsuPlayFinder m_play_finder = null;
+        private OsuStatusFinder m_modes_finder=null;
+        private OsuBeatmapFinder m_beatmap_finder = null;
+        private int _status_finder_timer = 3000;
 
         private OsuStatus m_last_osu_status = OsuStatus.Unkonwn;
 
+        #region last status
         private BeatmapSet m_last_beatmapset = BeatmapSet.Empty;
         private Beatmap m_last_beatmap = Beatmap.Empty;
         private ModsInfo m_last_mods = ModsInfo.Empty;
@@ -133,7 +137,7 @@ namespace OsuRTDataProvider.Listen
         private int m_last_50 = 0;
         private int m_last_miss = 0;
 
-        private string m_prev_status = string.Empty;
+        #endregion
 
         private bool m_is_tourney = false;
         private int m_osu_id = 0;
@@ -190,7 +194,26 @@ namespace OsuRTDataProvider.Listen
         Stopwatch _sw = new Stopwatch();
         const long _retry_time = 3000;
 
-        private void LoadMemorySearch(Process osu)
+        private void FindOsuSongPath()
+        {
+            string osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
+            string osu_config_file = Path.Combine(osu_path, $"osu!.{Environment.UserName}.cfg");
+            var lines = File.ReadLines(osu_config_file);
+            string song_path;
+            foreach (var line in lines)
+            {
+                if (line.Contains("BeatmapDirectory"))
+                {
+                    song_path = line.Split('=')[1].Trim();
+                    if (Path.IsPathRooted(song_path))
+                        Setting.SongsPath = song_path;
+                    else
+                        Setting.SongsPath = Path.Combine(osu_path, song_path);
+                    break;
+                }
+            }
+        }
+        private void LoadPlayFinder(Process osu)
         {
             m_play_finder = new OsuPlayFinder(osu);
 
@@ -226,6 +249,7 @@ namespace OsuRTDataProvider.Listen
                 m_osu_process = null;
                 m_play_finder = null;
                 m_modes_finder = null;
+                m_beatmap_finder = null;
 
                 if (status == OsuStatus.NoFoundProcess)
                     Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_NOT_FOUND,m_osu_id), ConsoleColor.Red);
@@ -262,28 +286,19 @@ namespace OsuRTDataProvider.Listen
 
             if (status != OsuStatus.NoFoundProcess && status != OsuStatus.Unkonwn)
             {
+                if (m_beatmap_finder == null)
+                {
+                    FindOsuSongPath();
+                    m_beatmap_finder = new OsuBeatmapFinder(m_osu_process);
+                    m_beatmap_finder.TryInit();
+                }
+
+
                 if (status == OsuStatus.Playing)
                 {
                     if (m_play_finder == null)
                     {
-                        string osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
-                        string osu_config_file = Path.Combine(osu_path, $"osu!.{Environment.UserName}.cfg");
-                        var lines=File.ReadLines(osu_config_file);
-                        string song_path;
-                        foreach(var line in lines)
-                        {
-                            if(line.Contains("BeatmapDirectory"))
-                            {
-                                song_path=line.Split('=')[1].Trim();
-                                if(Path.IsPathRooted(song_path))
-                                    Setting.SongsPath = song_path;
-                                else
-                                    Setting.SongsPath = Path.Combine(osu_path, song_path);
-                                break;
-                            }
-                        }
-
-                        LoadMemorySearch(m_osu_process);
+                        LoadPlayFinder(m_osu_process);
                     }
                 }
 
@@ -301,8 +316,8 @@ namespace OsuRTDataProvider.Listen
                     double hp = 0.0;
                     double acc = 0.0;
 
-                    if (OnBeatmapSetChanged != null || OnBeatmapChanged != null) beatmapset = m_play_finder.GetCurrentBeatmapSet(m_osu_id);
-                    if (OnBeatmapChanged != null) beatmap = m_play_finder.GetCurrentBeatmap();
+                    if (OnBeatmapSetChanged != null || OnBeatmapChanged != null) beatmapset = m_beatmap_finder.GetCurrentBeatmapSet(m_osu_id);
+                    if (OnBeatmapChanged != null) beatmap = m_beatmap_finder.GetCurrentBeatmap();
                     if (OnPlayingTimeChanged != null) pt = m_play_finder.GetPlayingTime();
 
                     try
@@ -389,9 +404,6 @@ namespace OsuRTDataProvider.Listen
                 m_last_osu_status = status;
             }
         }
-
-        private OsuStatusFinder m_modes_finder;
-        private int _status_finder_timer = 3000;
 
         private OsuStatus GetCurrentOsuStatus()
         {
