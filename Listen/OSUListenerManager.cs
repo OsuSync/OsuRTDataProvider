@@ -33,8 +33,6 @@ namespace OsuRTDataProvider.Listen
 
         public delegate void OnBeatmapChangedEvt(Beatmap map);
 
-        public delegate void OnBeatmapSetChangedEvt(BeatmapSet set);
-
         public delegate void OnHealthPointChangedEvt(double hp);
 
         public delegate void OnAccuracyChangedEvt(double acc);
@@ -54,12 +52,6 @@ namespace OsuRTDataProvider.Listen
         /// If too old beatmap, map.ID = -1.
         /// </summary>
         public event OnBeatmapChangedEvt OnBeatmapChanged;
-
-        /// <summary>
-        /// Available in Playing and Linsten.
-        /// If too old beatmap, set.ID = -1.
-        /// </summary>
-        public event OnBeatmapSetChangedEvt OnBeatmapSetChanged;
 
         /// <summary>
         /// Available in Playing.
@@ -124,7 +116,6 @@ namespace OsuRTDataProvider.Listen
         private OsuStatus m_last_osu_status = OsuStatus.Unkonwn;
 
         #region last status
-        private BeatmapSet m_last_beatmapset = BeatmapSet.Empty;
         private Beatmap m_last_beatmap = Beatmap.Empty;
         private ModsInfo m_last_mods = ModsInfo.Empty;
 
@@ -304,7 +295,6 @@ namespace OsuRTDataProvider.Listen
 
                 if (m_play_finder != null)
                 {
-                    BeatmapSet beatmapset = BeatmapSet.Empty;
                     Beatmap beatmap = Beatmap.Empty;
                     ModsInfo mods = ModsInfo.Empty;
                     int cb = 0;
@@ -316,20 +306,13 @@ namespace OsuRTDataProvider.Listen
                     double hp = 0.0;
                     double acc = 0.0;
 
-                    if (OnBeatmapSetChanged != null || OnBeatmapChanged != null) beatmapset = m_beatmap_finder.GetCurrentBeatmapSet(m_osu_id);
-                    if (OnBeatmapChanged != null) beatmap = m_beatmap_finder.GetCurrentBeatmap();
+                    if (OnBeatmapChanged != null) beatmap = m_beatmap_finder.GetCurrentBeatmap(m_osu_id);
                     if (OnPlayingTimeChanged != null) pt = m_play_finder.GetPlayingTime();
 
                     try
                     {
-                        if (beatmapset?.BeatmapSetID != m_last_beatmapset?.BeatmapSetID)
-                        {
-                            OnBeatmapSetChanged?.Invoke(beatmapset);
-                        }
-
                         if (beatmap.BeatmapID != m_last_beatmap.BeatmapID)
                         {
-                            beatmap.Set = beatmapset;
                             OnBeatmapChanged?.Invoke(beatmap);
                         }
 
@@ -389,7 +372,6 @@ namespace OsuRTDataProvider.Listen
                         Sync.Tools.IO.CurrentIO.WriteColor(e.ToString(), ConsoleColor.Red);
                     }
 
-                    m_last_beatmapset = beatmapset;
                     m_last_beatmap = beatmap;
                     m_last_mods = mods;
                     m_last_hp = hp;

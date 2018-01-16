@@ -64,7 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BeatmapInfo\Beatmap.cs" />
-    <Compile Include="BeatmapInfo\BeatmapSet.cs" />
     <Compile Include="DefaultLanguage.cs" />
     <Compile Include="Handler\ExitHandler.cs" />
     <Compile Include="Listen\OSUListenerManager.cs" />
