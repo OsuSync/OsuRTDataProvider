@@ -74,6 +74,8 @@ namespace OsuRTDataProvider.BeatmapInfo
         public int OsuClientID { get; private set; }
         public string Filename { get; private set; }
         public string FilenameFull { get; private set; }
+        [Obsolete("LocationFile is obsoleted,Please use FilenameFull", true)]
+        public string LocationFile => FilenameFull;
 
         public static Beatmap Empty => new Beatmap(0,-1,-1,"","");
 
