@@ -79,17 +79,17 @@ namespace OsuRTDataProvider.BeatmapInfo
 
         public static Beatmap Empty => new Beatmap(0,-1,-1,"","");
 
-        public Beatmap(int osu_id,int set_id,int id,string folder, string filename)
+        public Beatmap(int osu_id,int set_id,int id,string folder_path, string filename_path)
         {
             BeatmapSetID = set_id;
             OsuClientID = osu_id;
             BeatmapID = id;
 
-            Folder = Path.Combine(Setting.SongsPath, folder);
-            Filename = filename;
-            FilenameFull = Path.Combine(Folder,Filename);
+            Folder = folder_path;
+            Filename =Path.GetFileName(filename_path);
+            FilenameFull = filename_path;
 
-            if (!(string.IsNullOrWhiteSpace(folder) || string.IsNullOrWhiteSpace(filename)))
+            if (!(string.IsNullOrWhiteSpace(folder_path) || string.IsNullOrWhiteSpace(filename_path)))
             {
                 using (var stream = File.OpenRead(FilenameFull))
                 using (var sr = new StreamReader(stream))

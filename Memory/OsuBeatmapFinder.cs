@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -58,7 +59,22 @@ namespace OsuRTDataProvider.Memory
 
             string filename = GetCurrentBeatmapFilename();
             string folder = GetCurrentBeatmapFolder();
-            var beatmap = new Beatmap(osu_id,set_id,id,folder,filename);
+
+            Beatmap beatmap = Beatmap.Empty;
+
+            try
+            {
+                if (!(string.IsNullOrWhiteSpace(filename) || string.IsNullOrWhiteSpace(folder)))
+                {
+                    string folder_full = Path.Combine(Setting.SongsPath, folder);
+                    string filename_full = Path.Combine(folder_full, filename);
+                    if(File.Exists(filename_full))
+                        beatmap = new Beatmap(osu_id, set_id, id, folder_full, filename_full);
+                }
+            }
+            catch(ArgumentException e)
+            {
+            }
 
             return beatmap;
         }
@@ -66,49 +82,17 @@ namespace OsuRTDataProvider.Memory
         #region Beatmap Info
         private string GetCurrentBeatmapFolder()
         {
-            int try_count = 0;
-            string str;
-
-            do
-            {
-                TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
-
-                bool success = TryReadStringFromMemory(cur_beatmap_address + s_beatmap_folder_offset, out str);
-
-                if (OsuProcess.HasExited) return string.Empty;
-
-                if ((!success || string.IsNullOrEmpty(str)) && try_count < MAX_RETRY_COUNT)
-                {
-                    try_count++;
-                    Thread.Sleep(100);
-                }
-                else break;
-            } while (true);
-
+            TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
+            bool success = TryReadStringFromMemory(cur_beatmap_address + s_beatmap_folder_offset, out string str);
+            if (!success) return "";
             return str;
         }
 
         private string GetCurrentBeatmapFilename()
         {
-            int try_count = 0;
-            string str;
-
-            do
-            {
-                TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
-
-                bool success = TryReadStringFromMemory(cur_beatmap_address + s_beatmap_filename_offset, out str);
-
-                if (OsuProcess.HasExited) return string.Empty;
-
-                if ((!success || string.IsNullOrEmpty(str)) && try_count < MAX_RETRY_COUNT)
-                {
-                    try_count++;
-                    Thread.Sleep(100);
-                }
-                else break;
-            } while (true);
-
+            TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
+            bool success = TryReadStringFromMemory(cur_beatmap_address + s_beatmap_filename_offset, out string str);
+            if (!success) return "";
             return str;
         }
         #endregion
