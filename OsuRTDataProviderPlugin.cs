@@ -14,7 +14,7 @@ namespace OsuRTDataProvider
     {
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
-        public const string VERSION = "1.1.1";
+        public const string VERSION = "1.1.2";
 
         private OsuListenerManager[] m_listener_managers = new OsuListenerManager[16];
         private int m_listener_managers_count = 0;
