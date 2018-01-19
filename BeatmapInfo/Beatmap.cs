@@ -59,7 +59,7 @@ namespace OsuRTDataProvider.BeatmapInfo
         }
 
 
-        public string Diff { get; private set; }
+        public string Difficulty { get; private set; }
         public string Creator { get; private set; }
         public string Artist { get; private set; }
         public string ArtistUnicode { get; private set; }
@@ -125,7 +125,7 @@ namespace OsuRTDataProvider.BeatmapInfo
                                 else if (str.StartsWith("Version"))
                                 {
                                     GetPropertyValue(str, out string val);
-                                    Diff = val;
+                                    Difficulty = val;
                                 }
                                 else if (str.StartsWith("Creator"))
                                 {
