@@ -48,7 +48,7 @@ namespace OsuRTDataProvider.Memory
 
             SigScan.ResetRegion();
 
-            return m_beatmap_address == IntPtr.Zero;
+            return m_beatmap_address != IntPtr.Zero;
         }
 
         public Beatmap GetCurrentBeatmap(int osu_id)

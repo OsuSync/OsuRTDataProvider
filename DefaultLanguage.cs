@@ -11,6 +11,9 @@ namespace OsuRTDataProvider
         public static LanguageElement LANG_INIT_STATUS_FINDER_SUCCESS = "[OsuRTDataProvider][ID:{0}]Init StatusFinder Success!";
         public static LanguageElement LANG_INIT_PLAY_FINDER_FAILED = "[OsuRTDataProvider][ID:{0}]Init PlayFinder Failed! Retry after {1} seconds";
         public static LanguageElement LANG_INIT_PLAY_FINDER_SUCCESS = "[OsuRTDataProvider][ID:{0}]Init PlayFinder Success!";
+        public static LanguageElement LANG_INIT_BEATMAP_FINDER_FAILED = "[OsuRTDataProvider][ID:{0}]Init BeatmapFinder Failed! Retry after {1} seconds";
+        public static LanguageElement LANG_INIT_BEATMAP_FINDER_SUCCESS = "[OsuRTDataProvider][ID:{0}]Init BeatmapFinder Success!";
+
 
         public static LanguageElement LANG_BEATMAP_NOT_FOUND = "Beatmap not found";
     }

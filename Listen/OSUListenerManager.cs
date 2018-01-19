@@ -139,6 +139,7 @@ namespace OsuRTDataProvider.Listen
         static OsuListenerManager()
         {
             m_stop = false;
+            int interval = Setting.ListenInterval;
 
             m_listen_task = Task.Run(() =>
             {
@@ -150,10 +151,10 @@ namespace OsuRTDataProvider.Listen
                         var action = m_action_list[i];
                         action.Item2();
                     }
-                    if(s_random_interval)
-                        Thread.Sleep(s_random.Next(300,700));
-                    else
-                        Thread.Sleep(Setting.ListenInterval);
+
+                    interval = s_random_interval?s_random.Next(300, 700): Setting.ListenInterval;
+
+                    Thread.Sleep(interval);
                 }
             });
             ExitHandler.OnConsloeExit += () => m_stop = true;
@@ -182,9 +183,6 @@ namespace OsuRTDataProvider.Listen
             }
         }
 
-        Stopwatch _sw = new Stopwatch();
-        const long _retry_time = 3000;
-
         private void FindOsuSongPath()
         {
             string osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
@@ -204,31 +202,44 @@ namespace OsuRTDataProvider.Listen
                 }
             }
         }
-        private void LoadPlayFinder(Process osu)
+
+        const long _retry_time = 3000;
+        private long _play_finder_timer = 0;
+        private long _beatmap_finder_timer = 0;
+
+        private void LoadBeatmapFinder()
         {
-            m_play_finder = new OsuPlayFinder(osu);
-
-            if (_sw.IsRunning)
-                _sw.Start();
-
-            if(_sw.ElapsedMilliseconds%_retry_time>= 0)
+            if (_beatmap_finder_timer % _retry_time == 0)
             {
-                if (!m_play_finder.TryInit())
+                m_beatmap_finder = new OsuBeatmapFinder(m_osu_process);
+                if (m_beatmap_finder.TryInit())
                 {
-                    if (m_osu_process.HasExited || m_last_osu_status != OsuStatus.Playing)
-                    {
-                        m_play_finder = null;
-                        return;
-                    }
-                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_PLAY_FINDER_FAILED, m_osu_id, _retry_time / 1000), ConsoleColor.Red);
-                    _sw.Stop();
-                    _sw.Reset();
+                    _beatmap_finder_timer = 0;
+                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_BEATMAP_FINDER_SUCCESS, m_osu_id), ConsoleColor.Green);
+                    return;
                 }
-                else
-                {
-                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_PLAY_FINDER_SUCCESS, m_osu_id), ConsoleColor.Green);
-                }
+                m_beatmap_finder = null;
+                Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_BEATMAP_FINDER_FAILED, m_osu_id, _retry_time / 1000), ConsoleColor.Red);
             }
+            _beatmap_finder_timer += Setting.ListenInterval;
+        }
+
+        private void LoadPlayFinder()
+        {
+            if (_play_finder_timer % _retry_time == 0 && _play_finder_timer != 0)
+            {
+                m_play_finder = new OsuPlayFinder(m_osu_process);
+                if (m_play_finder.TryInit())
+                {
+                    _play_finder_timer = 0;
+                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_PLAY_FINDER_SUCCESS, m_osu_id), ConsoleColor.Green);
+                    return;
+                }
+
+                m_play_finder = null;
+                Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_PLAY_FINDER_FAILED, m_osu_id, _retry_time / 1000), ConsoleColor.Red);
+            }
+            _play_finder_timer += Setting.ListenInterval;
         }
 
         private void ListenLoopUpdate()
@@ -280,8 +291,7 @@ namespace OsuRTDataProvider.Listen
                 if (m_beatmap_finder == null)
                 {
                     FindOsuSongPath();
-                    m_beatmap_finder = new OsuBeatmapFinder(m_osu_process);
-                    m_beatmap_finder.TryInit();
+                    LoadBeatmapFinder();
                 }
 
 
@@ -289,7 +299,7 @@ namespace OsuRTDataProvider.Listen
                 {
                     if (m_play_finder == null)
                     {
-                        LoadPlayFinder(m_osu_process);
+                        LoadPlayFinder();
                     }
                 }
 
@@ -382,8 +392,8 @@ namespace OsuRTDataProvider.Listen
                     m_last_100 = n100;
                     m_last_50 = n50;
                     m_last_miss = nmiss;
+                    m_last_osu_status = status;
                 }
-                m_last_osu_status = status;
             }
         }
 
