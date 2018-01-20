@@ -15,6 +15,7 @@ namespace OsuRTDataProvider
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
         public const string VERSION = "1.1.2";
+        public static SyncHost SyncHost { get; private set; }
 
         private OsuListenerManager[] m_listener_managers = new OsuListenerManager[16];
         private int m_listener_managers_count = 0;
@@ -44,6 +45,7 @@ namespace OsuRTDataProvider
 
         public override void OnEnable()
         {
+            SyncHost = getHoster();
             Setting.PluginInstance = this;
             Sync.Tools.IO.CurrentIO.WriteColor(PLUGIN_NAME + " By " + PLUGIN_AUTHOR, ConsoleColor.DarkCyan);
 

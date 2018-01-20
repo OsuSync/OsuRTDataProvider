@@ -60,10 +60,5 @@ namespace OsuRTDataProvider
                 plugin_config = new PluginConfiuration(value, setting_output);
             }
         }
-
-        static Setting()
-        {
-            ExitHandler.OnConsloeExit += ()=>plugin_config?.ForceSave();
-        }
     }
 }

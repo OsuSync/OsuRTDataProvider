@@ -35,7 +35,7 @@ namespace OsuRTDataProvider.Handler
         private static bool Handler(CtrlType sig)
         {
             OnConsloeExit?.Invoke();
-            Environment.Exit(-1);
+            OsuRTDataProviderPlugin.SyncHost.ExitSync();
             return true;
         }
     }
