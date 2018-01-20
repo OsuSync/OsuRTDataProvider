@@ -8,11 +8,9 @@ namespace OsuRTDataProvider
     public class SettingIni : IConfigurable
     {
         public ConfigurationElement ListenInterval { set; get; }
-        public ConfigurationElement EnableDirectoryImprecisionSearch { get; set; }
         public ConfigurationElement EnableTourneyMode { get; set; }
         public ConfigurationElement TeamSize { get; set; }
         public ConfigurationElement DebugMode { get; set; }
-        public ConfigurationElement EnableOsuFileContentCompareSearch { get; set; }
 
         public void onConfigurationLoad()
         {
