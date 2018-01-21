@@ -260,7 +260,9 @@ namespace OsuRTDataProvider.Listen
                     Thread.Sleep(3000);
                     process_list = Process.GetProcessesByName("osu!");
 
+                    if (m_stop) return;
                     if (process_list.Length == 0) continue;
+
 
                     if (m_is_tourney)
                     {
@@ -409,6 +411,9 @@ namespace OsuRTDataProvider.Listen
                     if (_status_finder_timer >= 3000)
                     {
                         success = m_modes_finder.TryInit();
+
+                        if (m_stop) return OsuStatus.NoFoundProcess;
+
                         if (m_osu_process.HasExited)
                         {
                             m_modes_finder = null;
