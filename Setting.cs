@@ -1,5 +1,4 @@
-﻿using OsuRTDataProvider.Handler;
-using Sync.Tools;
+﻿using Sync.Tools;
 using System;
 using System.IO;
 
@@ -32,6 +31,11 @@ namespace OsuRTDataProvider
             }
         }
 
+        public void onConfigurationReload()
+        {
+            onConfigurationLoad();
+        }
+
         public void onConfigurationSave()
         {
             DebugMode = Setting.DebugMode.ToString();
@@ -51,14 +55,5 @@ namespace OsuRTDataProvider
         public static string SongsPath = string.Empty;//不保存
 
         private static SettingIni setting_output = new SettingIni();
-        private static PluginConfiuration plugin_config = null;
-
-        public static OsuRTDataProviderPlugin PluginInstance
-        {
-            set
-            {
-                plugin_config = new PluginConfiuration(value, setting_output);
-            }
-        }
     }
 }

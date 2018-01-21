@@ -17,6 +17,8 @@ namespace OsuRTDataProvider
         public const string VERSION = "1.1.2";
         public static SyncHost SyncHost { get; private set; }
 
+        private PluginConfigurationManager m_config_manager;
+
         private OsuListenerManager[] m_listener_managers = new OsuListenerManager[16];
         private int m_listener_managers_count = 0;
 
@@ -45,8 +47,10 @@ namespace OsuRTDataProvider
 
         public override void OnEnable()
         {
+            m_config_manager = new PluginConfigurationManager(this);
+            m_config_manager.AddItem(new SettingIni());
+
             SyncHost = getHoster();
-            Setting.PluginInstance = this;
             Sync.Tools.IO.CurrentIO.WriteColor(PLUGIN_NAME + " By " + PLUGIN_AUTHOR, ConsoleColor.DarkCyan);
 
             if (Setting.EnableTourneyMode)
@@ -141,6 +145,15 @@ namespace OsuRTDataProvider
             }
 
             Setting.DebugMode = enable;
+        }
+
+        public override void OnExit()
+        {
+            int size = Setting.EnableTourneyMode ? TourneyListenerManagersCount : 1;
+            for(int i=0;i<size;i++)
+            {
+                m_listener_managers[i].Stop();
+            }
         }
     }
 }
