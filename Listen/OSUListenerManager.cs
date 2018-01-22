@@ -29,6 +29,7 @@ namespace OsuRTDataProvider.Listen
         static private bool m_stop = false;
 
         #region Event
+        public delegate void OnPlayModeChangedEvt(PlayMode last,PlayMode mode);
 
         public delegate void OnBeatmapChangedEvt(Beatmap map);
 
@@ -45,6 +46,11 @@ namespace OsuRTDataProvider.Listen
         public delegate void OnHitCountChangedEvt(int hit);
 
         public delegate void OnStatusChangedEvt(OsuStatus last_status, OsuStatus status);
+
+        /// <summary>
+        /// Available in Linsten.
+        /// </summary>
+        public event OnPlayModeChangedEvt OnPlayModeChanged;
 
         /// <summary>
         /// Available in Playing and Linsten.
@@ -108,13 +114,15 @@ namespace OsuRTDataProvider.Listen
         private Process m_osu_process;
 
         private OsuPlayFinder m_play_finder = null;
-        private OsuStatusFinder m_modes_finder=null;
+        private OsuStatusFinder m_status_finder=null;
         private OsuBeatmapFinder m_beatmap_finder = null;
+        private OsuPlayModesFinder m_mode_finder = null;
         private int _status_finder_timer = 3000;
 
+        #region last status
         private OsuStatus m_last_osu_status = OsuStatus.Unkonwn;
 
-        #region last status
+        private PlayMode m_last_mode = PlayMode.Osu;
         private Beatmap m_last_beatmap = Beatmap.Empty;
         private ModsInfo m_last_mods = ModsInfo.Empty;
 
@@ -204,6 +212,7 @@ namespace OsuRTDataProvider.Listen
         const long _retry_time = 3000;
         private long _play_finder_timer = 0;
         private long _beatmap_finder_timer = 0;
+        private long _mode_finer_timer = 0;
 
         private void LoadBeatmapFinder()
         {
@@ -240,6 +249,24 @@ namespace OsuRTDataProvider.Listen
             _play_finder_timer += Setting.ListenInterval;
         }
 
+        private void LoadModeFinder()
+        {
+            if (_mode_finer_timer % _retry_time == 0 && _mode_finer_timer != 0)
+            {
+                m_mode_finder = new OsuPlayModesFinder(m_osu_process);
+                if (m_mode_finder.TryInit())
+                {
+                    _mode_finer_timer = 0;
+                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_MODE_FINDER_SUCCESS, m_osu_id), ConsoleColor.Green);
+                    return;
+                }
+
+                m_mode_finder = null;
+                Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_MODE_FINDER_FAILED, m_osu_id, _retry_time / 1000), ConsoleColor.Red);
+            }
+            _mode_finer_timer += Setting.ListenInterval;
+        }
+
         private void ListenLoopUpdate()
         {
             OsuStatus status = GetCurrentOsuStatus();
@@ -248,7 +275,7 @@ namespace OsuRTDataProvider.Listen
             {
                 m_osu_process = null;
                 m_play_finder = null;
-                m_modes_finder = null;
+                m_status_finder = null;
                 m_beatmap_finder = null;
 
                 if (status == OsuStatus.NoFoundProcess)
@@ -294,6 +321,11 @@ namespace OsuRTDataProvider.Listen
                     LoadBeatmapFinder();
                 }
 
+                if(m_mode_finder == null)
+                {
+                    LoadModeFinder();
+                }
+
 
                 if (status == OsuStatus.Playing)
                 {
@@ -301,6 +333,18 @@ namespace OsuRTDataProvider.Listen
                     {
                         LoadPlayFinder();
                     }
+                }
+
+                if(m_mode_finder!=null)
+                {
+                    PlayMode mode = PlayMode.Osu;
+
+                    if (OnPlayModeChanged != null) mode = m_mode_finder.GetMode();
+
+                    if (m_last_mode != mode)
+                        OnPlayModeChanged(m_last_mode, mode);
+
+                    m_last_mode=mode;
                 }
 
                 if (m_play_finder != null)
@@ -402,21 +446,21 @@ namespace OsuRTDataProvider.Listen
             if (m_osu_process == null) return OsuStatus.NoFoundProcess;
             if (m_osu_process.HasExited == true) return OsuStatus.NoFoundProcess;
 
-            if (m_modes_finder == null)
+            if (m_status_finder == null)
             {
-                m_modes_finder = new OsuStatusFinder(m_osu_process);
+                m_status_finder = new OsuStatusFinder(m_osu_process);
                 bool success = false;
                 while (!success)
                 {
                     if (_status_finder_timer >= 3000)
                     {
-                        success = m_modes_finder.TryInit();
+                        success = m_status_finder.TryInit();
 
                         if (m_stop) return OsuStatus.NoFoundProcess;
 
                         if (m_osu_process.HasExited)
                         {
-                            m_modes_finder = null;
+                            m_status_finder = null;
                             return OsuStatus.Unkonwn;
                         }
 
@@ -434,7 +478,7 @@ namespace OsuRTDataProvider.Listen
                
             }
 
-            OsuInternalStatus mode = m_modes_finder.GetCurrentOsuModes();
+            OsuInternalStatus mode = m_status_finder.GetCurrentOsuModes();
 
             if (mode == OsuInternalStatus.Unknown) return OsuStatus.Unkonwn;
 

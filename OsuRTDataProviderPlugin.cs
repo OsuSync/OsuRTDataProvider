@@ -110,18 +110,23 @@ namespace OsuRTDataProvider
                 for (int i = 0; i < TourneyListenerManagersCount; i++)
                 {
                     void OnTourneyStatusChanged(OsuStatus l, OsuStatus c) =>
-                        IO.FileLogger.WriteColor($"[OsuRTDataProvider][{i}]Current Game Status:{c}", ConsoleColor.Blue);
+                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{i}]Current Game Status:{c}", ConsoleColor.Blue);
                     void OnTourneyModsChanged(ModsInfo m) =>
-                        IO.FileLogger.WriteColor($"[OsuRTDataProvider][{i}]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
+                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{i}]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
+                    void OnTourneyModeChanged(PlayMode last, PlayMode mode) =>
+                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{i}]Mode:{mode}", ConsoleColor.Blue);
+
                     if (enable)
                     {
                         m_listener_managers[i].OnStatusChanged += OnTourneyStatusChanged;
                         m_listener_managers[i].OnModsChanged += OnTourneyModsChanged;
+                        m_listener_managers[i].OnPlayModeChanged += OnTourneyModeChanged;
                     }
                     else
                     {
                         m_listener_managers[i].OnStatusChanged -= OnTourneyStatusChanged;
                         m_listener_managers[i].OnModsChanged -= OnTourneyModsChanged;
+                        m_listener_managers[i].OnPlayModeChanged -= OnTourneyModeChanged;
                     }
                 }
             }
@@ -131,16 +136,20 @@ namespace OsuRTDataProvider
                     IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Current Game Status:{c}", ConsoleColor.Blue);
                 void OnModsChanged(ModsInfo m) =>
                     IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
+                void OnModeChanged(PlayMode last, PlayMode mode) =>
+                    IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Mode:{mode}", ConsoleColor.Blue);
 
-                if(enable)
+                if (enable)
                 {
                     m_listener_managers[0].OnStatusChanged += OnStatusChanged;
                     m_listener_managers[0].OnModsChanged += OnModsChanged;
+                    m_listener_managers[0].OnPlayModeChanged += OnModeChanged;
                 }
                 else
                 {
                     m_listener_managers[0].OnStatusChanged -= OnStatusChanged;
                     m_listener_managers[0].OnModsChanged -= OnModsChanged;
+                    m_listener_managers[0].OnPlayModeChanged -= OnModeChanged;
                 }
             }
 
