@@ -29,8 +29,7 @@ OSU! Clinet Version Requirements: **b20171225.2 After**
 
 |Setting Name|Default Value|Description|
 | ----- | ----- | ----- |
-| ListenInterval | 100 | Listen data interval(ms). PS: If it is too small may lag. |  
-| EnableDirectoryImprecisionSearch | True | Increase search range |
+| ListenInterval | 100 | Listen data interval(ms). PS: If it is too small may lag. |
 | EnableTourneyMode | False | Is tourney client?(Experimental)|
 | TeamSize | 1 | Tourney client team size|
 
@@ -48,7 +47,6 @@ OSU! Clinet Version Requirements: **b20171225.2 After**
 ##### Event
 ```csharp
         public delegate void OnBeatmapChangedEvt(Beatmap map);
-        public delegate void OnBeatmapSetChangedEvt(BeatmapSet set);
         public delegate void OnHealthPointChangedEvt(double hp);
         public delegate void OnAccuracyChangedEvt(double acc);
         public delegate void OnComboChangedEvt(int combo);
@@ -62,12 +60,6 @@ OSU! Clinet Version Requirements: **b20171225.2 After**
         /// If too old beatmap, map.ID = -1.
         /// </summary>
         public event OnBeatmapChangedEvt OnBeatmapChanged;
-
-        /// <summary>
-        /// Available at Playing and Linsten.
-        /// If too old beatmap, set.ID = -1.
-        /// </summary>
-        public event OnBeatmapSetChangedEvt OnBeatmapSetChanged;
 
         /// <summary>
         /// Available at Playing.

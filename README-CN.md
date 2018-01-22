@@ -30,8 +30,7 @@ OSU!客户端版本要求: **b20171225.2 之后**
 |Setting Name|Default Value|Description|
 | ----- | ----- | ----- |
 | ListenInterval | 100 | 监听数据的间隔(单位毫秒)。PS:如果太小可能会卡 |  
-| EnableDirectoryImprecisionSearch | True | 提升Songs文件夹搜索范围 |
-| EnableTourneyMode | False | 启用Tourney模式?(实验性) |
+|EnableTourneyMode | False | 启用Tourney模式?(实验性) |
 | TeamSize | 1 | Tourney client的队伍大小|  
 
 # API
@@ -48,7 +47,6 @@ OSU!客户端版本要求: **b20171225.2 之后**
 ##### Event
 ```csharp
         public delegate void OnBeatmapChangedEvt(Beatmap map);
-        public delegate void OnBeatmapSetChangedEvt(BeatmapSet set);
         public delegate void OnHealthPointChangedEvt(double hp);
         public delegate void OnAccuracyChangedEvt(double acc);
         public delegate void OnComboChangedEvt(int combo);
@@ -62,12 +60,6 @@ OSU!客户端版本要求: **b20171225.2 之后**
         /// 如果Beatmap太老, map.ID = -1.
         /// </summary>
         public event OnBeatmapChangedEvt OnBeatmapChanged;
-
-        /// <summary>
-        /// Playing和Linsten时可用.
-        /// 如果Beatmap太老, set.ID = -1.
-        /// </summary>
-        public event OnBeatmapSetChangedEvt OnBeatmapSetChanged;
 
         /// <summary>
         /// Playing时可用.
