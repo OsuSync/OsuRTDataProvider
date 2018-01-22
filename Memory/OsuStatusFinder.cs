@@ -29,7 +29,7 @@ namespace OsuRTDataProvider.Memory
             SigScan.ResetRegion();
 
 #if DEBUG
-            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Game Modes Address:0x{(int)m_game_modes_address:X8}");
+            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Game Status Address:0x{(int)m_game_modes_address:X8}");
 #endif
             return success;
         }
