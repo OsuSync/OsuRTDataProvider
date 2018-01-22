@@ -28,6 +28,9 @@ namespace OsuRTDataProvider.Memory
 #if DEBUG
             Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Mode Address:0x{(int)m_mode_address:X8}");
 #endif
+            if (m_mode_address == IntPtr.Zero)
+                success = false;
+
             return success;
         }
 
