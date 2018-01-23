@@ -36,10 +36,10 @@ namespace OsuRTDataProvider.Memory
             return success;
         }
 
-        public PlayMode GetMode()
+        public OsuPlayMode GetMode()
         {
             TryReadIntFromMemory(m_mode_address, out int val);
-            return (PlayMode)val;
+            return (OsuPlayMode)val;
         }
     }
 }

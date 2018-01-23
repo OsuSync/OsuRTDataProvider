@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OsuRTDataProvider.Listen
 {
-    public enum PlayMode
+    public enum OsuPlayMode
     {
         Osu = 0,
         Taiko = 1,

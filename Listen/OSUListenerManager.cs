@@ -29,7 +29,7 @@ namespace OsuRTDataProvider.Listen
         static private bool m_stop = false;
 
         #region Event
-        public delegate void OnPlayModeChangedEvt(PlayMode last,PlayMode mode);
+        public delegate void OnPlayModeChangedEvt(OsuPlayMode last,OsuPlayMode mode);
 
         public delegate void OnBeatmapChangedEvt(Beatmap map);
 
@@ -132,7 +132,7 @@ namespace OsuRTDataProvider.Listen
         #region last status
         private OsuStatus m_last_osu_status = OsuStatus.Unkonwn;
 
-        private PlayMode m_last_mode = PlayMode.Osu;
+        private OsuPlayMode m_last_mode = OsuPlayMode.Osu;
         private Beatmap m_last_beatmap = Beatmap.Empty;
         private ModsInfo m_last_mods = ModsInfo.Empty;
 
@@ -350,7 +350,7 @@ namespace OsuRTDataProvider.Listen
 
                 if(m_mode_finder!=null)
                 {
-                    PlayMode mode = PlayMode.Osu;
+                    OsuPlayMode mode = OsuPlayMode.Osu;
 
                     if (OnPlayModeChanged != null) mode = m_mode_finder.GetMode();
 
