@@ -131,7 +131,38 @@ namespace OsuRTDataProvider.Memory
                 TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
 
-            TryReadShortFromMemory(tmp_ptr + +0x88, out var value);
+            TryReadShortFromMemory(tmp_ptr + 0x88, out var value);
+            return value;
+        }
+
+        /// <summary>
+        /// Osu Geki
+        /// Mania RGB 300
+        /// </summary>
+        /// <returns></returns>
+        public int GetGekiCount()
+        {
+            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
+            if (!m_use_acc_address2)
+                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
+
+            TryReadShortFromMemory(tmp_ptr + 0x8a, out var value);
+            return value;
+        }
+
+        /// <summary>
+        /// Osu Katu
+        /// Mania 200
+        /// </summary>
+        public int GetKatuCount()
+        {
+            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
+            if (!m_use_acc_address2)
+                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
+
+            TryReadShortFromMemory(tmp_ptr + +0x8c, out var value);
             return value;
         }
 

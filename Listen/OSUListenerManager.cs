@@ -100,6 +100,16 @@ namespace OsuRTDataProvider.Listen
         public event OnHitCountChangedEvt On50HitChanged;
 
         /// <summary>
+        /// Mania: RGB 300
+        /// </summary>
+        public event Action<int> OnGekiChanged;
+
+        /// <summary>
+        /// Mania: 200
+        /// </summary>
+        public event Action<int> OnKatuChanged;
+
+        /// <summary>
         /// Available in Playing.
         /// </summary>
         public event OnHitCountChangedEvt OnMissHitChanged;
@@ -134,6 +144,8 @@ namespace OsuRTDataProvider.Listen
         private int m_last_100 = 0;
         private int m_last_50 = 0;
         private int m_last_miss = 0;
+        private int m_last_geki = 0;
+        private int m_last_katu = 0;
 
         #endregion
 
@@ -357,6 +369,8 @@ namespace OsuRTDataProvider.Listen
                     int n300 = 0;
                     int n100 = 0;
                     int n50 = 0;
+                    int ngeki = 0;
+                    int nkatu = 0;
                     int nmiss = 0;
                     double hp = 0.0;
                     double acc = 0.0;
@@ -378,6 +392,8 @@ namespace OsuRTDataProvider.Listen
                             if (On300HitChanged != null) n300 = m_play_finder.Get300Count();
                             if (On100HitChanged != null) n100 = m_play_finder.Get100Count();
                             if (On50HitChanged != null) n50 = m_play_finder.Get50Count();
+                            if (OnGekiChanged != null) ngeki = m_play_finder.GetGekiCount();
+                            if (OnKatuChanged != null) nkatu = m_play_finder.GetKatuCount();
                             if (OnMissHitChanged != null) nmiss = m_play_finder.GetMissCount();
                             if (OnAccuracyChanged != null) acc = m_play_finder.GetCurrentAccuracy();
                             if (OnHealthPointChanged != null) hp = m_play_finder.GetCurrentHP();
@@ -400,6 +416,12 @@ namespace OsuRTDataProvider.Listen
 
                         if (n50 != m_last_50)
                             On50HitChanged?.Invoke(n50);
+
+                        if (ngeki != m_last_geki)
+                            OnGekiChanged(ngeki);
+
+                        if (nkatu != m_last_katu)
+                            OnKatuChanged(nkatu);
 
                         if (nmiss != m_last_miss)
                             OnMissHitChanged?.Invoke(nmiss);
@@ -436,6 +458,8 @@ namespace OsuRTDataProvider.Listen
                     m_last_300 = n300;
                     m_last_100 = n100;
                     m_last_50 = n50;
+                    m_last_geki = ngeki;
+                    m_last_katu = nkatu;
                     m_last_miss = nmiss;
                     m_last_osu_status = status;
                 }
