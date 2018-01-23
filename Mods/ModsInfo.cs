@@ -14,7 +14,7 @@ namespace OsuRTDataProvider.Mods
             None = 0u,
             NoFail = 1u << 0,
             Easy = 1u << 1,
-            TouchScreen = 1 << 2,
+            TouchScreen = 1u << 2,
             Hidden = 1u << 3,
             HardRock = 1u << 4,
             SuddenDeath = 1u << 5,
