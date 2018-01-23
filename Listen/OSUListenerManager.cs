@@ -277,6 +277,7 @@ namespace OsuRTDataProvider.Listen
                 m_play_finder = null;
                 m_status_finder = null;
                 m_beatmap_finder = null;
+                m_mode_finder = null;
 
                 if (status == OsuStatus.NoFoundProcess)
                     Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_NOT_FOUND,m_osu_id), ConsoleColor.Red);
