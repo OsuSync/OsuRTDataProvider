@@ -205,6 +205,25 @@ namespace OsuRTDataProvider.Listen
         private long _play_finder_timer = 0;
         private long _beatmap_finder_timer = 0;
 
+        public ProvideData GetCurrentData()
+        {
+            ProvideData data = new ProvideData();
+            data.acc = m_last_acc;
+            data.beatmap = m_last_beatmap;
+            data.client_id = m_osu_id;
+            data.current_status = m_last_osu_status;
+            data.hp = m_last_hp;
+            data.last_combo = m_last_combo;
+            data.count_miss = m_last_miss;
+            data.count_100 = m_last_100;
+            data.count_300 = m_last_300;
+            data.count_50 = m_last_50;
+            data.mods = m_last_mods;
+            data.playing_time = m_playing_time;
+
+            return data;
+        }
+
         private void LoadBeatmapFinder()
         {
             if (_beatmap_finder_timer % _retry_time == 0)
