@@ -30,22 +30,15 @@ namespace OsuRTDataProvider.Listen
 
         #region Event
         public delegate void OnPlayModeChangedEvt(OsuPlayMode last,OsuPlayMode mode);
+        public delegate void OnStatusChangedEvt(OsuStatus last_status, OsuStatus status);
 
         public delegate void OnBeatmapChangedEvt(Beatmap map);
-
         public delegate void OnHealthPointChangedEvt(double hp);
-
         public delegate void OnAccuracyChangedEvt(double acc);
-
         public delegate void OnComboChangedEvt(int combo);
-
         public delegate void OnModsChangedEvt(ModsInfo mods);
-
         public delegate void OnPlayingTimeChangedEvt(int ms);
-
         public delegate void OnHitCountChangedEvt(int hit);
-
-        public delegate void OnStatusChangedEvt(OsuStatus last_status, OsuStatus status);
 
         /// <summary>
         /// Available in Linsten.
