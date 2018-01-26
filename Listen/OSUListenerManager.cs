@@ -87,32 +87,32 @@ namespace OsuRTDataProvider.Listen
         /// <summary>
         /// Available in Playing.
         /// </summary>
-        public event OnHitCountChangedEvt On300HitChanged;
+        public event OnHitCountChangedEvt On300CountChanged;
 
         /// <summary>
         /// Available in Playing.
         /// </summary>
-        public event OnHitCountChangedEvt On100HitChanged;
+        public event OnHitCountChangedEvt On100CountChanged;
 
         /// <summary>
         /// Available in Playing.
         /// </summary>
-        public event OnHitCountChangedEvt On50HitChanged;
+        public event OnHitCountChangedEvt On50CountChanged;
 
         /// <summary>
         /// Mania: RGB 300
         /// </summary>
-        public event Action<int> OnGekiChanged;
+        public event Action<int> OnGekiCountChanged;
 
         /// <summary>
         /// Mania: 200
         /// </summary>
-        public event Action<int> OnKatuChanged;
+        public event Action<int> OnKatuCountChanged;
 
         /// <summary>
         /// Available in Playing.
         /// </summary>
-        public event OnHitCountChangedEvt OnMissHitChanged;
+        public event OnHitCountChangedEvt OnMissCountChanged;
 
         /// <summary>
         /// Get Game Status.
@@ -389,12 +389,12 @@ namespace OsuRTDataProvider.Listen
                         {
                             if (OnModsChanged != null) mods = m_play_finder.GetCurrentMods();
                             if (OnComboChanged != null) cb = m_play_finder.GetCurrentCombo();
-                            if (On300HitChanged != null) n300 = m_play_finder.Get300Count();
-                            if (On100HitChanged != null) n100 = m_play_finder.Get100Count();
-                            if (On50HitChanged != null) n50 = m_play_finder.Get50Count();
-                            if (OnGekiChanged != null) ngeki = m_play_finder.GetGekiCount();
-                            if (OnKatuChanged != null) nkatu = m_play_finder.GetKatuCount();
-                            if (OnMissHitChanged != null) nmiss = m_play_finder.GetMissCount();
+                            if (On300CountChanged != null) n300 = m_play_finder.Get300Count();
+                            if (On100CountChanged != null) n100 = m_play_finder.Get100Count();
+                            if (On50CountChanged != null) n50 = m_play_finder.Get50Count();
+                            if (OnGekiCountChanged != null) ngeki = m_play_finder.GetGekiCount();
+                            if (OnKatuCountChanged != null) nkatu = m_play_finder.GetKatuCount();
+                            if (OnMissCountChanged != null) nmiss = m_play_finder.GetMissCount();
                             if (OnAccuracyChanged != null) acc = m_play_finder.GetCurrentAccuracy();
                             if (OnHealthPointChanged != null) hp = m_play_finder.GetCurrentHP();
                         }
@@ -409,22 +409,22 @@ namespace OsuRTDataProvider.Listen
                             OnAccuracyChanged?.Invoke(acc);
 
                         if (n300 != m_last_300)
-                            On300HitChanged?.Invoke(n300);
+                            On300CountChanged?.Invoke(n300);
 
                         if (n100 != m_last_100)
-                            On100HitChanged?.Invoke(n100);
+                            On100CountChanged?.Invoke(n100);
 
                         if (n50 != m_last_50)
-                            On50HitChanged?.Invoke(n50);
+                            On50CountChanged?.Invoke(n50);
 
                         if (ngeki != m_last_geki)
-                            OnGekiChanged(ngeki);
+                            OnGekiCountChanged(ngeki);
 
                         if (nkatu != m_last_katu)
-                            OnKatuChanged(nkatu);
+                            OnKatuCountChanged(nkatu);
 
                         if (nmiss != m_last_miss)
-                            OnMissHitChanged?.Invoke(nmiss);
+                            OnMissCountChanged?.Invoke(nmiss);
 
                         if (cb != m_last_combo)
                             OnComboChanged?.Invoke(cb);
