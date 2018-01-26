@@ -66,6 +66,7 @@
     <Compile Include="BeatmapInfo\Beatmap.cs" />
     <Compile Include="DefaultLanguage.cs" />
     <Compile Include="Listen\OSUListenerManager.cs" />
+    <Compile Include="Listen\ProvideData.cs" />
     <Compile Include="Memory\OsuBeatmapFinder.cs" />
     <Compile Include="Memory\OsuFinderBase.cs" />
     <Compile Include="Memory\OsuInternalStatus.cs" />
