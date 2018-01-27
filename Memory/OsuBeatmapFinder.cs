@@ -42,9 +42,7 @@ namespace OsuRTDataProvider.Memory
             m_beatmap_address = SigScan.FindPattern(StringToByte(s_beatmap_pattern), s_beatmap_mask, 11);
             BeatmapAddressSuccess = TryReadIntPtrFromMemory(m_beatmap_address, out m_beatmap_address);
 
-#if DEBUG
-            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Playing Beatmap Base Address:0x{(int)m_beatmap_address:X8}");
-#endif
+            EncryptLog($"Playing Beatmap Base Address:0x{(int)m_beatmap_address:X8}");
 
             SigScan.ResetRegion();
 

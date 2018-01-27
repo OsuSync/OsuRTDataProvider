@@ -58,11 +58,9 @@ namespace OsuRTDataProvider.Memory
 
             SigScan.ResetRegion();
 
-#if DEBUG
-            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Use Accuracy Address2={m_use_acc_address2}");
-            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Playing Accuracy Base Address:0x{(int)m_acc_address:X8}");
-            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Playing Time Base Address:0x{(int)m_time_address:X8}");
-#endif
+            EncryptLog($"Use Accuracy Address2={m_use_acc_address2}");
+            EncryptLog($"Playing Accuracy Base Address:0x{(int)m_acc_address:X8}");
+            EncryptLog($"Playing Time Base Address:0x{(int)m_time_address:X8}");
 
             if (m_acc_address == IntPtr.Zero ||m_time_address == IntPtr.Zero)
                 return false;

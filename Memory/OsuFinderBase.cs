@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace OsuRTDataProvider.Memory
@@ -31,6 +33,38 @@ namespace OsuRTDataProvider.Memory
         }
 
         private List<byte> _a = new List<byte>(64);
+
+        private string _key1 = "(A_Ud0ahsof;askf";
+        private string strKey = "aifjle;fbn vksig";
+
+        protected void EncryptLog(string plainText)
+        {
+            string msg = plainText;
+
+#if !DEBUG
+            if (Setting.DebugMode)
+            {
+                //分组加密算法
+                SymmetricAlgorithm des = Rijndael.Create();
+                byte[] inputByteArray = Encoding.UTF8.GetBytes(plainText);//得到需要加密的字节数组
+                                                                          //设置密钥及密钥向量
+                des.Key = Encoding.UTF8.GetBytes(strKey);
+                des.IV = StringToByte(_key1);
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, des.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(inputByteArray, 0, inputByteArray.Length);
+                        cs.FlushFinalBlock();
+                        byte[] cipherBytes = ms.ToArray();//得到加密后的字节数组
+                        msg = $"{Convert.ToBase64String(cipherBytes)}";
+                    }
+                }
+            }
+#endif
+            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]{msg}");
+        }
 
         protected byte[] StringToByte(string s)
         {

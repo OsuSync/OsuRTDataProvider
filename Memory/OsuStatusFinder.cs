@@ -28,9 +28,8 @@ namespace OsuRTDataProvider.Memory
 
             SigScan.ResetRegion();
 
-#if DEBUG
-            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Game Status Address:0x{(int)m_game_modes_address:X8}");
-#endif
+            EncryptLog($"Game Status Address:0x{(int)m_game_modes_address:X8}");
+
             return success;
         }
 

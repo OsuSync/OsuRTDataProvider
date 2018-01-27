@@ -1,4 +1,5 @@
-﻿using OsuRTDataProvider.Listen;
+﻿using OsuRTDataProvider.BeatmapInfo;
+using OsuRTDataProvider.Listen;
 using OsuRTDataProvider.Mods;
 using Sync;
 using Sync.Command;
@@ -99,8 +100,6 @@ namespace OsuRTDataProvider
             },"OsuRTDataProvider control panel");
         }
 
-
-
         private void DebugOutput(bool enable,bool first=false)
         {
             if (!first&&Setting.DebugMode == enable) return;
@@ -121,6 +120,7 @@ namespace OsuRTDataProvider
                         m_listener_managers[i].OnStatusChanged += OnTourneyStatusChanged;
                         m_listener_managers[i].OnModsChanged += OnTourneyModsChanged;
                         m_listener_managers[i].OnPlayModeChanged += OnTourneyModeChanged;
+                        
                     }
                     else
                     {
@@ -138,18 +138,22 @@ namespace OsuRTDataProvider
                     IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
                 void OnModeChanged(OsuPlayMode last, OsuPlayMode mode) =>
                     IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Mode:{mode}", ConsoleColor.Blue);
+                void OnBeatmapChanged(Beatmap map) =>
+                    IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Beatmap: {map.Artist} - {map.Title}[{map.Difficulty}]({map.BeatmapSetID},{map.BeatmapID},{map.FilenameFull})", ConsoleColor.Blue);
 
                 if (enable)
                 {
                     m_listener_managers[0].OnStatusChanged += OnStatusChanged;
                     m_listener_managers[0].OnModsChanged += OnModsChanged;
                     m_listener_managers[0].OnPlayModeChanged += OnModeChanged;
+                    m_listener_managers[0].OnBeatmapChanged += OnBeatmapChanged;
                 }
                 else
                 {
                     m_listener_managers[0].OnStatusChanged -= OnStatusChanged;
                     m_listener_managers[0].OnModsChanged -= OnModsChanged;
                     m_listener_managers[0].OnPlayModeChanged -= OnModeChanged;
+                    m_listener_managers[0].OnBeatmapChanged -= OnBeatmapChanged;
                 }
             }
 
