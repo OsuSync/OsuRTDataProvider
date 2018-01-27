@@ -61,9 +61,11 @@ namespace OsuRTDataProvider.Memory
                         msg = $"{Convert.ToBase64String(cipherBytes)}";
                     }
                 }
+                Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]{msg}");
             }
-#endif
+#else
             Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]{msg}");
+#endif
         }
 
         protected byte[] StringToByte(string s)
