@@ -60,18 +60,40 @@ namespace OsuRTDataProvider.Memory
 
             Beatmap beatmap = Beatmap.Empty;
 
+            bool failed = true;
+
             try
             {
                 if (!(string.IsNullOrWhiteSpace(filename) || string.IsNullOrWhiteSpace(folder)))
                 {
                     string folder_full = Path.Combine(Setting.SongsPath, folder);
                     string filename_full = Path.Combine(folder_full, filename);
-                    if(File.Exists(filename_full))
+                    if (File.Exists(filename_full))
+                    {
                         beatmap = new Beatmap(osu_id, set_id, id, folder_full, filename_full);
+                        failed = false;
+                    }
+                    else if (Setting.DebugMode)
+                        Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Can't found beatmap!({filename_full})", ConsoleColor.Yellow);
                 }
             }
-            catch(ArgumentException e)
+            catch(Exception e)
             {
+                if(Setting.DebugMode)
+                {
+                    Sync.Tools.IO.CurrentIO.WriteColor("-------------Exception---------------", ConsoleColor.Yellow);
+                }
+            }
+
+            if (Setting.DebugMode&&failed)
+            {
+                Sync.Tools.IO.CurrentIO.WriteColor("--------------ORTDP(Detail)----------------", ConsoleColor.Yellow);
+                Sync.Tools.IO.CurrentIO.WriteColor($"Songs Path:{Setting.SongsPath}", ConsoleColor.Yellow);
+                Sync.Tools.IO.CurrentIO.WriteColor($"Filename:{filename}", ConsoleColor.Yellow);
+                Sync.Tools.IO.CurrentIO.WriteColor($"Folder:{folder}", ConsoleColor.Yellow);
+                Sync.Tools.IO.CurrentIO.WriteColor($"BeatmapID:{id}", ConsoleColor.Yellow);
+                Sync.Tools.IO.CurrentIO.WriteColor($"BeatmapSetID:{set_id}", ConsoleColor.Yellow);
+                Sync.Tools.IO.CurrentIO.WriteColor("------------------------------------------", ConsoleColor.Yellow);
             }
 
             return beatmap;
