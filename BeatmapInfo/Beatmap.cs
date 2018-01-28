@@ -1,6 +1,5 @@
-﻿    using System;
+﻿using System;
 using System.IO;
-using System.Linq;
 using static OsuRTDataProvider.DefaultLanguage;
 
 namespace OsuRTDataProvider.BeatmapInfo
@@ -31,6 +30,7 @@ namespace OsuRTDataProvider.BeatmapInfo
         }
 
         private int m_beatmap_id = -1;
+
         /// <summary>
         /// Return set id.
         /// If no found return -1;
@@ -58,41 +58,41 @@ namespace OsuRTDataProvider.BeatmapInfo
             private set => m_beatmap_id = value;
         }
 
-
-        public string Difficulty { get; private set; }
-        public string Creator { get; private set; }
-        public string Artist { get; private set; }
-        public string ArtistUnicode { get; private set; }
-        public string Title { get; private set; }
-        public string TitleUnicode { get; private set; }
+        public string Difficulty { get; private set; } = string.Empty;
+        public string Creator { get; private set; } = string.Empty;
+        public string Artist { get; private set; } = string.Empty;
+        public string ArtistUnicode { get; private set; } = string.Empty;
+        public string Title { get; private set; } = string.Empty;
+        public string TitleUnicode { get; private set; } = string.Empty;
 
         /// <summary>
         /// Return the first of all possible beatmap set paths.
         /// If not found.return string.Empty.
         /// </summary>
-        public string Folder { get; private set; }
+        public string Folder { get; private set; } = string.Empty;
+
         public int OsuClientID { get; private set; }
-        public string Filename { get; private set; }
-        public string FilenameFull { get; private set; }
+        public string Filename { get; private set; } = string.Empty;
+        public string FilenameFull { get; private set; } = string.Empty;
+
         [Obsolete("LocationFile is obsoleted,Please use FilenameFull", true)]
         public string LocationFile => FilenameFull;
 
-        public static Beatmap Empty => new Beatmap(0,-1,-1,"","");
+        public static Beatmap Empty => new Beatmap(0, -1, -1, null);
 
-        public Beatmap(int osu_id,int set_id,int id,string folder_path, string filename_path)
+        public Beatmap(int osu_id, int set_id, int id, FileStream fs)
         {
             BeatmapSetID = set_id;
             OsuClientID = osu_id;
             BeatmapID = id;
 
-            Folder = folder_path;
-            Filename =Path.GetFileName(filename_path);
-            FilenameFull = filename_path;
-
-            if (!(string.IsNullOrWhiteSpace(folder_path) || string.IsNullOrWhiteSpace(filename_path)))
+            if (fs != null)
             {
-                using (var stream = File.OpenRead(FilenameFull))
-                using (var sr = new StreamReader(stream))
+                Folder = Path.GetDirectoryName(fs.Name);
+                Filename = Path.GetFileName(fs.Name);
+                FilenameFull = fs.Name;
+
+                using (var sr = new StreamReader(fs))
                 {
                     do
                     {
@@ -132,20 +132,20 @@ namespace OsuRTDataProvider.BeatmapInfo
                                     GetPropertyValue(str, out string val);
                                     Creator = val;
                                 }
-                                else if (str.StartsWith("[")||string.IsNullOrWhiteSpace(str))
+                                else if (str.StartsWith("[") || string.IsNullOrWhiteSpace(str))
                                     goto end;
                             }
                         }
                     } while (!sr.EndOfStream);
                 }
             }
-        end:;
+            end:;
         }
 
-        private static void GetPropertyValue(string line,out string val)
+        private static void GetPropertyValue(string line, out string val)
         {
-            int pos=line.IndexOf(':');
-            val = line.Substring(pos+1).Trim();
+            int pos = line.IndexOf(':');
+            val = line.Substring(pos + 1).Trim();
         }
     }
 }

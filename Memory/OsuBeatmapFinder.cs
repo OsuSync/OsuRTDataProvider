@@ -68,20 +68,20 @@ namespace OsuRTDataProvider.Memory
                 {
                     string folder_full = Path.Combine(Setting.SongsPath, folder);
                     string filename_full = Path.Combine(folder_full, filename);
-                    if (File.Exists(filename_full))
+                    using (var fs = File.OpenRead(filename_full))
                     {
-                        beatmap = new Beatmap(osu_id, set_id, id, folder_full, filename_full);
+                        beatmap = new Beatmap(osu_id, set_id, id,fs);
                         failed = false;
                     }
-                    else if (Setting.DebugMode)
-                        Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Beatmap does not exist,or no have permission to access the beatmap.({filename_full})", ConsoleColor.Yellow);
                 }
             }
             catch(Exception e)
             {
                 if(Setting.DebugMode)
                 {
-                    Sync.Tools.IO.CurrentIO.WriteColor("-------------Exception---------------", ConsoleColor.Yellow);
+                    Sync.Tools.IO.CurrentIO.WriteColor("-------------ORTDP(Exception)---------------", ConsoleColor.Yellow);
+                    Sync.Tools.IO.CurrentIO.WriteColor(e.ToString(), ConsoleColor.Yellow);
+                    Sync.Tools.IO.CurrentIO.WriteColor("--------------------------------------------", ConsoleColor.Yellow);
                 }
             }
 
