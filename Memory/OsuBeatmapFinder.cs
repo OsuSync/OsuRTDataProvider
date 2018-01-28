@@ -74,7 +74,7 @@ namespace OsuRTDataProvider.Memory
                         failed = false;
                     }
                     else if (Setting.DebugMode)
-                        Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Can't found beatmap!({filename_full})", ConsoleColor.Yellow);
+                        Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Beatmap does not exist,or no have permission to access the beatmap.({filename_full})", ConsoleColor.Yellow);
                 }
             }
             catch(Exception e)
