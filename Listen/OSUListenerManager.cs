@@ -196,6 +196,12 @@ namespace OsuRTDataProvider.Listen
 
         private void FindOsuSongPath()
         {
+            if (!string.IsNullOrWhiteSpace(Setting.ForceOsuSongsFolderPath))
+            {
+                Setting.SongsPath = Setting.ForceOsuSongsFolderPath;
+                return;
+            }
+
             string osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
             string osu_config_file = Path.Combine(osu_path, $"osu!.{Environment.UserName}.cfg");
             var lines = File.ReadLines(osu_config_file);
