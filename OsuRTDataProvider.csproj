@@ -67,9 +67,11 @@
     <Compile Include="DefaultLanguage.cs" />
     <Compile Include="Listen\OSUListenerManager.cs" />
     <Compile Include="Listen\ProvideData.cs" />
+    <Compile Include="Listen\PlayMode.cs" />
     <Compile Include="Memory\OsuBeatmapFinder.cs" />
     <Compile Include="Memory\OsuFinderBase.cs" />
     <Compile Include="Memory\OsuInternalStatus.cs" />
+    <Compile Include="Memory\OsuModeFinder.cs" />
     <Compile Include="Memory\OsuStatusFinder.cs" />
     <Compile Include="OsuRTDataProviderPlugin.cs" />
     <Compile Include="Memory\SigScan.cs" />

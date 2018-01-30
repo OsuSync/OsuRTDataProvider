@@ -58,11 +58,9 @@ namespace OsuRTDataProvider.Memory
 
             SigScan.ResetRegion();
 
-#if DEBUG
-            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Use Accuracy Address2={m_use_acc_address2}");
-            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Playing Accuracy Base Address:0x{(int)m_acc_address:X8}");
-            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]Playing Time Base Address:0x{(int)m_time_address:X8}");
-#endif
+            EncryptLog($"Use Accuracy Address2={m_use_acc_address2}");
+            EncryptLog($"Playing Accuracy Base Address:0x{(int)m_acc_address:X8}");
+            EncryptLog($"Playing Time Base Address:0x{(int)m_time_address:X8}");
 
             if (m_acc_address == IntPtr.Zero ||m_time_address == IntPtr.Zero)
                 return false;
@@ -131,7 +129,38 @@ namespace OsuRTDataProvider.Memory
                 TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
 
-            TryReadShortFromMemory(tmp_ptr + +0x88, out var value);
+            TryReadShortFromMemory(tmp_ptr + 0x88, out var value);
+            return value;
+        }
+
+        /// <summary>
+        /// Osu Geki
+        /// Mania RGB 300
+        /// </summary>
+        /// <returns></returns>
+        public int GetGekiCount()
+        {
+            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
+            if (!m_use_acc_address2)
+                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
+
+            TryReadShortFromMemory(tmp_ptr + 0x8a, out var value);
+            return value;
+        }
+
+        /// <summary>
+        /// Osu Katu
+        /// Mania 200
+        /// </summary>
+        public int GetKatuCount()
+        {
+            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
+            if (!m_use_acc_address2)
+                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
+            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
+
+            TryReadShortFromMemory(tmp_ptr + +0x8c, out var value);
             return value;
         }
 

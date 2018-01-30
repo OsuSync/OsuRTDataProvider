@@ -1,4 +1,5 @@
-﻿using OsuRTDataProvider.Listen;
+﻿using OsuRTDataProvider.BeatmapInfo;
+using OsuRTDataProvider.Listen;
 using OsuRTDataProvider.Mods;
 using Sync;
 using Sync.Command;
@@ -14,7 +15,7 @@ namespace OsuRTDataProvider
     {
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
-        public const string VERSION = "1.1.2";
+        public const string VERSION = "1.2.2";
         public static SyncHost SyncHost { get; private set; }
 
         private PluginConfigurationManager m_config_manager;
@@ -99,8 +100,6 @@ namespace OsuRTDataProvider
             },"OsuRTDataProvider control panel");
         }
 
-
-
         private void DebugOutput(bool enable,bool first=false)
         {
             if (!first&&Setting.DebugMode == enable) return;
@@ -110,18 +109,24 @@ namespace OsuRTDataProvider
                 for (int i = 0; i < TourneyListenerManagersCount; i++)
                 {
                     void OnTourneyStatusChanged(OsuStatus l, OsuStatus c) =>
-                        IO.FileLogger.WriteColor($"[OsuRTDataProvider][{i}]Current Game Status:{c}", ConsoleColor.Blue);
+                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{i}]Current Game Status:{c}", ConsoleColor.Blue);
                     void OnTourneyModsChanged(ModsInfo m) =>
-                        IO.FileLogger.WriteColor($"[OsuRTDataProvider][{i}]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
+                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{i}]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
+                    void OnTourneyModeChanged(OsuPlayMode last, OsuPlayMode mode) =>
+                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{i}]Mode:{mode}", ConsoleColor.Blue);
+
                     if (enable)
                     {
                         m_listener_managers[i].OnStatusChanged += OnTourneyStatusChanged;
                         m_listener_managers[i].OnModsChanged += OnTourneyModsChanged;
+                        m_listener_managers[i].OnPlayModeChanged += OnTourneyModeChanged;
+                        
                     }
                     else
                     {
                         m_listener_managers[i].OnStatusChanged -= OnTourneyStatusChanged;
                         m_listener_managers[i].OnModsChanged -= OnTourneyModsChanged;
+                        m_listener_managers[i].OnPlayModeChanged -= OnTourneyModeChanged;
                     }
                 }
             }
@@ -131,16 +136,24 @@ namespace OsuRTDataProvider
                     IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Current Game Status:{c}", ConsoleColor.Blue);
                 void OnModsChanged(ModsInfo m) =>
                     IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
+                void OnModeChanged(OsuPlayMode last, OsuPlayMode mode) =>
+                    IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Mode:{mode}", ConsoleColor.Blue);
+                void OnBeatmapChanged(Beatmap map) =>
+                    IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Beatmap: {map.Artist} - {map.Title}[{map.Difficulty}]({map.BeatmapSetID},{map.BeatmapID},{map.FilenameFull})", ConsoleColor.Blue);
 
-                if(enable)
+                if (enable)
                 {
                     m_listener_managers[0].OnStatusChanged += OnStatusChanged;
                     m_listener_managers[0].OnModsChanged += OnModsChanged;
+                    m_listener_managers[0].OnPlayModeChanged += OnModeChanged;
+                    m_listener_managers[0].OnBeatmapChanged += OnBeatmapChanged;
                 }
                 else
                 {
                     m_listener_managers[0].OnStatusChanged -= OnStatusChanged;
                     m_listener_managers[0].OnModsChanged -= OnModsChanged;
+                    m_listener_managers[0].OnPlayModeChanged -= OnModeChanged;
+                    m_listener_managers[0].OnBeatmapChanged -= OnBeatmapChanged;
                 }
             }
 
