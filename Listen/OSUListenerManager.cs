@@ -80,32 +80,32 @@ namespace OsuRTDataProvider.Listen
         /// <summary>
         /// Available in Playing.
         /// </summary>
-        public event OnHitCountChangedEvt On300CountChanged;
+        public event OnHitCountChangedEvt OnCount300Changed;
 
         /// <summary>
         /// Available in Playing.
         /// </summary>
-        public event OnHitCountChangedEvt On100CountChanged;
+        public event OnHitCountChangedEvt OnCount100Changed;
 
         /// <summary>
         /// Available in Playing.
         /// </summary>
-        public event OnHitCountChangedEvt On50CountChanged;
+        public event OnHitCountChangedEvt OnCount50Changed;
 
         /// <summary>
         /// Mania: RGB 300
         /// </summary>
-        public event Action<int> OnGekiCountChanged;
+        public event OnHitCountChangedEvt OnCountGekiChanged;
 
         /// <summary>
         /// Mania: 200
         /// </summary>
-        public event Action<int> OnKatuCountChanged;
+        public event OnHitCountChangedEvt OnCountKatuChanged;
 
         /// <summary>
         /// Available in Playing.
         /// </summary>
-        public event OnHitCountChangedEvt OnMissCountChanged;
+        public event OnHitCountChangedEvt OnCountMissChanged;
 
         /// <summary>
         /// Get Game Status.
@@ -220,29 +220,121 @@ namespace OsuRTDataProvider.Listen
             }
         }
 
+        #region Get Current Data
+        private bool HasMask(ProvideDataMask mask, ProvideDataMask h)
+        {
+            return (mask & h) == h;
+        }
+
+        public ProvideData GetCurrentData(ProvideDataMask mask)
+        {
+            ProvideData data;
+
+            data.ClientID = m_osu_id;
+            data.Status = m_last_osu_status;
+
+            data.PlayMode = OsuPlayMode.Unknown;
+            data.Beatmap = Beatmap.Empty;
+            data.Mods = ModsInfo.Empty;
+
+            data.Combo = 0;
+            data.Count300 = 0;
+            data.Count100 = 0;
+            data.Count50 = 0;
+            data.CountMiss = 0;
+            data.CountGeki = 0;
+            data.CountKatu = 0;
+            data.HealthPoint = 0;
+            data.Accuracy = 0;
+            data.Time = 0;
+
+            if (HasMask(mask, ProvideDataMask.Beatmap))
+            {
+                if (OnBeatmapChanged == null) OnBeatmapChanged += (t) => { };
+                data.Beatmap = m_last_beatmap;
+            }
+
+            if (HasMask(mask, ProvideDataMask.HealthPoint))
+            {
+                if (OnHealthPointChanged == null) OnHealthPointChanged += (t) => { };
+                data.HealthPoint = m_last_hp;
+            }
+
+            if (HasMask(mask, ProvideDataMask.Accuracy))
+            {
+                if (OnAccuracyChanged == null) OnAccuracyChanged += (t) => { };
+                data.Accuracy = m_last_acc;
+            }
+
+            if (HasMask(mask, ProvideDataMask.Combo))
+            {
+                if (OnComboChanged == null) OnComboChanged += (t) => { };
+                data.Combo = m_last_combo;
+            }
+
+            if (HasMask(mask, ProvideDataMask.Count300))
+            {
+                if (OnCount300Changed == null) OnCount300Changed += (t) => { };
+                data.Count300 = m_last_300;
+            }
+
+            if (HasMask(mask, ProvideDataMask.Count100))
+            {
+                if (OnCount100Changed == null) OnCount100Changed += (t) => { };
+                data.Count100 = m_last_100;
+            }
+
+            if (HasMask(mask, ProvideDataMask.Count50))
+            {
+                if (OnCount50Changed == null) OnCount50Changed += (t) => { };
+                data.Count50 = m_last_50;
+            }
+
+            if (HasMask(mask, ProvideDataMask.CountMiss))
+            {
+                if (OnCountMissChanged == null) OnCountMissChanged += (t) => { };
+                data.CountMiss = m_last_miss;
+            }
+
+            if (HasMask(mask, ProvideDataMask.CountGeki))
+            {
+                if (OnCountGekiChanged == null) OnCountGekiChanged += (t) => { };
+                data.CountGeki = m_last_geki;
+            }
+
+            if (HasMask(mask, ProvideDataMask.CountKatu))
+            {
+                if (OnCountKatuChanged == null) OnCountKatuChanged += (t) => { };
+                data.CountKatu = m_last_katu;
+            }
+
+            if (HasMask(mask, ProvideDataMask.Time))
+            {
+                if (OnPlayingTimeChanged == null) OnPlayingTimeChanged += (t) => { };
+                data.Time = m_playing_time;
+            }
+
+            if (HasMask(mask, ProvideDataMask.Mods))
+            {
+                if (OnModsChanged == null) OnModsChanged += (t) => { };
+                data.Mods = m_last_mods;
+            }
+
+            if (HasMask(mask, ProvideDataMask.GameMode))
+            {
+                if (OnPlayModeChanged == null) OnPlayModeChanged += (t,t2) => { };
+                data.PlayMode = m_last_mode;
+            }
+
+            return data;
+        }
+#endregion
+
         const long _retry_time = 3000;
         private long _play_finder_timer = 0;
         private long _beatmap_finder_timer = 0;
         private long _mode_finer_timer = 0;
 
-        public ProvideData GetCurrentData()
-        {
-            ProvideData data = new ProvideData();
-            data.acc = m_last_acc;
-            data.beatmap = m_last_beatmap;
-            data.client_id = m_osu_id;
-            data.current_status = m_last_osu_status;
-            data.hp = m_last_hp;
-            data.last_combo = m_last_combo;
-            data.count_miss = m_last_miss;
-            data.count_100 = m_last_100;
-            data.count_300 = m_last_300;
-            data.count_50 = m_last_50;
-            data.mods = m_last_mods;
-            data.playing_time = m_playing_time;
-
-            return data;
-        }
 
         private void LoadBeatmapFinder()
         {
@@ -357,7 +449,6 @@ namespace OsuRTDataProvider.Listen
                     LoadModeFinder();
                 }
 
-
                 if (status == OsuStatus.Playing)
                 {
                     if (m_play_finder == null)
@@ -407,12 +498,12 @@ namespace OsuRTDataProvider.Listen
                         {
                             if (OnModsChanged != null) mods = m_play_finder.GetCurrentMods();
                             if (OnComboChanged != null) cb = m_play_finder.GetCurrentCombo();
-                            if (On300CountChanged != null) n300 = m_play_finder.Get300Count();
-                            if (On100CountChanged != null) n100 = m_play_finder.Get100Count();
-                            if (On50CountChanged != null) n50 = m_play_finder.Get50Count();
-                            if (OnGekiCountChanged != null) ngeki = m_play_finder.GetGekiCount();
-                            if (OnKatuCountChanged != null) nkatu = m_play_finder.GetKatuCount();
-                            if (OnMissCountChanged != null) nmiss = m_play_finder.GetMissCount();
+                            if (OnCount300Changed != null) n300 = m_play_finder.Get300Count();
+                            if (OnCount100Changed != null) n100 = m_play_finder.Get100Count();
+                            if (OnCount50Changed != null) n50 = m_play_finder.Get50Count();
+                            if (OnCountGekiChanged != null) ngeki = m_play_finder.GetGekiCount();
+                            if (OnCountKatuChanged != null) nkatu = m_play_finder.GetKatuCount();
+                            if (OnCountMissChanged != null) nmiss = m_play_finder.GetMissCount();
                             if (OnAccuracyChanged != null) acc = m_play_finder.GetCurrentAccuracy();
                             if (OnHealthPointChanged != null) hp = m_play_finder.GetCurrentHP();
                         }
@@ -427,22 +518,22 @@ namespace OsuRTDataProvider.Listen
                             OnAccuracyChanged?.Invoke(acc);
 
                         if (n300 != m_last_300)
-                            On300CountChanged?.Invoke(n300);
+                            OnCount300Changed?.Invoke(n300);
 
                         if (n100 != m_last_100)
-                            On100CountChanged?.Invoke(n100);
+                            OnCount100Changed?.Invoke(n100);
 
                         if (n50 != m_last_50)
-                            On50CountChanged?.Invoke(n50);
+                            OnCount50Changed?.Invoke(n50);
 
                         if (ngeki != m_last_geki)
-                            OnGekiCountChanged(ngeki);
+                            OnCountGekiChanged(ngeki);
 
                         if (nkatu != m_last_katu)
-                            OnKatuCountChanged(nkatu);
+                            OnCountKatuChanged(nkatu);
 
                         if (nmiss != m_last_miss)
-                            OnMissCountChanged?.Invoke(nmiss);
+                            OnCountMissChanged?.Invoke(nmiss);
 
                         if (cb != m_last_combo)
                             OnComboChanged?.Invoke(cb);
