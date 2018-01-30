@@ -60,8 +60,6 @@ namespace OsuRTDataProvider.Memory
 
             Beatmap beatmap = Beatmap.Empty;
 
-            bool failed = true;
-
             try
             {
                 if (!(string.IsNullOrWhiteSpace(filename) || string.IsNullOrWhiteSpace(folder)))
@@ -71,7 +69,6 @@ namespace OsuRTDataProvider.Memory
                     using (var fs = File.OpenRead(filename_full))
                     {
                         beatmap = new Beatmap(osu_id, set_id, id,fs);
-                        failed = false;
                     }
                 }
             }
@@ -81,19 +78,14 @@ namespace OsuRTDataProvider.Memory
                 {
                     Sync.Tools.IO.CurrentIO.WriteColor("-------------ORTDP(Exception)---------------", ConsoleColor.Yellow);
                     Sync.Tools.IO.CurrentIO.WriteColor(e.ToString(), ConsoleColor.Yellow);
+                    Sync.Tools.IO.CurrentIO.WriteColor("--------------ORTDP(Detail)-----------------", ConsoleColor.Yellow);
+                    Sync.Tools.IO.CurrentIO.WriteColor($"Songs Path:{Setting.SongsPath}", ConsoleColor.Yellow);
+                    Sync.Tools.IO.CurrentIO.WriteColor($"Filename:{filename}", ConsoleColor.Yellow);
+                    Sync.Tools.IO.CurrentIO.WriteColor($"Folder:{folder}", ConsoleColor.Yellow);
+                    Sync.Tools.IO.CurrentIO.WriteColor($"BeatmapID:{id}", ConsoleColor.Yellow);
+                    Sync.Tools.IO.CurrentIO.WriteColor($"BeatmapSetID:{set_id}", ConsoleColor.Yellow);
                     Sync.Tools.IO.CurrentIO.WriteColor("--------------------------------------------", ConsoleColor.Yellow);
                 }
-            }
-
-            if (Setting.DebugMode&&failed)
-            {
-                Sync.Tools.IO.CurrentIO.WriteColor("--------------ORTDP(Detail)----------------", ConsoleColor.Yellow);
-                Sync.Tools.IO.CurrentIO.WriteColor($"Songs Path:{Setting.SongsPath}", ConsoleColor.Yellow);
-                Sync.Tools.IO.CurrentIO.WriteColor($"Filename:{filename}", ConsoleColor.Yellow);
-                Sync.Tools.IO.CurrentIO.WriteColor($"Folder:{folder}", ConsoleColor.Yellow);
-                Sync.Tools.IO.CurrentIO.WriteColor($"BeatmapID:{id}", ConsoleColor.Yellow);
-                Sync.Tools.IO.CurrentIO.WriteColor($"BeatmapSetID:{set_id}", ConsoleColor.Yellow);
-                Sync.Tools.IO.CurrentIO.WriteColor("------------------------------------------", ConsoleColor.Yellow);
             }
 
             return beatmap;
