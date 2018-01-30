@@ -20,7 +20,9 @@ namespace OsuRTDataProvider.Listen
         Time = 1u << 9,
         Mods = 1u<<10,
         GameMode = 1u<<11,
-        Beatmap = 1u<<12
+        Beatmap = 1u<<12,
+
+        HitCount=Count300|Count100|Count50|CountMiss|CountGeki|CountKatu,
     }
 
     public struct ProvideData

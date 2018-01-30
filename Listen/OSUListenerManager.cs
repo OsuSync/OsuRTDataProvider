@@ -125,7 +125,7 @@ namespace OsuRTDataProvider.Listen
         #region last status
         private OsuStatus m_last_osu_status = OsuStatus.Unkonwn;
 
-        private OsuPlayMode m_last_mode = OsuPlayMode.Osu;
+        private OsuPlayMode m_last_mode = OsuPlayMode.Unknown;
         private Beatmap m_last_beatmap = Beatmap.Empty;
         private ModsInfo m_last_mods = ModsInfo.Empty;
 
