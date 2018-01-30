@@ -41,7 +41,7 @@ namespace OsuRTDataProvider.Memory
         {
             string msg = plainText;
 
-#if !DEBUG
+#if WithEncryptLog
             if (Setting.DebugMode)
             {
                 //分组加密算法
@@ -63,7 +63,8 @@ namespace OsuRTDataProvider.Memory
                 }
                 Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]{msg}");
             }
-#else
+#endif
+#if DEBUG
             Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]{msg}");
 #endif
         }
