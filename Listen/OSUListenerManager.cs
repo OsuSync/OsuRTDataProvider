@@ -196,9 +196,9 @@ namespace OsuRTDataProvider.Listen
 
         private void FindOsuSongPath()
         {
-            if (!string.IsNullOrWhiteSpace(Setting.ForceOsuSongsFolderPath))
+            if (!string.IsNullOrWhiteSpace(Setting.ForceOsuSongsDirectory))
             {
-                Setting.SongsPath = Setting.ForceOsuSongsFolderPath;
+                Setting.SongsPath = Setting.ForceOsuSongsDirectory;
                 return;
             }
 
