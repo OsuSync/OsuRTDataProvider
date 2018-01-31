@@ -114,6 +114,13 @@ namespace OsuRTDataProvider.Memory
             long proc_max_address_l = (long)proc_max_address;
 
             IntPtr handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_WM_READ, false, m_vProcess.Id);
+
+            if(handle==IntPtr.Zero)
+            {
+                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Error Code:{Marshal.GetLastWin32Error():X8}",ConsoleColor.Red);
+                return;
+            }
+
             MEMORY_BASIC_INFORMATION mem_basic_info = new MEMORY_BASIC_INFORMATION();
 
             int mem_info_size = Marshal.SizeOf<MEMORY_BASIC_INFORMATION>();
@@ -364,6 +371,6 @@ namespace OsuRTDataProvider.Memory
         public static extern bool CloseHandle(IntPtr hObject);
 
         #endregion
-   
+
     }
 }

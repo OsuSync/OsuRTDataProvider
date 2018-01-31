@@ -74,10 +74,10 @@ namespace OsuRTDataProvider.Memory
             }
             catch(Exception e)
             {
-                if(Setting.DebugMode)
+                Sync.Tools.IO.CurrentIO.WriteColor("-------------ORTDP(Exception)---------------", ConsoleColor.Red);
+                Sync.Tools.IO.CurrentIO.WriteColor(e.ToString(), ConsoleColor.Yellow);
+                if (Setting.DebugMode)
                 {
-                    Sync.Tools.IO.CurrentIO.WriteColor("-------------ORTDP(Exception)---------------", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor(e.ToString(), ConsoleColor.Yellow);
                     Sync.Tools.IO.CurrentIO.WriteColor("--------------ORTDP(Detail)-----------------", ConsoleColor.Yellow);
                     Sync.Tools.IO.CurrentIO.WriteColor($"Songs Path:{Setting.SongsPath}", ConsoleColor.Yellow);
                     Sync.Tools.IO.CurrentIO.WriteColor($"Filename:{filename}", ConsoleColor.Yellow);
