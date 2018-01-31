@@ -215,6 +215,11 @@ namespace OsuRTDataProvider.Listen
                         Setting.SongsPath = song_path;
                     else
                         Setting.SongsPath = Path.Combine(osu_path, song_path);
+                }
+                else if(line.Contains("LastVersion"))
+                {
+                    Setting.OsuVersion=line.Split('=')[1].Trim();
+                    Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]OSU Client Verison:{Setting.OsuVersion}");
                     break;
                 }
             }
@@ -431,7 +436,10 @@ namespace OsuRTDataProvider.Listen
                     }
 
                     if (m_osu_process != null)
-                        Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_FOUND,m_osu_id), ConsoleColor.Green);
+                    {
+                        FindOsuSongPath();
+                        Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_FOUND, m_osu_id), ConsoleColor.Green);
+                    }
                 }
                 while (process_list.Length == 0);
             }
@@ -440,7 +448,6 @@ namespace OsuRTDataProvider.Listen
             {
                 if (m_beatmap_finder == null)
                 {
-                    FindOsuSongPath();
                     LoadBeatmapFinder();
                 }
 

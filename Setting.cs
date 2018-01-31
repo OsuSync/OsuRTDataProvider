@@ -58,6 +58,7 @@ namespace OsuRTDataProvider
 
 
         public static string SongsPath = string.Empty;//不保存
+        public static string OsuVersion = string.Empty;
 
         private static SettingIni setting_output = new SettingIni();
     }
