@@ -23,7 +23,7 @@ namespace OsuRTDataProvider.Memory
 
             //Find Game Modes
             m_game_modes_address = SigScan.FindPattern(StringToByte(s_game_modes_pattern), s_game_modes_mask, 10);
-            success=TryReadIntPtrFromMemory(m_game_modes_address,out m_game_modes_address);
+            success = TryReadIntPtrFromMemory(m_game_modes_address, out m_game_modes_address);
             if (m_game_modes_address == IntPtr.Zero) return false;
 
             SigScan.ResetRegion();

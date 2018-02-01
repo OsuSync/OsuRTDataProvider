@@ -29,15 +29,23 @@ namespace OsuRTDataProvider.Listen
         static private bool m_stop = false;
 
         #region Event
-        public delegate void OnPlayModeChangedEvt(OsuPlayMode last,OsuPlayMode mode);
+
+        public delegate void OnPlayModeChangedEvt(OsuPlayMode last, OsuPlayMode mode);
+
         public delegate void OnStatusChangedEvt(OsuStatus last_status, OsuStatus status);
 
         public delegate void OnBeatmapChangedEvt(Beatmap map);
+
         public delegate void OnHealthPointChangedEvt(double hp);
+
         public delegate void OnAccuracyChangedEvt(double acc);
+
         public delegate void OnComboChangedEvt(int combo);
+
         public delegate void OnModsChangedEvt(ModsInfo mods);
+
         public delegate void OnPlayingTimeChangedEvt(int ms);
+
         public delegate void OnHitCountChangedEvt(int hit);
 
         /// <summary>
@@ -117,12 +125,13 @@ namespace OsuRTDataProvider.Listen
         private Process m_osu_process;
 
         private OsuPlayFinder m_play_finder = null;
-        private OsuStatusFinder m_status_finder=null;
+        private OsuStatusFinder m_status_finder = null;
         private OsuBeatmapFinder m_beatmap_finder = null;
         private OsuPlayModesFinder m_mode_finder = null;
         private int _status_finder_timer = 3000;
 
         #region last status
+
         private OsuStatus m_last_osu_status = OsuStatus.Unkonwn;
 
         private OsuPlayMode m_last_mode = OsuPlayMode.Unknown;
@@ -140,12 +149,12 @@ namespace OsuRTDataProvider.Listen
         private int m_last_geki = 0;
         private int m_last_katu = 0;
 
-        #endregion
+        #endregion last status
 
         private bool m_is_tourney = false;
         private int m_osu_id = 0;
 
-        private static bool s_random_interval=false;
+        private static bool s_random_interval = false;
         private static Random s_random = new Random();
 
         static OsuListenerManager()
@@ -164,7 +173,7 @@ namespace OsuRTDataProvider.Listen
                         action.Item2();
                     }
 
-                    interval = s_random_interval?s_random.Next(300, 700): Setting.ListenInterval;
+                    interval = s_random_interval ? s_random.Next(300, 700) : Setting.ListenInterval;
 
                     Thread.Sleep(interval);
                 }
@@ -216,9 +225,9 @@ namespace OsuRTDataProvider.Listen
                     else
                         Setting.SongsPath = Path.Combine(osu_path, song_path);
                 }
-                else if(line.Contains("LastVersion"))
+                else if (line.Contains("LastVersion"))
                 {
-                    Setting.OsuVersion=line.Split('=')[1].Trim();
+                    Setting.OsuVersion = line.Split('=')[1].Trim();
                     Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]OSU Client Verison:{Setting.OsuVersion}");
                     break;
                 }
@@ -226,6 +235,7 @@ namespace OsuRTDataProvider.Listen
         }
 
         #region Get Current Data
+
         private bool HasMask(ProvideDataMask mask, ProvideDataMask h)
         {
             return (mask & h) == h;
@@ -327,19 +337,19 @@ namespace OsuRTDataProvider.Listen
 
             if (HasMask(mask, ProvideDataMask.GameMode))
             {
-                if (OnPlayModeChanged == null) OnPlayModeChanged += (t,t2) => { };
+                if (OnPlayModeChanged == null) OnPlayModeChanged += (t, t2) => { };
                 data.PlayMode = m_last_mode;
             }
 
             return data;
         }
-#endregion
 
-        const long _retry_time = 3000;
+        #endregion Get Current Data
+
+        private const long _retry_time = 3000;
         private long _play_finder_timer = 0;
         private long _beatmap_finder_timer = 0;
         private long _mode_finer_timer = 0;
-
 
         private void LoadBeatmapFinder()
         {
@@ -405,7 +415,6 @@ namespace OsuRTDataProvider.Listen
                 if (m_stop) return;
                 if (process_list.Length == 0) continue;
 
-
                 if (m_is_tourney)
                 {
                     foreach (var p in process_list)
@@ -444,7 +453,7 @@ namespace OsuRTDataProvider.Listen
                 m_mode_finder = null;
 
                 if (status == OsuStatus.NoFoundProcess)
-                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_NOT_FOUND,m_osu_id), ConsoleColor.Red);
+                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_NOT_FOUND, m_osu_id), ConsoleColor.Red);
 
                 FindOsuProcess();
             }
@@ -456,7 +465,7 @@ namespace OsuRTDataProvider.Listen
                     LoadBeatmapFinder();
                 }
 
-                if(m_mode_finder == null)
+                if (m_mode_finder == null)
                 {
                     LoadModeFinder();
                 }
@@ -469,7 +478,7 @@ namespace OsuRTDataProvider.Listen
                     }
                 }
 
-                if(m_mode_finder!=null)
+                if (m_mode_finder != null)
                 {
                     OsuPlayMode mode = OsuPlayMode.Osu;
 
@@ -478,7 +487,7 @@ namespace OsuRTDataProvider.Listen
                     if (m_last_mode != mode)
                         OnPlayModeChanged(m_last_mode, mode);
 
-                    m_last_mode=mode;
+                    m_last_mode = mode;
                 }
 
                 if (m_play_finder != null)
@@ -501,7 +510,7 @@ namespace OsuRTDataProvider.Listen
 
                     try
                     {
-                        if (beatmap!=Beatmap.Empty&&beatmap != m_last_beatmap)
+                        if (beatmap != Beatmap.Empty && beatmap != m_last_beatmap)
                         {
                             OnBeatmapChanged?.Invoke(beatmap);
                         }
@@ -556,7 +565,7 @@ namespace OsuRTDataProvider.Listen
                         if (status != m_last_osu_status)
                             OnStatusChanged?.Invoke(m_last_osu_status, status);
 
-                        if(!m_is_tourney)
+                        if (!m_is_tourney)
                         {
                             if ((mods.Mod & ModsInfo.Mods.Hidden) == ModsInfo.Mods.Hidden ||
                                 (mods.Mod & ModsInfo.Mods.Flashlight) == ModsInfo.Mods.Flashlight)
@@ -602,7 +611,7 @@ namespace OsuRTDataProvider.Listen
                     {
                         success = m_status_finder.TryInit();
 
-                        if (m_stop) return OsuStatus.NoFoundProcess;
+                        if (m_stop) return OsuStatus.Unkonwn;
 
                         if (m_osu_process.HasExited)
                         {
@@ -612,16 +621,15 @@ namespace OsuRTDataProvider.Listen
 
                         if (success)
                         {
-                            Sync.Tools.IO.CurrentIO.WriteColor(string.Format(DefaultLanguage.LANG_INIT_STATUS_FINDER_SUCCESS, m_osu_id, 3), ConsoleColor.Green);
+                            Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_STATUS_FINDER_SUCCESS, m_osu_id, 3), ConsoleColor.Green);
                             break;
                         }
-                        Sync.Tools.IO.CurrentIO.WriteColor(string.Format(DefaultLanguage.LANG_INIT_STATUS_FINDER_FAILED, m_osu_id, 3), ConsoleColor.Red);
+                        Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_STATUS_FINDER_FAILED, m_osu_id, 3), ConsoleColor.Red);
                         _status_finder_timer = 0;
                     }
                     Thread.Sleep(500);
                     _status_finder_timer += 500;
                 }
-               
             }
 
             OsuInternalStatus mode = m_status_finder.GetCurrentOsuModes();

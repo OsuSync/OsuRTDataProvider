@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace OsuRTDataProvider.Memory
@@ -91,7 +89,7 @@ namespace OsuRTDataProvider.Memory
             return false;
         }
 
-        protected bool TryReadIntFromMemory(IntPtr address,out int value)
+        protected bool TryReadIntFromMemory(IntPtr address, out int value)
         {
             int ret_size_ptr = 0;
             value = 0;
@@ -117,7 +115,7 @@ namespace OsuRTDataProvider.Memory
             return false;
         }
 
-        protected bool TryReadDoubleFromMemory(IntPtr address,out double value)
+        protected bool TryReadDoubleFromMemory(IntPtr address, out double value)
         {
             int ret_size_ptr = 0;
             value = double.NaN;
@@ -135,12 +133,12 @@ namespace OsuRTDataProvider.Memory
         protected bool TryReadStringFromMemory(IntPtr address, out string str)
         {
             str = null;
-            TryReadIntPtrFromMemory(address,out IntPtr str_base);
+            TryReadIntPtrFromMemory(address, out IntPtr str_base);
 
             try
             {
                 TryReadIntFromMemory(str_base + 0x4, out int len);
-                len*= 2;
+                len *= 2;
 
                 if (len > ReadMaxStringLength || len <= 0) return false;
 

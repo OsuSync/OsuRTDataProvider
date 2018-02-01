@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OsuRTDataProvider.Listen
+﻿namespace OsuRTDataProvider.Listen
 {
     public enum OsuPlayMode
     {
@@ -13,6 +7,6 @@ namespace OsuRTDataProvider.Listen
         CatchTheBeat = 2,
         Mania = 3,
 
-        Unknown=-1
+        Unknown = -1
     }
 }

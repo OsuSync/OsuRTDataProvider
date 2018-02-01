@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 //Clone Form https://github.com/Deathmax/dxgw2/blob/master/Trainer_Rewrite/SigScan.cs
@@ -46,9 +45,9 @@ namespace OsuRTDataProvider.Memory
 {
     internal class SigScan
     {
-        class MemoryRegion
+        private class MemoryRegion
         {
-            public IntPtr AllocationBase { get; set;}
+            public IntPtr AllocationBase { get; set; }
             public IntPtr BaseAddress { get; set; }
             public uint RegionSize { get; set; }
             public byte[] DumpedRegion { get; set; }
@@ -56,29 +55,28 @@ namespace OsuRTDataProvider.Memory
 
         /// <summary>
         /// m_vProcess
-        /// 
+        ///
         ///     The process we want to read the memory of.
         /// </summary>
         private Process m_vProcess;
 
         /// <summary>
         /// m_vAddress
-        /// 
+        ///
         ///     The starting address we want to begin reading at.
         /// </summary>
 
         /// <summary>
         /// m_vSize
-        /// 
+        ///
         ///     The number of bytes we wish to read from the process.
         /// </summary>
-
 
         #region "sigScan Class Construction"
 
         /// <summary>
         /// SigScan
-        /// 
+        ///
         ///     Overloaded class constructor that sets the class
         ///     properties during construction.
         /// </summary>
@@ -90,7 +88,8 @@ namespace OsuRTDataProvider.Memory
             this.m_vProcess = proc;
             InitMemoryRegionInfo();
         }
-        #endregion
+
+        #endregion "sigScan Class Construction"
 
         public void Reload()
         {
@@ -98,10 +97,10 @@ namespace OsuRTDataProvider.Memory
         }
 
         private List<MemoryRegion> m_memoryRegionList = new List<MemoryRegion>();
-        const int PROCESS_QUERY_INFORMATION = 0x0400;
-        const int MEM_COMMIT = 0x00001000;
-        const int PAGE_READWRITE = 0x04;
-        const int PROCESS_WM_READ = 0x0010;
+        private const int PROCESS_QUERY_INFORMATION = 0x0400;
+        private const int MEM_COMMIT = 0x00001000;
+        private const int PAGE_READWRITE = 0x04;
+        private const int PROCESS_WM_READ = 0x0010;
 
         private void InitMemoryRegionInfo()
         {
@@ -115,9 +114,9 @@ namespace OsuRTDataProvider.Memory
 
             IntPtr handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_WM_READ, false, m_vProcess.Id);
 
-            if(handle==IntPtr.Zero)
+            if (handle == IntPtr.Zero)
             {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Error Code:{Marshal.GetLastWin32Error():X8}",ConsoleColor.Red);
+                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Error Code:{Marshal.GetLastWin32Error():X8}", ConsoleColor.Red);
                 return;
             }
 
@@ -127,7 +126,7 @@ namespace OsuRTDataProvider.Memory
 
             while (proc_min_address_l < proc_max_address_l)
             {
-                int size=VirtualQueryEx(handle, proc_min_address, out mem_basic_info, 28);
+                int size = VirtualQueryEx(handle, proc_min_address, out mem_basic_info, 28);
 
                 if (size != mem_info_size) break;
 
@@ -149,9 +148,10 @@ namespace OsuRTDataProvider.Memory
         }
 
         #region "sigScan Class Private Methods"
+
         /// <summary>
         /// DumpMemory
-        /// 
+        ///
         ///     Internal memory dump function that uses the set class
         ///     properties to dump a memory region.
         /// </summary>
@@ -196,7 +196,7 @@ namespace OsuRTDataProvider.Memory
 
         /// <summary>
         /// MaskCheck
-        /// 
+        ///
         ///     Compares the current pattern byte to the current memory dump
         ///     byte to check for a match. Uses wildcards to skip bytes that
         ///     are deemed unneeded in the compares.
@@ -205,10 +205,10 @@ namespace OsuRTDataProvider.Memory
         /// <param name="btPattern">Pattern to scan for.</param>
         /// <param name="strMask">Mask to compare against.</param>
         /// <returns>Boolean depending on if the pattern was found.</returns>
-        private bool MaskCheck(MemoryRegion region,int nOffset, byte[] btPattern, string strMask)
+        private bool MaskCheck(MemoryRegion region, int nOffset, byte[] btPattern, string strMask)
         {
             // Loop the pattern and compare to the mask and dump.
-            for (int x = 0; x < btPattern.Length && (nOffset + x)<region.RegionSize; x++)
+            for (int x = 0; x < btPattern.Length && (nOffset + x) < region.RegionSize; x++)
             {
                 // If the mask char is a wildcard, just continue.
                 if (strMask[x] == '?')
@@ -222,12 +222,14 @@ namespace OsuRTDataProvider.Memory
             // The loop was successful so we found the pattern.
             return true;
         }
-        #endregion
+
+        #endregion "sigScan Class Private Methods"
 
         #region "sigScan Class Public Methods"
+
         /// <summary>
         /// FindPattern
-        /// 
+        ///
         ///     Attempts to locate the given pattern inside the dumped memory region
         ///     compared against the given mask. If the pattern is found, the offset
         ///     is added to the located address and returned to the user.
@@ -242,7 +244,7 @@ namespace OsuRTDataProvider.Memory
             {
                 // Dump the memory region if we have not dumped it yet.
 
-                 if (!this.DumpMemory())
+                if (!this.DumpMemory())
                     return IntPtr.Zero;
 
                 // Ensure the mask and pattern lengths match.
@@ -254,7 +256,7 @@ namespace OsuRTDataProvider.Memory
                 {
                     for (int x = 0; x < region.DumpedRegion.Length; x++)
                     {
-                        if (this.MaskCheck(region,x, btPattern, strMask))
+                        if (this.MaskCheck(region, x, btPattern, strMask))
                         {
                             // The pattern was found, return it.
                             return new IntPtr((int)region.BaseAddress + (x + nOffset));
@@ -273,7 +275,7 @@ namespace OsuRTDataProvider.Memory
 
         /// <summary>
         /// ResetRegion
-        /// 
+        ///
         ///     Resets the memory dump array to nothing to allow
         ///     the class to redump the memory.
         /// </summary>
@@ -284,17 +286,21 @@ namespace OsuRTDataProvider.Memory
                 region.DumpedRegion = null;
             }
         }
-        #endregion
+
+        #endregion "sigScan Class Public Methods"
 
         #region "sigScan Class Properties"
+
         public Process Process
         {
             get { return this.m_vProcess; }
             set { this.m_vProcess = value; }
         }
-        #endregion
+
+        #endregion "sigScan Class Properties"
 
         #region PInvoke
+
         [StructLayout(LayoutKind.Sequential)]
         public struct MEMORY_BASIC_INFORMATION
         {
@@ -326,7 +332,7 @@ namespace OsuRTDataProvider.Memory
         public struct SYSTEM_INFO
         {
             public ushort processorArchitecture;
-            ushort reserved;
+            private ushort reserved;
             public uint pageSize;
             public IntPtr minimumApplicationAddress;
             public IntPtr maximumApplicationAddress;
@@ -340,7 +346,7 @@ namespace OsuRTDataProvider.Memory
 
         /// <summary>
         /// ReadProcessMemory
-        /// 
+        ///
         ///     API import definition for ReadProcessMemory.
         /// </summary>
         /// <param name="hProcess">Handle to the process we want to read from.</param>
@@ -359,10 +365,10 @@ namespace OsuRTDataProvider.Memory
             );
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern int VirtualQueryEx(IntPtr hProcess, IntPtr lpAddress, out MEMORY_BASIC_INFORMATION lpBuffer, uint dwLength);
+        private static extern int VirtualQueryEx(IntPtr hProcess, IntPtr lpAddress, out MEMORY_BASIC_INFORMATION lpBuffer, uint dwLength);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern void GetSystemInfo(out SYSTEM_INFO lpSystemInfo);
+        private static extern void GetSystemInfo(out SYSTEM_INFO lpSystemInfo);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
@@ -370,7 +376,6 @@ namespace OsuRTDataProvider.Memory
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool CloseHandle(IntPtr hObject);
 
-        #endregion
-
+        #endregion PInvoke
     }
 }

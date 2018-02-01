@@ -2,7 +2,6 @@
 using OsuRTDataProvider.Listen;
 using OsuRTDataProvider.Mods;
 using Sync;
-using Sync.Command;
 using Sync.Plugins;
 using Sync.Tools;
 using System;
@@ -82,29 +81,29 @@ namespace OsuRTDataProvider
 
         private void InitCommand(PluginEvents.InitCommandEvent @e)
         {
-            @e.Commands.Dispatch.bind("ortdp",(args)=>
-            {
-                if (args.Count >= 2)
-                {
-                    if (args[0] == "debug")
-                    {
-                        if (bool.TryParse(args[1], out bool f))
-                        {
-                            DebugOutput(f);
-                            Sync.Tools.IO.CurrentIO.WriteColor($"Debug mode = {Setting.DebugMode}", ConsoleColor.Green);
-                        }
-                    }
-                    return true;
-                }
-                return false;
-            },"OsuRTDataProvider control panel");
+            @e.Commands.Dispatch.bind("ortdp", (args) =>
+             {
+                 if (args.Count >= 2)
+                 {
+                     if (args[0] == "debug")
+                     {
+                         if (bool.TryParse(args[1], out bool f))
+                         {
+                             DebugOutput(f);
+                             Sync.Tools.IO.CurrentIO.WriteColor($"Debug mode = {Setting.DebugMode}", ConsoleColor.Green);
+                         }
+                     }
+                     return true;
+                 }
+                 return false;
+             }, "OsuRTDataProvider control panel");
         }
 
-        private void DebugOutput(bool enable,bool first=false)
+        private void DebugOutput(bool enable, bool first = false)
         {
-            if (!first&&Setting.DebugMode == enable) return;
+            if (!first && Setting.DebugMode == enable) return;
 
-            if(Setting.EnableTourneyMode)
+            if (Setting.EnableTourneyMode)
             {
                 for (int i = 0; i < TourneyListenerManagersCount; i++)
                 {
@@ -120,7 +119,6 @@ namespace OsuRTDataProvider
                         m_listener_managers[i].OnStatusChanged += OnTourneyStatusChanged;
                         m_listener_managers[i].OnModsChanged += OnTourneyModsChanged;
                         m_listener_managers[i].OnPlayModeChanged += OnTourneyModeChanged;
-                        
                     }
                     else
                     {

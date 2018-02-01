@@ -1,6 +1,5 @@
 ﻿using Sync.Tools;
 using System;
-using System.IO;
 
 namespace OsuRTDataProvider
 {
@@ -21,13 +20,13 @@ namespace OsuRTDataProvider
                 Setting.EnableTourneyMode = bool.Parse(EnableTourneyMode);
                 Setting.TeamSize = int.Parse(TeamSize);
                 Setting.ForceOsuSongsDirectory = ForceOsuSongsDirectory;
-                if (Setting.TeamSize>8 || Setting.TeamSize<1)
+                if (Setting.TeamSize > 8 || Setting.TeamSize < 1)
                 {
                     Setting.TeamSize = 1;
-                    Sync.Tools.IO.CurrentIO.Write("TeameSize∈[1,8]");
+                    IO.CurrentIO.Write("TeameSize∈[1,8]");
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 onConfigurationSave();
             }
@@ -55,7 +54,6 @@ namespace OsuRTDataProvider
         public static bool EnableTourneyMode = false;
         public static int TeamSize = 1;
         public static string ForceOsuSongsDirectory = "";
-
 
         public static string SongsPath = string.Empty;//不保存
         public static string OsuVersion = string.Empty;

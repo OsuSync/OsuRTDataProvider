@@ -142,7 +142,7 @@ namespace OsuRTDataProvider.BeatmapInfo
             end:;
         }
 
-        public static bool operator==(Beatmap a,Beatmap b)
+        public static bool operator ==(Beatmap a, Beatmap b)
         {
             bool ret = false;
             ret = a.BeatmapID == b.BeatmapID;

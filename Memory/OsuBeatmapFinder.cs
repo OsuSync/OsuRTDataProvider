@@ -1,16 +1,11 @@
 ﻿using OsuRTDataProvider.BeatmapInfo;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OsuRTDataProvider.Memory
 {
-    class OsuBeatmapFinder: OsuFinderBase
+    internal class OsuBeatmapFinder : OsuFinderBase
     {
         //0x83,0x3d,0x0,0x0,0x0,0x0,0x01,0x74,0x0a,0x8b,0x35,0x0,0x0,0x0,0x0,0x85,0xf6,0x75,0x04
         private static readonly string s_beatmap_pattern = "\x83\x3d\x0\x0\x0\x0\x01\x74\x0a\x8b\x35\x0\x0\x0\x0\x85\xf6\x75\x04";
@@ -31,7 +26,6 @@ namespace OsuRTDataProvider.Memory
 
         public OsuBeatmapFinder(Process osu) : base(osu)
         {
-
         }
 
         public bool TryInit()
@@ -68,11 +62,11 @@ namespace OsuRTDataProvider.Memory
                     string filename_full = Path.Combine(folder_full, filename);
                     using (var fs = File.OpenRead(filename_full))
                     {
-                        beatmap = new Beatmap(osu_id, set_id, id,fs);
+                        beatmap = new Beatmap(osu_id, set_id, id, fs);
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Sync.Tools.IO.CurrentIO.WriteColor("-------------ORTDP(Exception)---------------", ConsoleColor.Red);
                 Sync.Tools.IO.CurrentIO.WriteColor(e.ToString(), ConsoleColor.Yellow);
@@ -92,6 +86,7 @@ namespace OsuRTDataProvider.Memory
         }
 
         #region Beatmap Info
+
         private string GetCurrentBeatmapFolder()
         {
             TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
@@ -107,6 +102,7 @@ namespace OsuRTDataProvider.Memory
             if (!success) return "";
             return str;
         }
-        #endregion
+
+        #endregion Beatmap Info
     }
 }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace OsuRTDataProvider.Mods
@@ -48,10 +46,10 @@ namespace OsuRTDataProvider.Mods
 
         private static Dictionary<string, string> s_name_to_sname = new Dictionary<string, string>
         {
-            ["None"] ="",
+            ["None"] = "",
             ["NoFail"] = "NF",
             ["Easy"] = "EZ",
-            ["TouchScreen"]="TS",
+            ["TouchScreen"] = "TS",
             ["Hidden"] = "HD",
             ["HardRock"] = "HR",
             ["SuddenDeath"] = "SD",
@@ -83,8 +81,10 @@ namespace OsuRTDataProvider.Mods
             ["Unknown"] = "Unknown"
         };
 
-        static public ModsInfo Empty {
-            get {
+        static public ModsInfo Empty
+        {
+            get
+            {
                 ModsInfo m;
                 m.m_mod = Mods.Unknown;
                 return m;
@@ -140,7 +140,7 @@ namespace OsuRTDataProvider.Mods
                     else return "Error";
                     b.Append(',');
                 }
-                return b.Remove(b.Length-1,1).ToString();
+                return b.Remove(b.Length - 1, 1).ToString();
             }
         }
 
@@ -168,12 +168,12 @@ namespace OsuRTDataProvider.Mods
             return hashCode;
         }
 
-        public static bool operator!=(ModsInfo a,ModsInfo b)
+        public static bool operator !=(ModsInfo a, ModsInfo b)
         {
             return a.Mod != b.Mod;
         }
 
-        public static bool operator==(ModsInfo a, ModsInfo b)
+        public static bool operator ==(ModsInfo a, ModsInfo b)
         {
             return a.Mod == b.Mod;
         }
