@@ -142,6 +142,19 @@ namespace OsuRTDataProvider.BeatmapInfo
             end:;
         }
 
+        public static bool operator==(Beatmap a,Beatmap b)
+        {
+            bool ret = false;
+            ret = a.BeatmapID == b.BeatmapID;
+            ret = ret && (a.BeatmapSetID == b.BeatmapSetID);
+            return ret;
+        }
+
+        public static bool operator !=(Beatmap a, Beatmap b)
+        {
+            return !(a == b);
+        }
+
         private static void GetPropertyValue(string line, out string val)
         {
             int pos = line.IndexOf(':');
