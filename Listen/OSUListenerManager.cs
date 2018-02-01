@@ -485,7 +485,7 @@ namespace OsuRTDataProvider.Listen
                     if (OnPlayModeChanged != null) mode = m_mode_finder.GetMode();
 
                     if (m_last_mode != mode)
-                        OnPlayModeChanged(m_last_mode, mode);
+                        OnPlayModeChanged?.Invoke(m_last_mode, mode);
 
                     m_last_mode = mode;
                 }
@@ -548,10 +548,10 @@ namespace OsuRTDataProvider.Listen
                             OnCount50Changed?.Invoke(n50);
 
                         if (ngeki != m_last_geki)
-                            OnCountGekiChanged(ngeki);
+                            OnCountGekiChanged?.Invoke(ngeki);
 
                         if (nkatu != m_last_katu)
-                            OnCountKatuChanged(nkatu);
+                            OnCountKatuChanged?.Invoke(nkatu);
 
                         if (nmiss != m_last_miss)
                             OnCountMissChanged?.Invoke(nmiss);
