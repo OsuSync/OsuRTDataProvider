@@ -17,7 +17,7 @@ namespace OsuRTDataProvider.Memory
         {
         }
 
-        public bool TryInit()
+        public override bool TryInit()
         {
             SigScan.Reload();
 

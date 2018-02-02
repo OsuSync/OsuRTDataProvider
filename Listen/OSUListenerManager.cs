@@ -128,7 +128,6 @@ namespace OsuRTDataProvider.Listen
         private OsuStatusFinder m_status_finder = null;
         private OsuBeatmapFinder m_beatmap_finder = null;
         private OsuPlayModesFinder m_mode_finder = null;
-        private int _status_finder_timer = 3000;
 
         #region last status
 
@@ -347,61 +346,32 @@ namespace OsuRTDataProvider.Listen
         #endregion Get Current Data
 
         private const long _retry_time = 3000;
-        private long _play_finder_timer = 0;
-        private long _beatmap_finder_timer = 0;
-        private long _mode_finer_timer = 0;
 
-        private void LoadBeatmapFinder()
+        Dictionary<Type, long> _finder_timer_dict = new Dictionary<Type, long>();
+        private T LoadFinder<T>(string success_fmt,string failed_fmt)where T:OsuFinderBase
         {
-            if (_beatmap_finder_timer % _retry_time == 0)
-            {
-                m_beatmap_finder = new OsuBeatmapFinder(m_osu_process);
-                if (m_beatmap_finder.TryInit())
-                {
-                    _beatmap_finder_timer = 0;
-                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_BEATMAP_FINDER_SUCCESS, m_osu_id), ConsoleColor.Green);
-                    return;
-                }
-                m_beatmap_finder = null;
-                Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_BEATMAP_FINDER_FAILED, m_osu_id, _retry_time / 1000), ConsoleColor.Red);
-            }
-            _beatmap_finder_timer += Setting.ListenInterval;
-        }
+            if (!_finder_timer_dict.ContainsKey(typeof(T)))
+                _finder_timer_dict.Add(typeof(T), 0);
 
-        private void LoadPlayFinder()
-        {
-            if (_play_finder_timer % _retry_time == 0 && _play_finder_timer != 0)
+            T finder = null;
+            long timer = _finder_timer_dict[typeof(T)];
+
+            if (timer % _retry_time == 0)
             {
-                m_play_finder = new OsuPlayFinder(m_osu_process);
-                if (m_play_finder.TryInit())
+                finder = typeof(T).GetConstructors()[0].Invoke(new object[]{ m_osu_process}) as T;
+                if (finder.TryInit())
                 {
-                    _play_finder_timer = 0;
-                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_PLAY_FINDER_SUCCESS, m_osu_id), ConsoleColor.Green);
-                    return;
+                    timer = 0;
+                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(success_fmt, m_osu_id), ConsoleColor.Green);
+                    return finder;
                 }
 
-                m_play_finder = null;
-                Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_PLAY_FINDER_FAILED, m_osu_id, _retry_time / 1000), ConsoleColor.Red);
+                finder = null;
+                Sync.Tools.IO.CurrentIO.WriteColor(string.Format(failed_fmt, m_osu_id, _retry_time / 1000), ConsoleColor.Red);
             }
-            _play_finder_timer += Setting.ListenInterval;
-        }
-
-        private void LoadModeFinder()
-        {
-            if (_mode_finer_timer % _retry_time == 0 && _mode_finer_timer != 0)
-            {
-                m_mode_finder = new OsuPlayModesFinder(m_osu_process);
-                if (m_mode_finder.TryInit())
-                {
-                    _mode_finer_timer = 0;
-                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_MODE_FINDER_SUCCESS, m_osu_id), ConsoleColor.Green);
-                    return;
-                }
-
-                m_mode_finder = null;
-                Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_MODE_FINDER_FAILED, m_osu_id, _retry_time / 1000), ConsoleColor.Red);
-            }
-            _mode_finer_timer += Setting.ListenInterval;
+            timer += Setting.ListenInterval;
+            _finder_timer_dict[typeof(T)]=timer;
+            return finder;
         }
 
         private void FindOsuProcess()
@@ -444,7 +414,7 @@ namespace OsuRTDataProvider.Listen
         {
             OsuStatus status = GetCurrentOsuStatus();
 
-            if (status == OsuStatus.NoFoundProcess || status == OsuStatus.Unkonwn)
+            if (status == OsuStatus.NoFoundProcess)
             {
                 m_osu_process = null;
                 m_play_finder = null;
@@ -462,19 +432,19 @@ namespace OsuRTDataProvider.Listen
             {
                 if (m_beatmap_finder == null)
                 {
-                    LoadBeatmapFinder();
+                    m_beatmap_finder = LoadFinder<OsuBeatmapFinder>(LANG_INIT_BEATMAP_FINDER_SUCCESS, LANG_INIT_BEATMAP_FINDER_FAILED);
                 }
 
                 if (m_mode_finder == null)
                 {
-                    LoadModeFinder();
+                    m_mode_finder=LoadFinder<OsuPlayModesFinder>(LANG_INIT_MODE_FINDER_SUCCESS, LANG_INIT_MODE_FINDER_FAILED);
                 }
 
                 if (status == OsuStatus.Playing)
                 {
                     if (m_play_finder == null)
                     {
-                        LoadPlayFinder();
+                        m_play_finder=LoadFinder<OsuPlayFinder>(LANG_INIT_PLAY_FINDER_SUCCESS,LANG_INIT_PLAY_FINDER_FAILED);
                     }
                 }
 
@@ -603,33 +573,8 @@ namespace OsuRTDataProvider.Listen
 
             if (m_status_finder == null)
             {
-                m_status_finder = new OsuStatusFinder(m_osu_process);
-                bool success = false;
-                while (!success)
-                {
-                    if (_status_finder_timer >= 3000)
-                    {
-                        success = m_status_finder.TryInit();
-
-                        if (m_stop) return OsuStatus.Unkonwn;
-
-                        if (m_osu_process.HasExited)
-                        {
-                            m_status_finder = null;
-                            return OsuStatus.Unkonwn;
-                        }
-
-                        if (success)
-                        {
-                            Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_STATUS_FINDER_SUCCESS, m_osu_id, 3), ConsoleColor.Green);
-                            break;
-                        }
-                        Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_INIT_STATUS_FINDER_FAILED, m_osu_id, 3), ConsoleColor.Red);
-                        _status_finder_timer = 0;
-                    }
-                    Thread.Sleep(500);
-                    _status_finder_timer += 500;
-                }
+                m_status_finder = LoadFinder<OsuStatusFinder>(LANG_INIT_STATUS_FINDER_SUCCESS, LANG_INIT_STATUS_FINDER_FAILED);
+                return OsuStatus.Unkonwn;
             }
 
             OsuInternalStatus mode = m_status_finder.GetCurrentOsuModes();

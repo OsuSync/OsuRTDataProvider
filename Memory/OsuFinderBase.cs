@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OsuRTDataProvider.Memory
 {
-    internal class OsuFinderBase
+    internal abstract class OsuFinderBase
     {
         protected SigScan SigScan { get; private set; }
         protected Process OsuProcess { get; private set; }
@@ -155,5 +155,7 @@ namespace OsuRTDataProvider.Memory
 
             return false;
         }
+
+        public abstract bool TryInit();
     }
 }
