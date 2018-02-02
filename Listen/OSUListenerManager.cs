@@ -164,6 +164,7 @@ namespace OsuRTDataProvider.Listen
             m_listen_task = Task.Run(() =>
             {
                 Thread.CurrentThread.Name = "OsuRTDataProviderThread";
+                Thread.Sleep(1000);
                 while (!m_stop)
                 {
                     for (int i = 0; i < m_action_list.Count; i++)
@@ -374,40 +375,47 @@ namespace OsuRTDataProvider.Listen
             return finder;
         }
 
+        private long _find_osu_process_timer = 0;
+        private const long _find_osu_retry_time = 10000;
+
         private void FindOsuProcess()
         {
-            Process[] process_list;
-            do
+            if (_find_osu_process_timer % _find_osu_retry_time == 0)
             {
-                Thread.Sleep(3000);
+                Process[] process_list;
+
                 process_list = Process.GetProcessesByName("osu!");
 
                 if (m_stop) return;
-                if (process_list.Length == 0) continue;
-
-                if (m_is_tourney)
+                if (process_list.Length != 0)
                 {
-                    foreach (var p in process_list)
+                    if (m_is_tourney)
                     {
-                        if (p.MainWindowTitle.Contains($"Client {m_osu_id}"))
+                        foreach (var p in process_list)
                         {
-                            m_osu_process = p;
-                            break;
+                            if (p.MainWindowTitle.Contains($"Client {m_osu_id}"))
+                            {
+                                m_osu_process = p;
+                                break;
+                            }
                         }
                     }
-                }
-                else
-                {
-                    m_osu_process = process_list[0];
-                }
+                    else
+                    {
+                        m_osu_process = process_list[0];
+                    }
 
-                if (m_osu_process != null)
-                {
-                    FindOsuSongPath();
-                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_FOUND, m_osu_id), ConsoleColor.Green);
+                    if (m_osu_process != null)
+                    {
+                        FindOsuSongPath();
+                        Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_FOUND, m_osu_id), ConsoleColor.Green);
+                        return;
+                    }
                 }
+                _find_osu_process_timer = 0;
+                Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_NOT_FOUND, m_osu_id), ConsoleColor.Red);
             }
-            while (process_list.Length == 0);
+            _find_osu_process_timer += Setting.ListenInterval;
         }
 
         private void ListenLoopUpdate()
@@ -421,9 +429,6 @@ namespace OsuRTDataProvider.Listen
                 m_status_finder = null;
                 m_beatmap_finder = null;
                 m_mode_finder = null;
-
-                if (status == OsuStatus.NoFoundProcess)
-                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_NOT_FOUND, m_osu_id), ConsoleColor.Red);
 
                 FindOsuProcess();
             }
