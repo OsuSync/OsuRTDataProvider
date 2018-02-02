@@ -153,6 +153,7 @@ namespace OsuRTDataProvider.Listen
         private bool m_is_tourney = false;
         private int m_osu_id = 0;
 
+        #region OsuRTDataProviderThread
         private static bool s_random_interval = false;
         private static Random s_random = new Random();
 
@@ -179,6 +180,7 @@ namespace OsuRTDataProvider.Listen
                 }
             });
         }
+        #endregion
 
         public OsuListenerManager(bool tourney = false, int osuid = 0)
         {
@@ -200,37 +202,6 @@ namespace OsuRTDataProvider.Listen
             {
                 m_stop = true;
                 m_listen_task.Wait();
-            }
-        }
-
-        private void FindOsuSongPath()
-        {
-            if (!string.IsNullOrWhiteSpace(Setting.ForceOsuSongsDirectory))
-            {
-                Setting.SongsPath = Setting.ForceOsuSongsDirectory;
-                return;
-            }
-
-            string osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
-            string osu_config_file = Path.Combine(osu_path, $"osu!.{Environment.UserName}.cfg");
-            var lines = File.ReadLines(osu_config_file);
-            string song_path;
-            foreach (var line in lines)
-            {
-                if (line.Contains("BeatmapDirectory"))
-                {
-                    song_path = line.Split('=')[1].Trim();
-                    if (Path.IsPathRooted(song_path))
-                        Setting.SongsPath = song_path;
-                    else
-                        Setting.SongsPath = Path.Combine(osu_path, song_path);
-                }
-                else if (line.Contains("LastVersion"))
-                {
-                    Setting.OsuVersion = line.Split('=')[1].Trim();
-                    Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]OSU Client Verison:{Setting.OsuVersion}");
-                    break;
-                }
             }
         }
 
@@ -346,10 +317,11 @@ namespace OsuRTDataProvider.Listen
 
         #endregion Get Current Data
 
+        #region Init Finder
         private const long _retry_time = 3000;
 
         Dictionary<Type, long> _finder_timer_dict = new Dictionary<Type, long>();
-        private T LoadFinder<T>(string success_fmt,string failed_fmt)where T:OsuFinderBase
+        private T InitFinder<T>(string success_fmt,string failed_fmt)where T:OsuFinderBase
         {
             if (!_finder_timer_dict.ContainsKey(typeof(T)))
                 _finder_timer_dict.Add(typeof(T), 0);
@@ -374,7 +346,9 @@ namespace OsuRTDataProvider.Listen
             _finder_timer_dict[typeof(T)]=timer;
             return finder;
         }
+        #endregion
 
+        #region Find Osu Setting
         private long _find_osu_process_timer = 0;
         private const long _find_osu_retry_time = 10000;
 
@@ -417,6 +391,37 @@ namespace OsuRTDataProvider.Listen
             }
             _find_osu_process_timer += Setting.ListenInterval;
         }
+        private void FindOsuSongPath()
+        {
+            if (!string.IsNullOrWhiteSpace(Setting.ForceOsuSongsDirectory))
+            {
+                Setting.SongsPath = Setting.ForceOsuSongsDirectory;
+                return;
+            }
+
+            string osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
+            string osu_config_file = Path.Combine(osu_path, $"osu!.{Environment.UserName}.cfg");
+            var lines = File.ReadLines(osu_config_file);
+            string song_path;
+            foreach (var line in lines)
+            {
+                if (line.Contains("BeatmapDirectory"))
+                {
+                    song_path = line.Split('=')[1].Trim();
+                    if (Path.IsPathRooted(song_path))
+                        Setting.SongsPath = song_path;
+                    else
+                        Setting.SongsPath = Path.Combine(osu_path, song_path);
+                }
+                else if (line.Contains("LastVersion"))
+                {
+                    Setting.OsuVersion = line.Split('=')[1].Trim();
+                    Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]OSU Client Verison:{Setting.OsuVersion}");
+                    break;
+                }
+            }
+        }
+        #endregion
 
         private void ListenLoopUpdate()
         {
@@ -437,19 +442,19 @@ namespace OsuRTDataProvider.Listen
             {
                 if (m_beatmap_finder == null)
                 {
-                    m_beatmap_finder = LoadFinder<OsuBeatmapFinder>(LANG_INIT_BEATMAP_FINDER_SUCCESS, LANG_INIT_BEATMAP_FINDER_FAILED);
+                    m_beatmap_finder = InitFinder<OsuBeatmapFinder>(LANG_INIT_BEATMAP_FINDER_SUCCESS, LANG_INIT_BEATMAP_FINDER_FAILED);
                 }
 
                 if (m_mode_finder == null)
                 {
-                    m_mode_finder=LoadFinder<OsuPlayModesFinder>(LANG_INIT_MODE_FINDER_SUCCESS, LANG_INIT_MODE_FINDER_FAILED);
+                    m_mode_finder=InitFinder<OsuPlayModesFinder>(LANG_INIT_MODE_FINDER_SUCCESS, LANG_INIT_MODE_FINDER_FAILED);
                 }
 
                 if (status == OsuStatus.Playing)
                 {
                     if (m_play_finder == null)
                     {
-                        m_play_finder=LoadFinder<OsuPlayFinder>(LANG_INIT_PLAY_FINDER_SUCCESS,LANG_INIT_PLAY_FINDER_FAILED);
+                        m_play_finder=InitFinder<OsuPlayFinder>(LANG_INIT_PLAY_FINDER_SUCCESS,LANG_INIT_PLAY_FINDER_FAILED);
                     }
                 }
 
@@ -578,7 +583,7 @@ namespace OsuRTDataProvider.Listen
 
             if (m_status_finder == null)
             {
-                m_status_finder = LoadFinder<OsuStatusFinder>(LANG_INIT_STATUS_FINDER_SUCCESS, LANG_INIT_STATUS_FINDER_FAILED);
+                m_status_finder = InitFinder<OsuStatusFinder>(LANG_INIT_STATUS_FINDER_SUCCESS, LANG_INIT_STATUS_FINDER_FAILED);
                 return OsuStatus.Unkonwn;
             }
 
