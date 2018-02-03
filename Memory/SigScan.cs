@@ -93,6 +93,7 @@ namespace OsuRTDataProvider.Memory
 
         public void Reload()
         {
+            ResetRegion();
             InitMemoryRegionInfo();
         }
 
