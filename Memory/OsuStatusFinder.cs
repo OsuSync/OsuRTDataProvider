@@ -20,13 +20,14 @@ namespace OsuRTDataProvider.Memory
         public override bool TryInit()
         {
             SigScan.Reload();
-
-            //Find Game Modes
-            m_game_modes_address = SigScan.FindPattern(StringToByte(s_game_modes_pattern), s_game_modes_mask, 10);
-            success = TryReadIntPtrFromMemory(m_game_modes_address, out m_game_modes_address);
-            if (m_game_modes_address == IntPtr.Zero) return false;
-
+            {
+                //Find Game Modes
+                m_game_modes_address = SigScan.FindPattern(StringToByte(s_game_modes_pattern), s_game_modes_mask, 10);
+                success = TryReadIntPtrFromMemory(m_game_modes_address, out m_game_modes_address);
+            }
             SigScan.ResetRegion();
+
+            if (m_game_modes_address == IntPtr.Zero) success = false;
 
             EncryptLog($"Game Status Address:0x{(int)m_game_modes_address:X8}");
 

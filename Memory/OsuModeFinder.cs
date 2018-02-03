@@ -19,17 +19,19 @@ namespace OsuRTDataProvider.Memory
 
         public override bool TryInit()
         {
+            bool success = false;
+
             SigScan.Reload();
-
-            m_mode_address = SigScan.FindPattern(StringToByte(s_mode_pattern), s_mode_mask, 4);
-            bool success = TryReadIntPtrFromMemory(m_mode_address, out m_mode_address);
-
-            EncryptLog($"Mode Address:0x{(int)m_mode_address:X8}");
+            {
+                m_mode_address = SigScan.FindPattern(StringToByte(s_mode_pattern), s_mode_mask, 4);
+                success = TryReadIntPtrFromMemory(m_mode_address, out m_mode_address);
+            }
+            SigScan.ResetRegion();
 
             if (m_mode_address == IntPtr.Zero)
                 success = false;
 
-            SigScan.ResetRegion();
+            EncryptLog($"Mode Address:0x{(int)m_mode_address:X8}");
 
             return success;
         }

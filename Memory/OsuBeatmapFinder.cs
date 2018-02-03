@@ -22,7 +22,6 @@ namespace OsuRTDataProvider.Memory
         private const int MAX_RETRY_COUNT = 10;
 
         private IntPtr m_beatmap_address;
-        public bool BeatmapAddressSuccess { get; private set; }
 
         public OsuBeatmapFinder(Process osu) : base(osu)
         {
@@ -30,17 +29,20 @@ namespace OsuRTDataProvider.Memory
 
         public override bool TryInit()
         {
+            bool success = false;
             SigScan.Reload();
-
-            //Find Beatmap ID Address
-            m_beatmap_address = SigScan.FindPattern(StringToByte(s_beatmap_pattern), s_beatmap_mask, 11);
-            BeatmapAddressSuccess = TryReadIntPtrFromMemory(m_beatmap_address, out m_beatmap_address);
-
-            EncryptLog($"Playing Beatmap Base Address:0x{(int)m_beatmap_address:X8}");
-
+            {
+                //Find Beatmap ID Address
+                m_beatmap_address = SigScan.FindPattern(StringToByte(s_beatmap_pattern), s_beatmap_mask, 11);
+                success = TryReadIntPtrFromMemory(m_beatmap_address, out m_beatmap_address);
+            }
             SigScan.ResetRegion();
 
-            return m_beatmap_address != IntPtr.Zero;
+            if (m_beatmap_address == IntPtr.Zero)
+                success = false;
+
+            EncryptLog($"Playing Beatmap Base Address:0x{(int)m_beatmap_address:X8}");
+            return success;
         }
 
         public Beatmap GetCurrentBeatmap(int osu_id)
