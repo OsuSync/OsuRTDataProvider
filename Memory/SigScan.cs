@@ -281,10 +281,7 @@ namespace OsuRTDataProvider.Memory
         /// </summary>
         public void ResetRegion()
         {
-            foreach (var region in m_memoryRegionList)
-            {
-                region.DumpedRegion = null;
-            }
+            m_memoryRegionList.Clear();
         }
 
         #endregion "sigScan Class Public Methods"

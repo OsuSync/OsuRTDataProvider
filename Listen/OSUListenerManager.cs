@@ -3,6 +3,7 @@ using OsuRTDataProvider.Memory;
 using OsuRTDataProvider.Mods;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -350,7 +351,7 @@ namespace OsuRTDataProvider.Listen
 
         #region Find Osu Setting
         private long _find_osu_process_timer = 0;
-        private const long _find_osu_retry_time = 10000;
+        private const long _find_osu_retry_time = 5000;
 
         private void FindOsuProcess()
         {
@@ -399,26 +400,33 @@ namespace OsuRTDataProvider.Listen
                 return;
             }
 
-            string osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
-            string osu_config_file = Path.Combine(osu_path, $"osu!.{Environment.UserName}.cfg");
-            var lines = File.ReadLines(osu_config_file);
-            string song_path;
-            foreach (var line in lines)
+            try
             {
-                if (line.Contains("BeatmapDirectory"))
+                string osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
+                string osu_config_file = Path.Combine(osu_path, $"osu!.{Environment.UserName}.cfg");
+                var lines = File.ReadLines(osu_config_file);
+                string song_path;
+                foreach (var line in lines)
                 {
-                    song_path = line.Split('=')[1].Trim();
-                    if (Path.IsPathRooted(song_path))
-                        Setting.SongsPath = song_path;
-                    else
-                        Setting.SongsPath = Path.Combine(osu_path, song_path);
+                    if (line.Contains("BeatmapDirectory"))
+                    {
+                        song_path = line.Split('=')[1].Trim();
+                        if (Path.IsPathRooted(song_path))
+                            Setting.SongsPath = song_path;
+                        else
+                            Setting.SongsPath = Path.Combine(osu_path, song_path);
+                    }
+                    else if (line.Contains("LastVersion"))
+                    {
+                        Setting.OsuVersion = line.Split('=')[1].Trim();
+                        Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]OSU Client Verison:{Setting.OsuVersion}");
+                        break;
+                    }
                 }
-                else if (line.Contains("LastVersion"))
-                {
-                    Setting.OsuVersion = line.Split('=')[1].Trim();
-                    Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]OSU Client Verison:{Setting.OsuVersion}");
-                    break;
-                }
+            }
+            catch (Win32Exception e)
+            {
+                return;
             }
         }
         #endregion
