@@ -107,12 +107,13 @@ namespace OsuRTDataProvider
             {
                 for (int i = 0; i < TourneyListenerManagersCount; i++)
                 {
-                    void OnTourneyStatusChanged(OsuStatus l, OsuStatus c) =>
-                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{i}]Current Game Status:{c}", ConsoleColor.Blue);
-                    void OnTourneyModsChanged(ModsInfo m) =>
-                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{i}]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
-                    void OnTourneyModeChanged(OsuPlayMode last, OsuPlayMode mode) =>
-                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{i}]Mode:{mode}", ConsoleColor.Blue);
+                    int id = i;
+                    void OnTourneyStatusChanged(OsuStatus l, OsuStatus c)=>
+                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{id}]Current Game Status:{c}", ConsoleColor.Blue);
+                    void OnTourneyModsChanged(ModsInfo m)=>
+                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{id}]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
+                    void OnTourneyModeChanged(OsuPlayMode last, OsuPlayMode mode)=>
+                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{id}]Mode:{mode}", ConsoleColor.Blue);
 
                     if (enable)
                     {
