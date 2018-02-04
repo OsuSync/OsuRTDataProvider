@@ -86,7 +86,7 @@ namespace OsuRTDataProvider.Memory
         public SigScan(Process proc)
         {
             this.m_vProcess = proc;
-            InitMemoryRegionInfo();
+            //InitMemoryRegionInfo();
         }
 
         #endregion "sigScan Class Construction"
@@ -117,7 +117,7 @@ namespace OsuRTDataProvider.Memory
 
             if (handle == IntPtr.Zero)
             {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Error Code:{Marshal.GetLastWin32Error():X8}", ConsoleColor.Red);
+                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Error Code:0x{Marshal.GetLastWin32Error():X8}", ConsoleColor.Red);
                 return;
             }
 
@@ -129,7 +129,11 @@ namespace OsuRTDataProvider.Memory
             {
                 int size = VirtualQueryEx(handle, proc_min_address, out mem_basic_info, (uint)mem_info_size);
 
-                if (size != mem_info_size) break;
+                if (size != mem_info_size)
+                {
+                    Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Error Code:0x{Marshal.GetLastWin32Error():X8}", ConsoleColor.Red);
+                    break;
+                }
 
                 if (mem_basic_info.Protect == AllocationProtect.PAGE_EXECUTE_READWRITE && mem_basic_info.State == MEM_COMMIT)
                 {
@@ -146,6 +150,11 @@ namespace OsuRTDataProvider.Memory
             }
 
             CloseHandle(handle);
+
+            if(m_memoryRegionList.Count==0)
+            {
+                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Error:List is Empty", ConsoleColor.Red);
+            }
         }
 
         #region "sigScan Class Private Methods"

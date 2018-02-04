@@ -166,7 +166,7 @@ namespace OsuRTDataProvider.Listen
             m_listen_task = Task.Run(() =>
             {
                 Thread.CurrentThread.Name = "OsuRTDataProviderThread";
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
                 while (!m_stop)
                 {
                     for (int i = 0; i < m_action_list.Count; i++)
