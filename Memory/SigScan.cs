@@ -127,7 +127,7 @@ namespace OsuRTDataProvider.Memory
 
             while (proc_min_address_l < proc_max_address_l)
             {
-                int size = VirtualQueryEx(handle, proc_min_address, out mem_basic_info, 28);
+                int size = VirtualQueryEx(handle, proc_min_address, out mem_basic_info, (uint)mem_info_size);
 
                 if (size != mem_info_size) break;
 
@@ -299,6 +299,7 @@ namespace OsuRTDataProvider.Memory
 
         #region PInvoke
 
+#if X86
         [StructLayout(LayoutKind.Sequential)]
         public struct MEMORY_BASIC_INFORMATION
         {
@@ -310,7 +311,21 @@ namespace OsuRTDataProvider.Memory
             public AllocationProtect Protect;
             public uint Type;
         }
-
+#elif X64
+        [StructLayout(LayoutKind.Sequential,Pack = 16)]
+        public struct MEMORY_BASIC_INFORMATION
+        {
+            public IntPtr BaseAddress;
+            public IntPtr AllocationBase;
+            public uint AllocationProtect;
+            public uint __alignment1;
+            public IntPtr RegionSize;
+            public uint State;
+            public AllocationProtect Protect;
+            public uint Type;
+            public uint __alignment2;
+        }
+#endif
         public enum AllocationProtect : uint
         {
             PAGE_EXECUTE = 0x00000010,
@@ -374,6 +389,6 @@ namespace OsuRTDataProvider.Memory
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool CloseHandle(IntPtr hObject);
 
-        #endregion PInvoke
+#endregion PInvoke
     }
 }
