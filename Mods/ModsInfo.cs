@@ -87,6 +87,7 @@ namespace OsuRTDataProvider.Mods
             {
                 ModsInfo m;
                 m.m_mod = Mods.Unknown;
+                m.m_time_rate = 1.0;
                 return m;
             }
         }
@@ -106,10 +107,21 @@ namespace OsuRTDataProvider.Mods
                     value &= ~Mods.Autoplay;
                 else if ((value & Mods.Perfect) == Mods.Perfect)
                     value &= ~Mods.SuddenDeath;
-                m_mod = value;
+
+                if ((value & Mods.Nightcore) > 0 || (value & Mods.DoubleTime) > 0)
+                    m_time_rate = 1.5;
+                else if ((value & Mods.HalfTime) > 0)
+                    m_time_rate = 0.75;
+                else
+                    m_time_rate = 1.0;
+
+            m_mod = value;
             }
             get => m_mod;
         }
+
+        public double m_time_rate;
+        public double TimeRate => m_time_rate;
 
         /// <summary>
         /// Get Mods Name

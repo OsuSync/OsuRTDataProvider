@@ -102,7 +102,7 @@ namespace OsuRTDataProvider.Listen
         public event OnHitCountChangedEvt OnCount50Changed;
 
         /// <summary>
-        /// Mania: RGB 300
+        /// Mania: 300g
         /// </summary>
         public event OnHitCountChangedEvt OnCountGekiChanged;
 
