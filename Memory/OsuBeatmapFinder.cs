@@ -15,7 +15,6 @@ namespace OsuRTDataProvider.Memory
         private static readonly int s_beatmap_offset = 0xc0;
         private static readonly int s_beatmap_set_offset = 0xc4;
 
-        private static readonly int s_title_offset = 0x7c;
         private static readonly int s_beatmap_folder_offset = 0x70;
         private static readonly int s_beatmap_filename_offset = 0x88;
 

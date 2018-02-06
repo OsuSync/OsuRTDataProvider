@@ -156,6 +156,11 @@ namespace OsuRTDataProvider.Mods
             }
         }
 
+        public bool HasMod(Mods mods)
+        {
+            return (m_mod & mods) > 0;
+        }
+
         public override string ToString()
         {
             return ShortName;

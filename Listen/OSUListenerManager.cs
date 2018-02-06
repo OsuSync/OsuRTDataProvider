@@ -50,6 +50,12 @@ namespace OsuRTDataProvider.Listen
         public delegate void OnHitCountChangedEvt(int hit);
 
         /// <summary>
+        /// Available in Playing and Linsten.
+        /// If too old beatmap, map.ID = -1.
+        /// </summary>
+        public event Action<int> OnScoreChanged;
+
+        /// <summary>
         /// Available in Linsten.
         /// </summary>
         public event OnPlayModeChangedEvt OnPlayModeChanged;
@@ -149,6 +155,8 @@ namespace OsuRTDataProvider.Listen
         private int m_last_geki = 0;
         private int m_last_katu = 0;
 
+        private int m_last_score = 0;
+
         #endregion last status
 
         private bool m_is_tourney = false;
@@ -234,6 +242,7 @@ namespace OsuRTDataProvider.Listen
             data.HealthPoint = 0;
             data.Accuracy = 0;
             data.Time = 0;
+            data.Score = 0;
 
             if (HasMask(mask, ProvideDataMask.Beatmap))
             {
@@ -311,6 +320,12 @@ namespace OsuRTDataProvider.Listen
             {
                 if (OnPlayModeChanged == null) OnPlayModeChanged += (t, t2) => { };
                 data.PlayMode = m_last_mode;
+            }
+
+            if(HasMask(mask,ProvideDataMask.Score))
+            {
+                if (OnScoreChanged == null) OnScoreChanged += (s) => { };
+                data.Score = m_last_score;
             }
 
             return data;
@@ -490,6 +505,7 @@ namespace OsuRTDataProvider.Listen
                     int ngeki = 0;
                     int nkatu = 0;
                     int nmiss = 0;
+                    int score = 0;
                     double hp = 0.0;
                     double acc = 0.0;
 
@@ -515,6 +531,7 @@ namespace OsuRTDataProvider.Listen
                             if (OnCountMissChanged != null) nmiss = m_play_finder.GetMissCount();
                             if (OnAccuracyChanged != null) acc = m_play_finder.GetCurrentAccuracy();
                             if (OnHealthPointChanged != null) hp = m_play_finder.GetCurrentHP();
+                            if (OnScoreChanged != null) score = m_play_finder.GetCurrentScore();
                         }
 
                         if (mods != m_last_mods)
@@ -525,6 +542,9 @@ namespace OsuRTDataProvider.Listen
 
                         if (acc != m_last_acc)
                             OnAccuracyChanged?.Invoke(acc);
+
+                        if (score != m_last_score)
+                            OnScoreChanged?.Invoke(score);
 
                         if (n300 != m_last_300)
                             OnCount300Changed?.Invoke(n300);
@@ -579,6 +599,7 @@ namespace OsuRTDataProvider.Listen
                     m_last_geki = ngeki;
                     m_last_katu = nkatu;
                     m_last_miss = nmiss;
+                    m_last_score = score;
                     m_last_osu_status = status;
                 }
             }

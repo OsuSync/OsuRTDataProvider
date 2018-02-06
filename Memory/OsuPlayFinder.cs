@@ -71,82 +71,66 @@ namespace OsuRTDataProvider.Memory
 
         public double GetCurrentAccuracy()
         {
-            TryReadIntPtrFromMemory(m_acc_address, out IntPtr tmp_ptr);
-            if (!m_use_acc_address2)
-                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x48, out tmp_ptr);
+            TryReadIntPtrFromMemory(RulesetBaseAddress + 0x48, out var tmp_ptr);
 
             TryReadDoubleFromMemory(tmp_ptr + 0x14, out double value);
             return value;
         }
 
+        public double GetCurrentHP()
+        {
+            TryReadIntPtrFromMemory(RulesetBaseAddress + 0x40, out var tmp_ptr);
+
+            TryReadDoubleFromMemory(tmp_ptr + 0x1c, out double value);
+            return value;
+        }
+
+        #region Score Address
+
+        public int GetCurrentScore()
+        {
+            TryReadIntFromMemory(ScoreBaseAddress + 0x74, out var value);
+            return value;
+        }
+
         public int GetCurrentCombo()
         {
-            TryReadIntPtrFromMemory(m_acc_address, out IntPtr tmp_ptr);
-            if (!m_use_acc_address2) TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
-
-            TryReadShortFromMemory(tmp_ptr + 0x90, out var value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x90, out var value);
             return value;
         }
 
         public int GetMissCount()
         {
-            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            if (!m_use_acc_address2)
-                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
-
-            TryReadShortFromMemory(tmp_ptr + 0x8e, out var value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x8e, out var value);
             return value;
         }
 
         public int Get300Count()
         {
-            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            if (!m_use_acc_address2)
-                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
-
-            TryReadShortFromMemory(tmp_ptr + 0x86, out ushort value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x86, out ushort value);
             return value;
         }
 
         public int Get100Count()
         {
-            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            if (!m_use_acc_address2)
-                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
-
-            TryReadShortFromMemory(tmp_ptr + 0x84, out var value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x84, out var value);
             return value;
         }
 
         public int Get50Count()
         {
-            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            if (!m_use_acc_address2)
-                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
-
-            TryReadShortFromMemory(tmp_ptr + 0x88, out var value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x88, out var value);
             return value;
         }
 
         /// <summary>
         /// Osu Geki
-        /// Mania RGB 300
+        /// Mania 300g
         /// </summary>
         /// <returns></returns>
         public int GetGekiCount()
         {
-            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            if (!m_use_acc_address2)
-                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
-
-            TryReadShortFromMemory(tmp_ptr + 0x8a, out var value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x8a, out var value);
             return value;
         }
 
@@ -156,38 +140,13 @@ namespace OsuRTDataProvider.Memory
         /// </summary>
         public int GetKatuCount()
         {
-            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            if (!m_use_acc_address2)
-                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
-
-            TryReadShortFromMemory(tmp_ptr + +0x8c, out var value);
-            return value;
-        }
-
-        public int GetPlayingTime()
-        {
-            TryReadIntFromMemory(m_time_address, out int value);
-            return value;
-        }
-
-        public double GetCurrentHP()
-        {
-            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            if (!m_use_acc_address2)
-                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x40, out tmp_ptr);
-
-            TryReadDoubleFromMemory(tmp_ptr + 0x1c, out double value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x8c, out var value);
             return value;
         }
 
         public ModsInfo GetCurrentMods()
         {
-            TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-            if (!m_use_acc_address2)
-                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x38, out tmp_ptr);
+            var tmp_ptr = ScoreBaseAddress;
 
             TryReadIntPtrFromMemory(tmp_ptr + 0x1c, out var salt_ptr);
             TryReadIntPtrFromMemory(tmp_ptr + 0x1c, out var mods_ptr);
@@ -201,6 +160,37 @@ namespace OsuRTDataProvider.Memory
                 };
             }
             return ModsInfo.Empty;
+        }
+        #endregion
+
+        #region Time Address
+        public int GetPlayingTime()
+        {
+            TryReadIntFromMemory(m_time_address, out int value);
+            return value;
+        }
+        #endregion
+
+
+
+        private IntPtr RulesetBaseAddress
+        {
+            get
+            {
+                TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
+                if (!m_use_acc_address2)
+                    TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
+                return tmp_ptr;
+            }
+        }
+
+        private IntPtr ScoreBaseAddress
+        {
+            get
+            {
+                TryReadIntPtrFromMemory(RulesetBaseAddress + 0x38, out var tmp_ptr);
+                return tmp_ptr;
+            }
         }
     }
 }

@@ -21,6 +21,7 @@ namespace OsuRTDataProvider.Listen
         Mods = 1u << 10,
         GameMode = 1u << 11,
         Beatmap = 1u << 12,
+        Score = 1u << 13,
 
         HitCount = Count300 | Count100 | Count50 | CountMiss | CountGeki | CountKatu,
     }
@@ -44,5 +45,6 @@ namespace OsuRTDataProvider.Listen
         public int CountGeki;
         public int CountKatu;
         public int Time;
+        public int Score;
     }
 }
