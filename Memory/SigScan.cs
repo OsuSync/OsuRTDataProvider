@@ -308,7 +308,7 @@ namespace OsuRTDataProvider.Memory
 
         #region PInvoke
 
-#if X86
+#if !X64
         [StructLayout(LayoutKind.Sequential)]
         public struct MEMORY_BASIC_INFORMATION
         {
@@ -320,7 +320,7 @@ namespace OsuRTDataProvider.Memory
             public AllocationProtect Protect;
             public uint Type;
         }
-#elif X64
+#else
         [StructLayout(LayoutKind.Sequential,Pack = 16)]
         public struct MEMORY_BASIC_INFORMATION
         {
