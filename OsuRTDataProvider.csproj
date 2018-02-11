@@ -104,6 +104,7 @@
   <ItemGroup>
     <Compile Include="BeatmapInfo\Beatmap.cs" />
     <Compile Include="DefaultLanguage.cs" />
+    <Compile Include="Helper\PathHelper.cs" />
     <Compile Include="Listen\OSUListenerManager.cs" />
     <Compile Include="Listen\ProvideData.cs" />
     <Compile Include="Listen\PlayMode.cs" />
