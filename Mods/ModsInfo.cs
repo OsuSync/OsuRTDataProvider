@@ -120,7 +120,7 @@ namespace OsuRTDataProvider.Mods
             get => m_mod;
         }
 
-        public double m_time_rate;
+        private double m_time_rate;
         public double TimeRate => m_time_rate;
 
         /// <summary>

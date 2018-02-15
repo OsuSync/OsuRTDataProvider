@@ -64,6 +64,7 @@ namespace OsuRTDataProvider.BeatmapInfo
         public string ArtistUnicode { get; private set; } = string.Empty;
         public string Title { get; private set; } = string.Empty;
         public string TitleUnicode { get; private set; } = string.Empty;
+        public string AudioFilename { get; private set; } = string.Empty;
 
         /// <summary>
         /// Return the first of all possible beatmap set paths.
@@ -97,7 +98,7 @@ namespace OsuRTDataProvider.BeatmapInfo
                     do
                     {
                         string str = sr.ReadLine().Trim();
-                        if (str.StartsWith("[Metadata]"))
+                        if (str.StartsWith("[Metadata]")|| str.StartsWith("[General]"))
                         {
                             while (!sr.EndOfStream)
                             {
@@ -131,6 +132,11 @@ namespace OsuRTDataProvider.BeatmapInfo
                                 {
                                     GetPropertyValue(str, out string val);
                                     Creator = val;
+                                }
+                                else if(str.StartsWith("AudioFilename"))
+                                {
+                                    GetPropertyValue(str, out string val);
+                                    AudioFilename = val;
                                 }
                                 else if (str.StartsWith("[") || string.IsNullOrWhiteSpace(str))
                                     goto end;
