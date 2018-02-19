@@ -98,6 +98,7 @@ namespace OsuRTDataProvider.BeatmapInfo
                     do
                     {
                         string str = sr.ReadLine().Trim();
+                        if (str.StartsWith("[HitObjects]")) break;
                         if (str.StartsWith("[Metadata]")|| str.StartsWith("[General]"))
                         {
                             while (!sr.EndOfStream)
@@ -133,19 +134,18 @@ namespace OsuRTDataProvider.BeatmapInfo
                                     GetPropertyValue(str, out string val);
                                     Creator = val;
                                 }
-                                else if(str.StartsWith("AudioFilename"))
+                                else if (str.StartsWith("AudioFilename"))
                                 {
                                     GetPropertyValue(str, out string val);
                                     AudioFilename = val;
                                 }
-                                else if (str.StartsWith("[") || string.IsNullOrWhiteSpace(str))
-                                    goto end;
+                                else if (string.IsNullOrWhiteSpace(str))
+                                    break;
                             }
                         }
                     } while (!sr.EndOfStream);
                 }
             }
-            end:;
         }
 
         public static bool operator ==(Beatmap a, Beatmap b)
