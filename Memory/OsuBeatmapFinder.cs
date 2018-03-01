@@ -33,14 +33,16 @@ namespace OsuRTDataProvider.Memory
             {
                 //Find Beatmap ID Address
                 m_beatmap_address = SigScan.FindPattern(StringToByte(s_beatmap_pattern), s_beatmap_mask, 11);
+                EncryptLog($"Beatmap Base Address (0):0x{(int)m_beatmap_address:X8}");
+
                 success = TryReadIntPtrFromMemory(m_beatmap_address, out m_beatmap_address);
+                EncryptLog($"Beatmap Base Address (1):0x{(int)m_beatmap_address:X8}");
             }
             SigScan.ResetRegion();
 
             if (m_beatmap_address == IntPtr.Zero)
                 success = false;
 
-            EncryptLog($"Playing Beatmap Base Address:0x{(int)m_beatmap_address:X8}");
             return success;
         }
 

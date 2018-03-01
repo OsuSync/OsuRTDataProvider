@@ -43,17 +43,30 @@ namespace OsuRTDataProvider.Memory
             {
                 //Find acc Address
                 m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern), s_acc_mask, 11);
+                EncryptLog($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
+
                 m_accuracy_address_success = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
+                EncryptLog($"Playing Accuracy Base Address (1):0x{(int)m_acc_address:X8}");
+
                 if (!m_accuracy_address_success)
                 {
+                    EncryptLog($"Use Accuracy Address2");
+
                     m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern2), s_acc_mask2, 4);
+                    EncryptLog($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
+
                     m_accuracy_address_success = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
+                    EncryptLog($"Playing Accuracy Base Address (1):0x{(int)m_acc_address:X8}");
+
                     m_use_acc_address2 = true;
                 }
 
                 //Find Time Address
                 m_time_address = SigScan.FindPattern(StringToByte(s_time_pattern), s_time_mask, 5);
+                EncryptLog($"Time Base Address (0):0x{(int)m_time_address:X8}");
+
                 m_time_address_success = TryReadIntPtrFromMemory(m_time_address, out m_time_address);
+                EncryptLog($"Time Base Address (1):0x{(int)m_time_address:X8}");
             }
             SigScan.ResetRegion();
 
@@ -61,10 +74,6 @@ namespace OsuRTDataProvider.Memory
 
             if (m_acc_address == IntPtr.Zero || m_time_address == IntPtr.Zero)
                 success = false;
-
-            EncryptLog($"Use Accuracy Address2={m_use_acc_address2}");
-            EncryptLog($"Playing Accuracy Base Address:0x{(int)m_acc_address:X8}");
-            EncryptLog($"Playing Time Base Address:0x{(int)m_time_address:X8}");
 
             return success;
         }
