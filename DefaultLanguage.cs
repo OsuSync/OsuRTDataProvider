@@ -1,4 +1,5 @@
 ﻿using Sync.Tools;
+using Sync.Tools.ConfigGUI;
 
 namespace OsuRTDataProvider
 {
@@ -17,5 +18,20 @@ namespace OsuRTDataProvider
         public static LanguageElement LANG_INIT_MODE_FINDER_SUCCESS = "[OsuRTDataProvider][ID:{0}]Init ModeFinder Success!";
 
         public static LanguageElement LANG_BEATMAP_NOT_FOUND = "Beatmap not found";
+
+        [ConfigI18n]
+        public static LanguageElement ListenInterval = "Listen interval";
+
+        [ConfigI18n]
+        public static LanguageElement EnableTourneyMode = "Tourney mode";
+
+        [ConfigI18n]
+        public static LanguageElement TeamSize = "Team size";
+
+        [ConfigI18n]
+        public static LanguageElement DebugMode = "Debug mode";
+
+        [ConfigI18n]
+        public static LanguageElement ForceOsuSongsDirectory = "Force OSU! songs directory";
     }
 }

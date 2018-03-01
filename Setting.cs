@@ -1,14 +1,24 @@
-﻿using Sync.Tools;
+﻿using Sync.Tools.ConfigGUI;
+using Sync.Tools;
 using System;
 
 namespace OsuRTDataProvider
 {
     public class SettingIni : IConfigurable
     {
+        [ConfigInteger(MinValue = 1,MaxValue = 10000,NeedRestart = true)]
         public ConfigurationElement ListenInterval { set; get; }
+
+        [ConfigBool(NeedRestart = true)]
         public ConfigurationElement EnableTourneyMode { get; set; }
+
+        [ConfigInteger(MinValue = 1,MaxValue = 8,NeedRestart = true)]
         public ConfigurationElement TeamSize { get; set; }
+
+        [ConfigBool(NeedRestart = true)]
         public ConfigurationElement DebugMode { get; set; }
+
+        [ConfigPath(IsFilePath =false,NeedRestart = true)]
         public ConfigurationElement ForceOsuSongsDirectory { get; set; }
 
         public void onConfigurationLoad()
