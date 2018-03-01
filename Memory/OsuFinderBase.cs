@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Sync.Tools;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace OsuRTDataProvider.Memory
@@ -32,39 +34,22 @@ namespace OsuRTDataProvider.Memory
 
         private List<byte> _a = new List<byte>(64);
 
-        private string _key1 = "(A_Ud0ahsof;askf";
-        private string strKey = "aifjle;fbn vksig";
-
+        private string _public_key = @"<RSAKeyValue><Modulus>yAs66SUY9SqPiZcoriVGzbLkpHGzJcyhLustyfA6fNQjE8COalr6rnjgyI44hFSYkhpz6ThMjsnINLDPv23k6ZkPzQSXA7HyBDHUj6L8xf9YoypWjGlRbou6usynWfK525bzOomGaLFSmz8WN0KZgzfsP42oHBHcwv6DeWurwH2KZogYv8NDAACslizbApJET3oPFPdiO/PnwMOoPpXnJYSE00S23ZsEFkqj1eGOWnB7Xije/NDL1ijxSFn27YhT66dI64mluz1818LaaPDYvCHivkCKqhKdpJeDrYfOZiY2v2Hpn3hr/DUEM14vJTpBTDxBfG498X5j5J0gZDQ8gQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>";
         protected void EncryptLog(string plainText)
         {
             string msg = plainText;
+            ISyncOutput output = IO.CurrentIO;
 
-#if WithEncryptLog
-            if (Setting.DebugMode)
+#if !DEBUG
+            output = IO.FileLogger;
+            using(RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
             {
-                //分组加密算法
-                SymmetricAlgorithm des = Rijndael.Create();
-                byte[] inputByteArray = Encoding.UTF8.GetBytes(plainText);//得到需要加密的字节数组
-                                                                          //设置密钥及密钥向量
-                des.Key = Encoding.UTF8.GetBytes(strKey);
-                des.IV = StringToByte(_key1);
-
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    using (CryptoStream cs = new CryptoStream(ms, des.CreateEncryptor(), CryptoStreamMode.Write))
-                    {
-                        cs.Write(inputByteArray, 0, inputByteArray.Length);
-                        cs.FlushFinalBlock();
-                        byte[] cipherBytes = ms.ToArray();//得到加密后的字节数组
-                        msg = $"{Convert.ToBase64String(cipherBytes)}";
-                    }
-                }
-                Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]{msg}");
+                rsa.FromXmlString(_public_key);
+                byte[] cipherbytes = rsa.Encrypt(Encoding.UTF8.GetBytes(plainText), false);
+                msg = Convert.ToBase64String(cipherbytes);
             }
 #endif
-#if DEBUG
-            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]{msg}");
-#endif
+            output.Write($"[OsuRTDataProvider]{msg}");
         }
 
         protected byte[] StringToByte(string s)
