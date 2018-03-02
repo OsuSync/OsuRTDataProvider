@@ -31,7 +31,7 @@ namespace OsuRTDataProvider.Listen
         {
             ["Osu"] = OsuPlayMode.Osu,
             ["Taiko"] = OsuPlayMode.Taiko,
-            ["CTB"] = OsuPlayMode.CatchTheBeat,
+            ["CatchTheBeat"] = OsuPlayMode.CatchTheBeat,
             ["Mania"] = OsuPlayMode.Mania,
         };
 
@@ -513,10 +513,9 @@ namespace OsuRTDataProvider.Listen
                 {
                     if(Setting.GameMode!="Auto")
                     {
-                        OsuPlayMode mode = s_game_mode_map[Setting.GameMode];
-
-                        if (m_last_mode != mode)
-                            OnPlayModeChanged?.Invoke(m_last_mode, mode);
+                        if(s_game_mode_map.TryGetValue(Setting.GameMode,out var mode))
+                            if (m_last_mode != mode)
+                                OnPlayModeChanged?.Invoke(m_last_mode, mode);
 
                         m_last_mode = mode;
                     }

@@ -15,7 +15,7 @@ namespace OsuRTDataProvider
     {
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
-        public const string VERSION = "1.3.4";
+        public const string VERSION = "1.3.5";
         public static SyncHost SyncHost { get; private set; }
 
         private PluginConfigurationManager m_config_manager;
