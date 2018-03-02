@@ -61,11 +61,16 @@ namespace OsuRTDataProvider.Helper
 
         private static void Print(string str)
         {
+#if !DEBUG
             Sync.Tools.IO.FileLogger.Write($"[OsuRTDataProvider]{str}");
+#else
+            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]{str}");
+#endif
         }
 
         public static void PrintHardwareInformation()
         {
+            Print($"CLI: {Environment.Version}");
             Print($"OS: {GetOSInformation()}");
             Print($"CPU: {GetProcessorInformation()}");
             Print($"Memory:  {GetPhysicalMemory()} Total");
