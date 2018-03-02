@@ -10,6 +10,12 @@ namespace OsuRTDataProvider
         public ConfigurationElement TeamSize { get; set; }
         public ConfigurationElement DebugMode { get; set; }
         public ConfigurationElement ForceOsuSongsDirectory { get; set; }
+        //Auto,Osu,Taiko,Mania,CTB
+        public ConfigurationElement GameMode
+        {
+            get => Setting.GameMode;
+            set => Setting.GameMode = value;
+        }
 
         public void onConfigurationLoad()
         {
@@ -54,6 +60,7 @@ namespace OsuRTDataProvider
         public static bool EnableTourneyMode = false;
         public static int TeamSize = 1;
         public static string ForceOsuSongsDirectory = "";
+        public static string GameMode = "Auto";
 
         public static string SongsPath = string.Empty;//不保存
         public static string OsuVersion = string.Empty;

@@ -61,7 +61,7 @@ namespace OsuRTDataProvider.Helper
 
         private static void Print(string str)
         {
-            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]{str}");
+            Sync.Tools.IO.FileLogger.Write($"[OsuRTDataProvider]{str}");
         }
 
         public static void PrintHardwareInformation()

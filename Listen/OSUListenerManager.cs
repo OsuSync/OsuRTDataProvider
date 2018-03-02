@@ -27,6 +27,14 @@ namespace OsuRTDataProvider.Listen
             Rank
         }
 
+        private static Dictionary<string, OsuPlayMode> s_game_mode_map = new Dictionary<string, OsuPlayMode>(4)
+        {
+            ["Osu"] = OsuPlayMode.Osu,
+            ["Taiko"] = OsuPlayMode.Taiko,
+            ["CTB"] = OsuPlayMode.CatchTheBeat,
+            ["Mania"] = OsuPlayMode.Mania,
+        };
+
         static private List<Tuple<int, Action>> m_action_list = new List<Tuple<int, Action>>();
         static private Task m_listen_task;
         static private bool m_stop = false;
@@ -477,7 +485,7 @@ namespace OsuRTDataProvider.Listen
                     m_beatmap_finder = InitFinder<OsuBeatmapFinder>(LANG_INIT_BEATMAP_FINDER_SUCCESS, LANG_INIT_BEATMAP_FINDER_FAILED);
                 }
 
-                if (m_mode_finder == null)
+                if (Setting.GameMode=="Auto"&&m_mode_finder == null)
                 {
                     m_mode_finder=InitFinder<OsuPlayModesFinder>(LANG_INIT_MODE_FINDER_SUCCESS, LANG_INIT_MODE_FINDER_FAILED);
                 }
@@ -500,6 +508,18 @@ namespace OsuRTDataProvider.Listen
                         OnPlayModeChanged?.Invoke(m_last_mode, mode);
 
                     m_last_mode = mode;
+                }
+                else
+                {
+                    if(Setting.GameMode!="Auto")
+                    {
+                        OsuPlayMode mode = s_game_mode_map[Setting.GameMode];
+
+                        if (m_last_mode != mode)
+                            OnPlayModeChanged?.Invoke(m_last_mode, mode);
+
+                        m_last_mode = mode;
+                    }
                 }
 
                 if (m_play_finder != null)
