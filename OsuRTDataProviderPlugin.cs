@@ -1,4 +1,5 @@
 ﻿using OsuRTDataProvider.BeatmapInfo;
+using OsuRTDataProvider.Helper;
 using OsuRTDataProvider.Listen;
 using OsuRTDataProvider.Mods;
 using Sync;
@@ -43,6 +44,7 @@ namespace OsuRTDataProvider
         {
             I18n.Instance.ApplyLanguage(new DefaultLanguage());
             base.EventBus.BindEvent<PluginEvents.InitCommandEvent>(InitCommand);
+            base.EventBus.BindEvent<PluginEvents.ProgramReadyEvent>((e)=>HardwareInformationHelper.PrintHardwareInformation());
         }
 
         public override void OnEnable()
