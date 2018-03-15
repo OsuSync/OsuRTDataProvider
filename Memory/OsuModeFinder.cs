@@ -6,10 +6,11 @@ namespace OsuRTDataProvider.Memory
 {
     internal class OsuPlayModesFinder : OsuFinderBase
     {
-        //74 60 89 0d 0 0 0 0 8b 3d 0 0 0 0 85 ff
-        private static readonly string s_mode_pattern = "\x74\x60\x89\x0d\x0\x0\x0\x0\x8b\x3d\x0\x0\x0\x0\x85\xff";
+        //8B 40 30 FF 50 14 83 3D 00000000 03    
 
-        private static readonly string s_mode_mask = "xxxx????xx????xx";
+        private static readonly string s_mode_pattern = "\x8B\x40\x30\xFF\x50\x14\x83\x3D\x00\x00\x00\x00\x03";
+
+        private static readonly string s_mode_mask = "xxxxxxxx????x";
 
         private IntPtr m_mode_address;
 
@@ -23,7 +24,7 @@ namespace OsuRTDataProvider.Memory
 
             SigScan.Reload();
             {
-                m_mode_address = SigScan.FindPattern(StringToByte(s_mode_pattern), s_mode_mask, 4);
+                m_mode_address = SigScan.FindPattern(StringToByte(s_mode_pattern), s_mode_mask,8);
                 EncryptLog($"Mode Address (0):0x{(int)m_mode_address:X8}");
 
                 success = TryReadIntPtrFromMemory(m_mode_address, out m_mode_address);

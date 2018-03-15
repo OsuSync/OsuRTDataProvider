@@ -485,16 +485,16 @@ namespace OsuRTDataProvider.Listen
                     m_beatmap_finder = InitFinder<OsuBeatmapFinder>(LANG_INIT_BEATMAP_FINDER_SUCCESS, LANG_INIT_BEATMAP_FINDER_FAILED);
                 }
 
-                if (Setting.GameMode=="Auto"&&m_mode_finder == null)
-                {
-                    m_mode_finder=InitFinder<OsuPlayModesFinder>(LANG_INIT_MODE_FINDER_SUCCESS, LANG_INIT_MODE_FINDER_FAILED);
-                }
-
                 if (status == OsuStatus.Playing)
                 {
                     if (m_play_finder == null)
                     {
                         m_play_finder=InitFinder<OsuPlayFinder>(LANG_INIT_PLAY_FINDER_SUCCESS,LANG_INIT_PLAY_FINDER_FAILED);
+                    }
+
+                    if (Setting.GameMode == "Auto" && m_mode_finder == null)
+                    {
+                        m_mode_finder = InitFinder<OsuPlayModesFinder>(LANG_INIT_MODE_FINDER_SUCCESS, LANG_INIT_MODE_FINDER_FAILED);
                     }
                 }
 

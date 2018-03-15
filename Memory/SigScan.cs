@@ -135,7 +135,7 @@ namespace OsuRTDataProvider.Memory
                     break;
                 }
 
-                if (mem_basic_info.Protect == AllocationProtect.PAGE_EXECUTE_READWRITE && mem_basic_info.State == MEM_COMMIT)
+                if ((mem_basic_info.Protect & AllocationProtect.PAGE_EXECUTE_READWRITE)>0 && mem_basic_info.State == MEM_COMMIT)
                 {
                     var region = new MemoryRegion()
                     {
@@ -315,7 +315,7 @@ namespace OsuRTDataProvider.Memory
             public IntPtr BaseAddress;
             public IntPtr AllocationBase;
             public uint AllocationProtect;
-            public IntPtr RegionSize;
+            public uint RegionSize;
             public uint State;
             public AllocationProtect Protect;
             public uint Type;
@@ -328,7 +328,7 @@ namespace OsuRTDataProvider.Memory
             public IntPtr AllocationBase;
             public uint AllocationProtect;
             public uint __alignment1;
-            public IntPtr RegionSize;
+            public ulong RegionSize;
             public uint State;
             public AllocationProtect Protect;
             public uint Type;
