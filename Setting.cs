@@ -6,21 +6,22 @@ namespace OsuRTDataProvider
 {
     public class SettingIni : IConfigurable
     {
-        [ConfigInteger(MinValue = 1,MaxValue = 10000,NeedRestart = true)]
+        [Integer(MinValue = 1,MaxValue = 10000,NeedRestart = true)]
         public ConfigurationElement ListenInterval { set; get; }
 
-        [ConfigBool(NeedRestart = true)]
+        [Bool(NeedRestart = true)]
         public ConfigurationElement EnableTourneyMode { get; set; }
 
-        [ConfigInteger(MinValue = 1,MaxValue = 8,NeedRestart = true)]
+        [Integer(MinValue = 1,MaxValue = 8,NeedRestart = true)]
         public ConfigurationElement TeamSize { get; set; }
 
-        [ConfigBool(NeedRestart = true)]
+        [Bool(NeedRestart = true)]
         public ConfigurationElement DebugMode { get; set; }
 
-        [ConfigPath(IsFilePath =false,NeedRestart = true)]
+        [Path(IsDirectory = true,NeedRestart = true)]
         public ConfigurationElement ForceOsuSongsDirectory { get; set; }
         //Auto,Osu,Taiko,Mania,CTB
+        [List(ValueList = new string[] { "Auto", "Osu", "Taiko", "CatchTheBeat", "Mania" })]
         public ConfigurationElement GameMode
         {
             get => Setting.GameMode;

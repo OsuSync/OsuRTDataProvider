@@ -19,19 +19,11 @@ namespace OsuRTDataProvider
 
         public static LanguageElement LANG_BEATMAP_NOT_FOUND = "Beatmap not found";
 
-        [ConfigI18n]
-        public static LanguageElement ListenInterval = "Listen interval";
-
-        [ConfigI18n]
-        public static LanguageElement EnableTourneyMode = "Tourney mode";
-
-        [ConfigI18n]
-        public static LanguageElement TeamSize = "Team size";
-
-        [ConfigI18n]
-        public static LanguageElement DebugMode = "Debug mode";
-
-        [ConfigI18n]
-        public static LanguageElement ForceOsuSongsDirectory = "Force OSU! songs directory";
+        public static GuiLanguageElement ListenInterval = "Listen interval";
+        public static GuiLanguageElement EnableTourneyMode = "Tourney mode";
+        public static GuiLanguageElement TeamSize = "Team size";
+        public static GuiLanguageElement DebugMode = "Debug mode";
+        public static GuiLanguageElement ForceOsuSongsDirectory = "Force OSU! songs directory";
+        public static GuiLanguageElement GameMode = "Game Mode";
     }
 }
