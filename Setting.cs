@@ -6,19 +6,23 @@ namespace OsuRTDataProvider
 {
     public class SettingIni : IConfigurable
     {
-        [Integer(MinValue = 1,MaxValue = 10000,NeedRestart = true)]
-        public ConfigurationElement ListenInterval { set; get; }
+        [Integer(MinValue = 1,MaxValue = 10000)]
+        public ConfigurationElement ListenInterval
+        {
+            set => Setting.ListenInterval = int.Parse(value);
+            get => Setting.ListenInterval.ToString();
+        }
 
-        [Bool(NeedRestart = true)]
+        [Bool(RequireRestart = true)]
         public ConfigurationElement EnableTourneyMode { get; set; }
 
-        [Integer(MinValue = 1,MaxValue = 8,NeedRestart = true)]
+        [Integer(MinValue = 1,MaxValue = 8,RequireRestart = true)]
         public ConfigurationElement TeamSize { get; set; }
 
-        [Bool(NeedRestart = true)]
+        [Bool(RequireRestart = true)]
         public ConfigurationElement DebugMode { get; set; }
 
-        [Path(IsDirectory = true,NeedRestart = true)]
+        [Path(IsDirectory = true,RequireRestart = true)]
         public ConfigurationElement ForceOsuSongsDirectory { get; set; }
         //Auto,Osu,Taiko,Mania,CTB
         [List(ValueList = new string[] { "Auto", "Osu", "Taiko", "CatchTheBeat", "Mania" })]

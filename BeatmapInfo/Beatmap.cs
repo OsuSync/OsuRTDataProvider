@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using static OsuRTDataProvider.DefaultLanguage;
 
@@ -75,9 +76,6 @@ namespace OsuRTDataProvider.BeatmapInfo
         public int OsuClientID { get; private set; }
         public string Filename { get; private set; } = string.Empty;
         public string FilenameFull { get; private set; } = string.Empty;
-
-        [Obsolete("LocationFile is obsoleted,Please use FilenameFull", true)]
-        public string LocationFile => FilenameFull;
 
         public static Beatmap Empty => new Beatmap(0, -1, -1, null);
 
@@ -165,6 +163,36 @@ namespace OsuRTDataProvider.BeatmapInfo
         {
             int pos = line.IndexOf(':');
             val = line.Substring(pos + 1).Trim();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var beatmap = obj as Beatmap;
+            return beatmap != null &&
+                   BeatmapID == beatmap.BeatmapID &&
+                   BeatmapSetID == beatmap.BeatmapSetID &&
+                   Difficulty == beatmap.Difficulty &&
+                   Creator == beatmap.Creator &&
+                   Artist == beatmap.Artist &&
+                   ArtistUnicode == beatmap.ArtistUnicode &&
+                   Title == beatmap.Title &&
+                   TitleUnicode == beatmap.TitleUnicode &&
+                   Filename == beatmap.Filename;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -173464191;
+            hashCode = hashCode * -1521134295 + BeatmapID.GetHashCode();
+            hashCode = hashCode * -1521134295 + BeatmapSetID.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Difficulty);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Creator);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Artist);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(ArtistUnicode);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Title);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(TitleUnicode);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Filename);
+            return hashCode;
         }
     }
 }
