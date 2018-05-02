@@ -148,15 +148,12 @@ namespace OsuRTDataProvider.BeatmapInfo
 
         public static bool operator ==(Beatmap a, Beatmap b)
         {
-            bool ret = false;
-            ret = a.BeatmapID == b.BeatmapID;
-            ret = ret && (a.BeatmapSetID == b.BeatmapSetID);
-            return ret;
+            return a.Equals(b);
         }
 
         public static bool operator !=(Beatmap a, Beatmap b)
         {
-            return !(a == b);
+            return !a.Equals(b);
         }
 
         private static void GetPropertyValue(string line, out string val)
@@ -174,9 +171,7 @@ namespace OsuRTDataProvider.BeatmapInfo
                    Difficulty == beatmap.Difficulty &&
                    Creator == beatmap.Creator &&
                    Artist == beatmap.Artist &&
-                   ArtistUnicode == beatmap.ArtistUnicode &&
                    Title == beatmap.Title &&
-                   TitleUnicode == beatmap.TitleUnicode &&
                    Filename == beatmap.Filename;
         }
 
@@ -188,9 +183,7 @@ namespace OsuRTDataProvider.BeatmapInfo
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Difficulty);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Creator);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Artist);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(ArtistUnicode);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Title);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(TitleUnicode);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Filename);
             return hashCode;
         }
