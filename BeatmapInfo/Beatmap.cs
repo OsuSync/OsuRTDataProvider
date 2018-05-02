@@ -164,15 +164,17 @@ namespace OsuRTDataProvider.BeatmapInfo
 
         public override bool Equals(object obj)
         {
-            var beatmap = obj as Beatmap;
-            return beatmap != null &&
-                   BeatmapID == beatmap.BeatmapID &&
-                   BeatmapSetID == beatmap.BeatmapSetID &&
-                   Difficulty == beatmap.Difficulty &&
-                   Creator == beatmap.Creator &&
-                   Artist == beatmap.Artist &&
-                   Title == beatmap.Title &&
-                   Filename == beatmap.Filename;
+            if (obj is Beatmap beatmap)
+            {
+                return BeatmapID == beatmap.BeatmapID &&
+                       BeatmapSetID == beatmap.BeatmapSetID &&
+                       Difficulty == beatmap.Difficulty &&
+                       Creator == beatmap.Creator &&
+                       Artist == beatmap.Artist &&
+                       Title == beatmap.Title &&
+                       Filename == beatmap.Filename;
+            }
+            return false;
         }
 
         public override int GetHashCode()
