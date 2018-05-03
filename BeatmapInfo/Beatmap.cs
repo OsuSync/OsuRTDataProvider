@@ -59,7 +59,8 @@ namespace OsuRTDataProvider.BeatmapInfo
             private set => m_beatmap_id = value;
         }
 
-        public string Difficulty { get; private set; } = string.Empty;
+        public string Version { get; private set; } = string.Empty;
+        public string Difficulty => Version;
         public string Creator { get; private set; } = string.Empty;
         public string Artist { get; private set; } = string.Empty;
         public string ArtistUnicode { get; private set; } = string.Empty;
@@ -109,7 +110,7 @@ namespace OsuRTDataProvider.BeatmapInfo
                         {
                             foreach(var prop in typeof(Beatmap).GetProperties())
                             {
-                                if(line.StartsWith(prop.Name))
+                                if (line.StartsWith(prop.Name))
                                 {
                                     object val=GetPropertyValue(line);
                                     if (prop.PropertyType == typeof(int))
