@@ -66,6 +66,8 @@ namespace OsuRTDataProvider.BeatmapInfo
         public string Title { get; private set; } = string.Empty;
         public string TitleUnicode { get; private set; } = string.Empty;
         public string AudioFilename { get; private set; } = string.Empty;
+        public string BackgroundFilename { get; private set; } = string.Empty;
+        public string VideoFilename { get; private set; } = string.Empty;
 
         /// <summary>
         /// Return the first of all possible beatmap set paths.
@@ -77,7 +79,8 @@ namespace OsuRTDataProvider.BeatmapInfo
         public string Filename { get; private set; } = string.Empty;
         public string FilenameFull { get; private set; } = string.Empty;
 
-        public static Beatmap Empty => new Beatmap(0, -1, -1, null);
+        private static readonly Beatmap s_empty = new Beatmap(0, -1, -1, null);
+        public static Beatmap Empty => s_empty;
 
         public Beatmap(int osu_id, int set_id, int id, FileStream fs)
         {
@@ -93,55 +96,44 @@ namespace OsuRTDataProvider.BeatmapInfo
 
                 using (var sr = new StreamReader(fs))
                 {
-                    do
+                    string block = "";
+
+                    while(!sr.EndOfStream)
                     {
-                        string str = sr.ReadLine().Trim();
-                        if (str.StartsWith("[HitObjects]")) break;
-                        if (str.StartsWith("[Metadata]")|| str.StartsWith("[General]"))
+                        string line = sr.ReadLine().Trim();
+                        if (line.StartsWith("[")&&line.EndsWith("]"))
                         {
-                            while (!sr.EndOfStream)
+                            block = line;
+                        }
+                        else if(block== "[General]"||block== "[Metadata]")
+                        {
+                            foreach(var prop in typeof(Beatmap).GetProperties())
                             {
-                                str = sr.ReadLine().Trim();
-                                if (str.StartsWith("ArtistUnicode"))
+                                if(line.StartsWith(prop.Name))
                                 {
-                                    GetPropertyValue(str, out string val);
-                                    ArtistUnicode = val;
+                                    object val=GetPropertyValue(line);
+                                    if (prop.PropertyType == typeof(int))
+                                        val = int.Parse(val as string);
+                                    if (prop.PropertyType == typeof(double))
+                                        val = double.Parse(val as string);
+                                    prop.SetValue(this, val);
                                 }
-                                else if (str.StartsWith("Artist"))
-                                {
-                                    GetPropertyValue(str, out string val);
-                                    Artist = val;
-                                }
-                                else if (str.StartsWith("TitleUnicode"))
-                                {
-                                    GetPropertyValue(str, out string val);
-                                    TitleUnicode = val;
-                                }
-                                else if (str.StartsWith("Title"))
-                                {
-                                    GetPropertyValue(str, out string val);
-                                    Title = val;
-                                }
-                                else if (str.StartsWith("Version"))
-                                {
-                                    GetPropertyValue(str, out string val);
-                                    Difficulty = val;
-                                }
-                                else if (str.StartsWith("Creator"))
-                                {
-                                    GetPropertyValue(str, out string val);
-                                    Creator = val;
-                                }
-                                else if (str.StartsWith("AudioFilename"))
-                                {
-                                    GetPropertyValue(str, out string val);
-                                    AudioFilename = val;
-                                }
-                                else if (string.IsNullOrWhiteSpace(str))
-                                    break;
                             }
                         }
-                    } while (!sr.EndOfStream);
+                        else if(block=="[Events]")
+                        {
+                            if(line.StartsWith("Video"))
+                            {
+                                var breaked=line.Split(',');
+                                VideoFilename = breaked[2].Replace("\"","").Trim();
+                            }
+                            else if(line.StartsWith("0,")&&string.IsNullOrEmpty(BackgroundFilename))
+                            {
+                                var breaked = line.Split(',');
+                                BackgroundFilename = breaked[2].Replace("\"", "").Trim();
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -156,10 +148,10 @@ namespace OsuRTDataProvider.BeatmapInfo
             return !a.Equals(b);
         }
 
-        private static void GetPropertyValue(string line, out string val)
+        private static string GetPropertyValue(string line)
         {
             int pos = line.IndexOf(':');
-            val = line.Substring(pos + 1).Trim();
+            return line.Substring(pos + 1).Trim();
         }
 
         public override bool Equals(object obj)
