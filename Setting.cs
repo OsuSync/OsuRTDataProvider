@@ -66,11 +66,6 @@ namespace OsuRTDataProvider
 
         public void onConfigurationSave()
         {
-            DebugMode = Setting.DebugMode.ToString();
-            ListenInterval = Setting.ListenInterval.ToString();
-            EnableTourneyMode = Setting.EnableTourneyMode.ToString();
-            TeamSize = Setting.TeamSize.ToString();
-            ForceOsuSongsDirectory = Setting.ForceOsuSongsDirectory;
         }
     }
 
