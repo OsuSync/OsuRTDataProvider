@@ -409,7 +409,8 @@ namespace OsuRTDataProvider.Listen
                     }
                 }
                 _find_osu_process_timer = 0;
-                Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_NOT_FOUND, m_osu_id), ConsoleColor.Red);
+                if(!Setting.DisableProcessNotFoundInformation)
+                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_NOT_FOUND, m_osu_id), ConsoleColor.Red);
             }
             _find_osu_process_timer += Setting.ListenInterval;
         }

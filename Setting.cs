@@ -31,6 +31,12 @@ namespace OsuRTDataProvider
             get => Setting.GameMode;
             set => Setting.GameMode = value;
         }
+        [Bool]
+        public ConfigurationElement DisableProcessNotFoundInformation
+        {
+            set => Setting.DisableProcessNotFoundInformation = bool.Parse(value);
+            get => Setting.DisableProcessNotFoundInformation.ToString();
+        }
 
         public void onConfigurationLoad()
         {
@@ -76,6 +82,7 @@ namespace OsuRTDataProvider
         public static int TeamSize = 1;
         public static string ForceOsuSongsDirectory = "";
         public static string GameMode = "Auto";
+        public static bool DisableProcessNotFoundInformation = false;
 
         public static string SongsPath = string.Empty;//不保存
         public static string OsuVersion = string.Empty;
