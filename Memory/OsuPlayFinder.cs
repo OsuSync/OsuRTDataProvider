@@ -21,13 +21,16 @@ namespace OsuRTDataProvider.Memory
 
         //0x5e,0x5f,0x5d,0xc3,0xa1,0x0,0x0,0x0,0x0,0x89,0x0,0x04
         private static readonly string s_time_pattern = "\x5e\x5f\x5d\xc3\xa1\x0\x0\x0\x0\x89\x0\x04";
-
         private static readonly string s_time_mask = "xxxxx????x?x";
+
+        private static readonly string s_global_mods_pattern = "\x85\xC0\x75\x62\xA1\x00\x00\x00\x00\x89\x45\xC0\x8B\x40\x04";
+        private static readonly string s_global_mods_mask = "xxxxx????xxxxxx";
 
         #endregion Address Arguments
 
         private IntPtr m_acc_address;//acc,combo,hp,mods,300hit,100hit,50hit,miss Base Address
         private IntPtr m_time_address;
+        private IntPtr m_mods_address;
 
         public OsuPlayFinder(Process osu) : base(osu)
         {
@@ -41,6 +44,11 @@ namespace OsuRTDataProvider.Memory
 
             SigScan.Reload();
             {
+                //Find mods address
+                m_mods_address = SigScan.FindPattern(StringToByte(s_global_mods_pattern), s_global_mods_mask, 5);
+                TryReadIntPtrFromMemory(m_mods_address, out m_mods_address);
+                EncryptLog($"Mods Base Address (0):0x{(int)m_mods_address:X8}");
+
                 //Find acc Address
                 m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern), s_acc_mask, 11);
                 EncryptLog($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
@@ -155,12 +163,19 @@ namespace OsuRTDataProvider.Memory
 
         public ModsInfo GetCurrentMods()
         {
-            var tmp_ptr = ScoreBaseAddress;
+            IntPtr mods_ptr;
 
-            TryReadIntPtrFromMemory(tmp_ptr + 0x1c, out var salt_ptr);
-            TryReadIntPtrFromMemory(tmp_ptr + 0x1c, out var mods_ptr);
+            if (!Setting.EnableModsChangedAtListening)
+            {
+                var tmp_ptr = ScoreBaseAddress;
+                TryReadIntPtrFromMemory(tmp_ptr + 0x1c, out mods_ptr);
+            }
+            else
+            {
+                TryReadIntPtrFromMemory(m_mods_address, out mods_ptr);
+            }
 
-            if (TryReadIntFromMemory(salt_ptr + 0x8, out int salt) &&
+            if (TryReadIntFromMemory(mods_ptr + 0x8, out int salt) &&
                 TryReadIntFromMemory(mods_ptr + 0xc, out int mods))
             {
                 return new ModsInfo()

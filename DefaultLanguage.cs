@@ -26,5 +26,6 @@ namespace OsuRTDataProvider
         public static GuiLanguageElement ForceOsuSongsDirectory = "Force OSU! songs directory";
         public static GuiLanguageElement GameMode = "Game Mode";
         public static GuiLanguageElement DisableProcessNotFoundInformation = "Disable OSU! process not found information";
+        public static GuiLanguageElement EnableModsChangedAtListening = "Enable Mods Changed At Listening(Experimental)";
     }
 }
