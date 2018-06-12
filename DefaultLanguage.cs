@@ -19,7 +19,7 @@ namespace OsuRTDataProvider
 
         public static LanguageElement LANG_BEATMAP_NOT_FOUND = "Beatmap not found";
 
-        public static GuiLanguageElement ListenInterval = "Listen interval";
+        public static GuiLanguageElement ListenInterval = "Listen interval(ms)";
         public static GuiLanguageElement EnableTourneyMode = "Tourney mode";
         public static GuiLanguageElement TeamSize = "Team size";
         public static GuiLanguageElement DebugMode = "Debug mode";
