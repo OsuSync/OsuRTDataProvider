@@ -23,6 +23,8 @@ namespace OsuRTDataProvider
         private OsuListenerManager[] m_listener_managers = new OsuListenerManager[16];
         private int m_listener_managers_count = 0;
 
+        public bool ModsChangedAtListening => Setting.EnableModsChangedAtListening;
+
         /// <summary>
         /// If EnableTourneyMode = false in config.ini, return 0.
         /// If EnableTourneyMode = true in config.ini, return TeamSize * 2.
