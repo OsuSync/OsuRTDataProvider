@@ -642,11 +642,14 @@ namespace OsuRTDataProvider.Listen
 
             OsuInternalStatus mode = m_status_finder.GetCurrentOsuModes();
 
+#if DEBUG
             if(mode != m_last_test)
             {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[ORTDP Test]Internal Status:{mode}", ConsoleColor.Green);
+                Sync.Tools.IO.CurrentIO.WriteColor($"[ORTDP Debug]Internal Status:{mode}", ConsoleColor.DarkYellow);
             }
             m_last_test = mode;
+#endif
+
             switch (mode)
             {
                 case OsuInternalStatus.Unknown:
