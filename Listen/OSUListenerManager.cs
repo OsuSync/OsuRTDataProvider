@@ -17,6 +17,7 @@ namespace OsuRTDataProvider.Listen
 {
     public class OsuListenerManager
     {
+        [Flags]
         public enum OsuStatus
         {
             NoFoundProcess,
@@ -24,7 +25,8 @@ namespace OsuRTDataProvider.Listen
             Listening,
             Playing,
             Editing,
-            Rank
+            Rank,
+            Idle
         }
 
         private static Dictionary<string, OsuPlayMode> s_game_mode_map = new Dictionary<string, OsuPlayMode>(4)
@@ -536,8 +538,7 @@ namespace OsuRTDataProvider.Listen
 
                     if (OnBeatmapChanged != null) beatmap = m_beatmap_finder.GetCurrentBeatmap(m_osu_id);
                     if (OnPlayingTimeChanged != null) pt = m_play_finder.GetPlayingTime();
-                    if(Setting.EnableModsChangedAtListening)
-                        if (OnModsChanged != null) mods = m_play_finder.GetCurrentMods();
+                    if (Setting.EnableModsChangedAtListening) if (OnModsChanged != null) mods = m_play_finder.GetCurrentMods();
 
                     try
                     {
@@ -548,8 +549,7 @@ namespace OsuRTDataProvider.Listen
 
                         if (status == OsuStatus.Playing)
                         {
-                            if (!Setting.EnableModsChangedAtListening)
-                                if (OnModsChanged != null) mods = m_play_finder.GetCurrentMods();
+                            if (!Setting.EnableModsChangedAtListening) if (OnModsChanged != null) mods = m_play_finder.GetCurrentMods();
                             if (OnComboChanged != null) cb = m_play_finder.GetCurrentCombo();
                             if (OnCount300Changed != null) n300 = m_play_finder.Get300Count();
                             if (OnCount100Changed != null) n100 = m_play_finder.Get100Count();
@@ -561,6 +561,9 @@ namespace OsuRTDataProvider.Listen
                             if (OnHealthPointChanged != null) hp = m_play_finder.GetCurrentHP();
                             if (OnScoreChanged != null) score = m_play_finder.GetCurrentScore();
                         }
+
+                        if (!ModsInfo.VaildMods(mods))
+                            mods = m_last_mods;
 
                         if (mods != m_last_mods)
                             OnModsChanged?.Invoke(mods);
@@ -624,6 +627,8 @@ namespace OsuRTDataProvider.Listen
             }
         }
 
+
+        private OsuInternalStatus m_last_test = OsuInternalStatus.Menu;
         private OsuStatus GetCurrentOsuStatus()
         {
             if (m_osu_process == null) return OsuStatus.NoFoundProcess;
@@ -637,15 +642,36 @@ namespace OsuRTDataProvider.Listen
 
             OsuInternalStatus mode = m_status_finder.GetCurrentOsuModes();
 
-            if (mode == OsuInternalStatus.Unknown) return OsuStatus.Unkonwn;
+            if(mode != m_last_test)
+            {
+                Sync.Tools.IO.CurrentIO.WriteColor($"[ORTDP Test]Internal Status:{mode}", ConsoleColor.Green);
+            }
+            m_last_test = mode;
+            switch (mode)
+            {
+                case OsuInternalStatus.Unknown:
+                    return OsuStatus.Unkonwn;
 
-            if (mode == OsuInternalStatus.Edit) return OsuStatus.Editing;
+                case OsuInternalStatus.Edit:
+                    return OsuStatus.Editing;
 
-            if (mode == OsuInternalStatus.Play) return OsuStatus.Playing;
+                case OsuInternalStatus.Play:
+                    return OsuStatus.Playing;
 
-            if (mode == OsuInternalStatus.Rank) return OsuStatus.Rank;
+                case OsuInternalStatus.RankingTagCoop:
+                case OsuInternalStatus.RankingTeam:
+                case OsuInternalStatus.RankingVs:
+                case OsuInternalStatus.Rank:
+                    return OsuStatus.Rank;
 
-            return OsuStatus.Listening;
+                case OsuInternalStatus.Lobby:
+                case OsuInternalStatus.Menu:
+                case OsuInternalStatus.OnlineSelection:
+                    return OsuStatus.Idle;
+
+                default:
+                    return OsuStatus.Listening;
+            }
         }
     }
 }

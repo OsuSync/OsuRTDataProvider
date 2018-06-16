@@ -115,13 +115,32 @@ namespace OsuRTDataProvider.Mods
                 else
                     m_time_rate = 1.0;
 
-            m_mod = value;
+                m_mod = value;
             }
             get => m_mod;
         }
 
         private double m_time_rate;
         public double TimeRate => m_time_rate;
+
+        private static readonly List<Mods> s_invaild_mods_mask = new List<Mods> {
+            Mods.Easy|Mods.HardRock,
+            Mods.HalfTime|Mods.DoubleTime,
+            Mods.SuddenDeath|Mods.AutoPilot,
+            Mods.AutoPilot|Mods.Relax,
+            Mods.NoFail|Mods.SuddenDeath,
+            Mods.NoFail|Mods.Perfect
+        };
+
+        public static bool VaildMods(ModsInfo mods)
+        {
+            foreach(var mask in s_invaild_mods_mask)
+            {
+                if ((mask & mods.Mod) > 0)
+                    return false;
+            }
+            return true;
+        }
 
         /// <summary>
         /// Get Mods Name
