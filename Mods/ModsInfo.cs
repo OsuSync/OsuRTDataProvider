@@ -129,7 +129,11 @@ namespace OsuRTDataProvider.Mods
             Mods.SuddenDeath|Mods.AutoPilot,
             Mods.AutoPilot|Mods.Relax,
             Mods.NoFail|Mods.SuddenDeath,
-            Mods.NoFail|Mods.Perfect
+            Mods.NoFail|Mods.Perfect,
+            Mods.NoFail|Mods.Relax,
+            Mods.NoFail|Mods.AutoPilot,
+            Mods.Relax|Mods.SuddenDeath,
+            Mods.SpunOut|Mods.AutoPilot
         };
 
         public static bool VaildMods(ModsInfo mods)
