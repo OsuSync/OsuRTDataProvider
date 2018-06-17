@@ -136,7 +136,7 @@ namespace OsuRTDataProvider.Mods
         {
             foreach(var mask in s_invaild_mods_mask)
             {
-                if ((mask & mods.Mod) > 0)
+                if ((mask & mods.Mod) == mask)
                     return false;
             }
             return true;
