@@ -455,7 +455,7 @@ namespace OsuRTDataProvider.Listen
                     }
                 }
             }
-            catch (Win32Exception e)
+            catch (Win32Exception)
             {
                 return;
             }

@@ -61,7 +61,7 @@ namespace OsuRTDataProvider
                     IO.CurrentIO.Write("TeameSize∈[1,8]");
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 onConfigurationSave();
             }
