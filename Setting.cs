@@ -1,4 +1,4 @@
-﻿using Sync.Tools.ConfigGUI;
+﻿using Sync.Tools.ConfigurationAttribute;
 using Sync.Tools;
 using System;
 

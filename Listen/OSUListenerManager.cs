@@ -562,7 +562,7 @@ namespace OsuRTDataProvider.Listen
                             if (OnScoreChanged != null) score = m_play_finder.GetCurrentScore();
                         }
 
-                        if (!ModsInfo.VaildMods(mods))
+                        if (mods != ModsInfo.Empty && !ModsInfo.VaildMods(mods))
                             mods = m_last_mods;
 
                         if (mods != m_last_mods)

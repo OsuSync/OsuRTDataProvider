@@ -1,5 +1,5 @@
 ﻿using Sync.Tools;
-using Sync.Tools.ConfigGUI;
+using Sync.Tools.ConfigurationAttribute;
 
 namespace OsuRTDataProvider
 {
