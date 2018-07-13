@@ -161,19 +161,29 @@ namespace OsuRTDataProvider.Memory
             return value;
         }
 
+        public ModsInfo GetCurrentModsAtListening()
+        {
+            IntPtr mods_ptr;
+            TryReadIntPtrFromMemory(m_mods_address, out mods_ptr);
+
+            if (TryReadIntFromMemory(mods_ptr + 0x8, out int salt) &&
+                TryReadIntFromMemory(mods_ptr + 0xc, out int mods))
+            {
+                return new ModsInfo()
+                {
+                    Mod = (ModsInfo.Mods)(mods ^ salt)
+                };
+            }
+            return ModsInfo.Empty;
+        }
+
         public ModsInfo GetCurrentMods()
         {
             IntPtr mods_ptr;
 
-            if (!Setting.EnableModsChangedAtListening)
-            {
-                var tmp_ptr = ScoreBaseAddress;
-                TryReadIntPtrFromMemory(tmp_ptr + 0x1c, out mods_ptr);
-            }
-            else
-            {
-                TryReadIntPtrFromMemory(m_mods_address, out mods_ptr);
-            }
+
+            var tmp_ptr = ScoreBaseAddress;
+            TryReadIntPtrFromMemory(tmp_ptr + 0x1c, out mods_ptr);
 
             if (TryReadIntFromMemory(mods_ptr + 0x8, out int salt) &&
                 TryReadIntFromMemory(mods_ptr + 0xc, out int mods))
