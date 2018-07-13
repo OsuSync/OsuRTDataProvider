@@ -537,7 +537,8 @@ namespace OsuRTDataProvider.Listen
 
                     if (OnBeatmapChanged != null) beatmap = m_beatmap_finder.GetCurrentBeatmap(m_osu_id);
                     if (OnPlayingTimeChanged != null) pt = m_play_finder.GetPlayingTime();
-                    if (Setting.EnableModsChangedAtListening) if (OnModsChanged != null) mods = m_play_finder.GetCurrentModsAtListening();
+                    if (Setting.EnableModsChangedAtListening && status != OsuStatus.Playing)
+                        if (OnModsChanged != null) mods = m_play_finder.GetCurrentModsAtListening();
 
                     try
                     {
