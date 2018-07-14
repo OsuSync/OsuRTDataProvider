@@ -46,7 +46,8 @@ namespace OsuRTDataProvider
         {
             I18n.Instance.ApplyLanguage(new DefaultLanguage());
             base.EventBus.BindEvent<PluginEvents.InitCommandEvent>(InitCommand);
-            base.EventBus.BindEvent<PluginEvents.ProgramReadyEvent>((e)=>HardwareInformationHelper.PrintHardwareInformation());
+            base.EventBus.BindEvent<PluginEvents.ProgramReadyEvent>((e) => HardwareInformationHelper.PrintHardwareInformation());
+            base.EventBus.BindEvent<PluginEvents.ProgramReadyEvent>((e) => IO.CurrentIO.WriteColor(string.Format(DefaultLanguage.LANG_TOURNEY_HINT, Setting.EnableTourneyMode), ConsoleColor.Green));
         }
 
         public override void OnEnable()

@@ -7,6 +7,7 @@ namespace OsuRTDataProvider
     {
         public static LanguageElement LANG_OSU_NOT_FOUND = "[OsuRTDataProvider][ID:{0}]Not found osu!.exe process";
         public static LanguageElement LANG_OSU_FOUND = "[OsuRTDataProvider][ID:{0}]Found osu!.exe process";
+        public static LanguageElement LANG_TOURNEY_HINT = "[OsuRTDataProvider]Tourney Mode: {0}";
 
         public static LanguageElement LANG_INIT_STATUS_FINDER_FAILED = "[OsuRTDataProvider][ID:{0}]Init StatusFinder Failed! Retry after {1} seconds";
         public static LanguageElement LANG_INIT_STATUS_FINDER_SUCCESS = "[OsuRTDataProvider][ID:{0}]Init StatusFinder Success!";
