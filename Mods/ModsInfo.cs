@@ -133,7 +133,49 @@ namespace OsuRTDataProvider.Mods
             Mods.NoFail|Mods.Relax,
             Mods.NoFail|Mods.AutoPilot,
             Mods.Relax|Mods.SuddenDeath,
-            Mods.SpunOut|Mods.AutoPilot
+            Mods.SpunOut|Mods.AutoPilot,
+            Mods.Key1 | Mods.Key3,
+            Mods.Key1 | Mods.Key4,
+            Mods.Key1 | Mods.Key5,
+            Mods.Key1 | Mods.Key6,
+            Mods.Key1 | Mods.Key7,
+            Mods.Key1 | Mods.Key8,
+            Mods.Key1 | Mods.Key9,
+
+            Mods.Key2 | Mods.Key3,
+            Mods.Key2 | Mods.Key4,
+            Mods.Key2 | Mods.Key5,
+            Mods.Key2 | Mods.Key6,
+            Mods.Key2 | Mods.Key7,
+            Mods.Key2 | Mods.Key8,
+            Mods.Key2 | Mods.Key9,
+
+            Mods.Key3 | Mods.Key4,
+            Mods.Key3 | Mods.Key5,
+            Mods.Key3 | Mods.Key6,
+            Mods.Key3 | Mods.Key7,
+            Mods.Key3 | Mods.Key8,
+            Mods.Key3 | Mods.Key9,
+
+            Mods.Key4 | Mods.Key5,
+            Mods.Key4 | Mods.Key6,
+            Mods.Key4 | Mods.Key7,
+            Mods.Key4 | Mods.Key8,
+            Mods.Key4 | Mods.Key9,
+
+            Mods.Key5 | Mods.Key6,
+            Mods.Key5 | Mods.Key7,
+            Mods.Key5 | Mods.Key8,
+            Mods.Key5 | Mods.Key9,
+
+            Mods.Key6 | Mods.Key7,
+            Mods.Key6 | Mods.Key8,
+            Mods.Key6 | Mods.Key9,
+
+            Mods.Key7 | Mods.Key8,
+            Mods.Key7 | Mods.Key9,
+
+            Mods.Key8 | Mods.Key9,
         };
 
         public static bool VaildMods(ModsInfo mods)
