@@ -460,9 +460,13 @@ namespace OsuRTDataProvider.Listen
                     }
                 }
             }
-            catch (Win32Exception)
+            catch (Win32Exception e)
             {
-                return;
+                if (Setting.DebugMode)
+                {
+                    Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Unknown error, search for song path failed.", ConsoleColor.Yellow);
+                    Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Win32Exception: {e.ToString()}",ConsoleColor.Yellow);
+                }
             }
 
             if (string.IsNullOrWhiteSpace(Setting.SongsPath))
