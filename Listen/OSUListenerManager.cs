@@ -418,10 +418,10 @@ namespace OsuRTDataProvider.Listen
 
         private void FindOsuSongPath()
         {
-            string osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
-
+            string osu_path = "";
             try
             {
+                osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
                 string osu_config_file = Path.Combine(osu_path, $"osu!.{PathHelper.WindowsPathStrip(Environment.UserName)}.cfg");
                 string song_path;
 
