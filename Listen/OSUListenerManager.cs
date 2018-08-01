@@ -329,7 +329,7 @@ namespace OsuRTDataProvider.Listen
                 data.PlayMode = m_last_mode;
             }
 
-            if(HasMask(mask,ProvideDataMask.Score))
+            if (HasMask(mask, ProvideDataMask.Score))
             {
                 if (OnScoreChanged == null) OnScoreChanged += (s) => { };
                 data.Score = m_last_score;
@@ -344,7 +344,7 @@ namespace OsuRTDataProvider.Listen
         private const long _retry_time = 3000;
 
         Dictionary<Type, long> _finder_timer_dict = new Dictionary<Type, long>();
-        private T InitFinder<T>(string success_fmt,string failed_fmt)where T:OsuFinderBase
+        private T InitFinder<T>(string success_fmt, string failed_fmt) where T : OsuFinderBase
         {
             if (!_finder_timer_dict.ContainsKey(typeof(T)))
                 _finder_timer_dict.Add(typeof(T), 0);
@@ -354,7 +354,7 @@ namespace OsuRTDataProvider.Listen
 
             if (timer % _retry_time == 0)
             {
-                finder = typeof(T).GetConstructors()[0].Invoke(new object[]{ m_osu_process}) as T;
+                finder = typeof(T).GetConstructors()[0].Invoke(new object[] { m_osu_process }) as T;
                 if (finder.TryInit())
                 {
                     timer = 0;
@@ -366,7 +366,7 @@ namespace OsuRTDataProvider.Listen
                 Sync.Tools.IO.CurrentIO.WriteColor(string.Format(failed_fmt, m_osu_id, _retry_time / 1000), ConsoleColor.Red);
             }
             timer += Setting.ListenInterval;
-            _finder_timer_dict[typeof(T)]=timer;
+            _finder_timer_dict[typeof(T)] = timer;
             return finder;
         }
         #endregion
@@ -410,7 +410,7 @@ namespace OsuRTDataProvider.Listen
                     }
                 }
                 _find_osu_process_timer = 0;
-                if(!Setting.DisableProcessNotFoundInformation)
+                if (!Setting.DisableProcessNotFoundInformation)
                     Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_NOT_FOUND, m_osu_id), ConsoleColor.Red);
             }
             _find_osu_process_timer += Setting.ListenInterval;
@@ -418,15 +418,10 @@ namespace OsuRTDataProvider.Listen
 
         private void FindOsuSongPath()
         {
-            if (!string.IsNullOrWhiteSpace(Setting.ForceOsuSongsDirectory))
-            {
-                Setting.SongsPath = Setting.ForceOsuSongsDirectory;
-                return;
-            }
+            string osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
 
             try
             {
-                string osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
                 string osu_config_file = Path.Combine(osu_path, $"osu!.{PathHelper.WindowsPathStrip(Environment.UserName)}.cfg");
                 string song_path;
 
@@ -437,14 +432,25 @@ namespace OsuRTDataProvider.Listen
                     {
                         string line = sr.ReadLine();
 
+
                         if (line.Contains("BeatmapDirectory"))
                         {
-                            song_path = line.Split('=')[1].Trim();
-                            if (Path.IsPathRooted(song_path))
-                                Setting.SongsPath = song_path;
+                            if (Directory.Exists(Setting.ForceOsuSongsDirectory))
+                            {
+                                Setting.SongsPath = Setting.ForceOsuSongsDirectory;
+                            }
                             else
-                                Setting.SongsPath = Path.Combine(osu_path, song_path);
+                            {
+                                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]ForceOsuSongsDirectory: {Setting.ForceOsuSongsDirectory}", ConsoleColor.Yellow);
+                                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]The ForceOsuSongsDirectory does not exist, try searching for the songs path.",ConsoleColor.Yellow);
+                                song_path = line.Split('=')[1].Trim();
+                                if (Path.IsPathRooted(song_path))
+                                    Setting.SongsPath = song_path;
+                                else
+                                    Setting.SongsPath = Path.Combine(osu_path, song_path);
+                            }
                         }
+
                         else if (line.Contains("LastVersion"))
                         {
                             Setting.OsuVersion = line.Split('=')[1].Trim();
@@ -458,6 +464,13 @@ namespace OsuRTDataProvider.Listen
             {
                 return;
             }
+
+            if (string.IsNullOrWhiteSpace(Setting.SongsPath))
+            {
+                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Search failed, use default songs path.", ConsoleColor.Yellow);
+                Setting.SongsPath = Path.Combine(osu_path,"Songs");
+            }
+            Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Beatmap Path: {Setting.SongsPath}", ConsoleColor.Green);
         }
         #endregion
 
@@ -487,7 +500,7 @@ namespace OsuRTDataProvider.Listen
                 {
                     if (m_play_finder == null)
                     {
-                        m_play_finder=InitFinder<OsuPlayFinder>(LANG_INIT_PLAY_FINDER_SUCCESS,LANG_INIT_PLAY_FINDER_FAILED);
+                        m_play_finder = InitFinder<OsuPlayFinder>(LANG_INIT_PLAY_FINDER_SUCCESS, LANG_INIT_PLAY_FINDER_FAILED);
                     }
 
                     if (Setting.GameMode == "Auto" && m_mode_finder == null)
@@ -509,9 +522,9 @@ namespace OsuRTDataProvider.Listen
                 }
                 else
                 {
-                    if(Setting.GameMode!="Auto")
+                    if (Setting.GameMode != "Auto")
                     {
-                        if(s_game_mode_map.TryGetValue(Setting.GameMode,out var mode))
+                        if (s_game_mode_map.TryGetValue(Setting.GameMode, out var mode))
                             if (m_last_mode != mode)
                                 OnPlayModeChanged?.Invoke(m_last_mode, mode);
 
@@ -643,7 +656,7 @@ namespace OsuRTDataProvider.Listen
             OsuInternalStatus mode = m_status_finder.GetCurrentOsuModes();
 
 #if DEBUG
-            if(mode != m_last_test)
+            if (mode != m_last_test)
             {
                 Sync.Tools.IO.CurrentIO.WriteColor($"[ORTDP Debug]Internal Status:{mode}", ConsoleColor.DarkYellow);
             }

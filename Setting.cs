@@ -22,8 +22,12 @@ namespace OsuRTDataProvider
         [Bool(RequireRestart = true)]
         public ConfigurationElement DebugMode { get; set; }
 
-        [Path(IsDirectory = true,RequireRestart = true)]
-        public ConfigurationElement ForceOsuSongsDirectory { get; set; }
+        [Path(IsDirectory = true, RequireRestart = true)]
+        public ConfigurationElement ForceOsuSongsDirectory
+        {
+            get => Setting.ForceOsuSongsDirectory;
+            set => Setting.ForceOsuSongsDirectory = value;
+        }
         //Auto,Osu,Taiko,Mania,CTB
         [List(ValueList = new string[] { "Auto", "Osu", "Taiko", "CatchTheBeat", "Mania" })]
         public ConfigurationElement GameMode
