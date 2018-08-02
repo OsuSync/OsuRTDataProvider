@@ -474,6 +474,7 @@ namespace OsuRTDataProvider.Listen
                 Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Search failed, use default songs path.", ConsoleColor.Yellow);
                 Setting.SongsPath = Path.Combine(osu_path,"Songs");
             }
+            Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Osu Path: {osu_path}", ConsoleColor.Green);
             Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Beatmap Path: {Setting.SongsPath}", ConsoleColor.Green);
         }
         #endregion
