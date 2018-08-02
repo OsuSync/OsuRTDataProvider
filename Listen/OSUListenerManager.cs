@@ -25,6 +25,7 @@ namespace OsuRTDataProvider.Listen
             Playing,
             Editing,
             Rank,
+            MatchSetup,
             Idle
         }
 
@@ -689,7 +690,8 @@ namespace OsuRTDataProvider.Listen
                 case OsuInternalStatus.Menu:
                 case OsuInternalStatus.OnlineSelection:
                     return OsuStatus.Idle;
-
+                case OsuInternalStatus.MatchSetup:
+                    return OsuStatus.MatchSetup;
                 default:
                     return OsuStatus.Listening;
             }
