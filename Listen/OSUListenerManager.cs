@@ -17,16 +17,18 @@ namespace OsuRTDataProvider.Listen
 {
     public class OsuListenerManager
     {
-        public enum OsuStatus
+        [Flags]
+        public enum OsuStatus:UInt64
         {
-            NoFoundProcess,
-            Unkonwn,
-            Listening,
-            Playing,
-            Editing,
-            Rank,
-            MatchSetup,
-            Idle
+            NoFoundProcess = 1ul<<0,
+            Unkonwn = 1ul<<1,
+            SelectSong = 1ul<<2,
+            Playing = 1ul<<3,
+            Editing = 1ul<<4,
+            Rank = 1ul<<5,
+            MatchSetup = 1ul<<6,
+            Lobby = 1ul<<7,
+            Idle = 1ul<<8,
         }
 
         private static Dictionary<string, OsuPlayMode> s_game_mode_map = new Dictionary<string, OsuPlayMode>(4)
@@ -671,9 +673,6 @@ namespace OsuRTDataProvider.Listen
 
             switch (mode)
             {
-                case OsuInternalStatus.Unknown:
-                    return OsuStatus.Unkonwn;
-
                 case OsuInternalStatus.Edit:
                     return OsuStatus.Editing;
 
@@ -686,14 +685,24 @@ namespace OsuRTDataProvider.Listen
                 case OsuInternalStatus.Rank:
                     return OsuStatus.Rank;
 
-                case OsuInternalStatus.Lobby:
+                case OsuInternalStatus.BeatmapImport:
                 case OsuInternalStatus.Menu:
                 case OsuInternalStatus.OnlineSelection:
                     return OsuStatus.Idle;
+
                 case OsuInternalStatus.MatchSetup:
                     return OsuStatus.MatchSetup;
+
+                case OsuInternalStatus.Lobby:
+                    return OsuStatus.Lobby;
+
+                case OsuInternalStatus.SelectEdit:
+                case OsuInternalStatus.SelectMulti:
+                case OsuInternalStatus.SelectPlay:
+                    return OsuStatus.SelectSong;
+
                 default:
-                    return OsuStatus.Listening;
+                    return OsuStatus.Unkonwn;
             }
         }
     }
