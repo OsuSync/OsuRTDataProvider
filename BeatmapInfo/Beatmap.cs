@@ -110,7 +110,7 @@ namespace OsuRTDataProvider.BeatmapInfo
                         {
                             foreach(var prop in typeof(Beatmap).GetProperties())
                             {
-                                if (line.StartsWith(prop.Name))
+                                if (line.StartsWith($"{prop.Name}:"))
                                 {
                                     object val=GetPropertyValue(line);
                                     if (prop.PropertyType == typeof(int))
