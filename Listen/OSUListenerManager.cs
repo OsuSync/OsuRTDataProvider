@@ -173,11 +173,10 @@ namespace OsuRTDataProvider.Listen
 
         #endregion last status
 
-        private bool m_is_tourney = false;
-        private int m_osu_id = 0;
+        private readonly bool m_is_tourney = false;
+        private readonly int m_osu_id = 0;
 
         #region OsuRTDataProviderThread
-        private static Random s_random = new Random();
 
         static OsuListenerManager()
         {
