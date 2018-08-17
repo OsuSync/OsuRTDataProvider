@@ -15,6 +15,8 @@ OsuRTDataProvider can be obtained from [OSU!](https://osu.ppy.sh)(Stable Only):
 * Miss Count
 * Mods
 * Play Time
+* Score
+* Game Mode
 
 OSU! Clinet Version Requirements: **b20171225.2 After**  
 
