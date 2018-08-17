@@ -3,7 +3,7 @@
 OsuRTDataProvider是一个 [OsuSync](https://github.com/Deliay/osuSync) 插件.  
 实验性的支持Osu!Tourney。  
   
-OsuRTDataProvider能实时的从[OSU!](https://osu.ppy.sh)中获取以下内容(只支持Std):
+OsuRTDataProvider能实时的从[OSU!](https://osu.ppy.sh)中获取以下内容(只支持正式版):
 * BeatmapID
 * 游戏状态
 * Accuracy
@@ -15,6 +15,8 @@ OsuRTDataProvider能实时的从[OSU!](https://osu.ppy.sh)中获取以下内容(
 * Miss数量
 * Mods
 * 播放时间
+* 分数
+* 游戏模式
 
 OSU!客户端版本要求: **b20171225.2 之后**
 
@@ -31,7 +33,11 @@ OSU!客户端版本要求: **b20171225.2 之后**
 | ----- | ----- | ----- |
 | ListenInterval | 100 | 监听数据的间隔(单位毫秒)。PS:如果太小可能会卡 |  
 |EnableTourneyMode | False | 启用Tourney模式?(实验性) |
-| TeamSize | 1 | Tourney client的队伍大小|  
+| TeamSize | 1 | Tourney client的队伍大小|
+| ForceOsuSongsDirectory |  | 强制在指定路径中搜索Beatmap|
+| GameMode | Auto |如果ModeFinder初始化失败. 请手动设置游戏模式|
+| DisableProcessNotFoundInformation | False | 隐藏"没有发现osu.exe进程"|
+| EnableModsChangedAtListening | False | 尝试在非Play状态监听Mods变化|
 
 # API
 #### OsuRTDataProviderPlugin ***class***
