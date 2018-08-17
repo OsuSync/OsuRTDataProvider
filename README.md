@@ -3,7 +3,7 @@
 OsuRTDataProvider is an [OsuSync](https://github.com/Deliay/osuSync) plugin.  
 Experimental Support OSU!Tourney.  
   
-OsuRTDataProvider can be obtained from [OSU!](https://osu.ppy.sh)(Std Only):
+OsuRTDataProvider can be obtained from [OSU!](https://osu.ppy.sh)(Stable Only):
 * BeatmapID
 * Game Status
 * Accuracy
@@ -29,9 +29,13 @@ OSU! Clinet Version Requirements: **b20171225.2 After**
 
 |Setting Name|Default Value|Description|
 | ----- | ----- | ----- |
-| ListenInterval | 100 | Listen data interval(ms). PS: If it is too small may lag. |
+| ListenInterval | 100 | Listen data interval(ms). PS: If it is too small may lag |
 | EnableTourneyMode | False | Is tourney client?(Experimental)|
 | TeamSize | 1 | Tourney client team size|
+| ForceOsuSongsDirectory |  | Force search for Beatmap from this path|
+| GameMode | Auto |If ModeFinder initialization fails. Please manually select the current Mode.|
+| DisableProcessNotFoundInformation | False | Hide "Not found osu!.exe process"|
+| EnableModsChangedAtListening | False | Try to monitor Mods changes in non-Play status|
 
 # API
 #### OsuRTDataProviderPlugin ***class***
