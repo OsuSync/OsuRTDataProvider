@@ -45,15 +45,23 @@ namespace OsuRTDataProvider
         public OsuRTDataProviderPlugin() : base(PLUGIN_NAME, PLUGIN_AUTHOR)
         {
             I18n.Instance.ApplyLanguage(new DefaultLanguage());
+            m_config_manager = new PluginConfigurationManager(this);
+            m_config_manager.AddItem(new SettingIni());
+
+            if (Setting.DebugMode)
+            {
+                base.EventBus.BindEvent<PluginEvents.ProgramReadyEvent>((e) =>
+                    HardwareInformationHelper.PrintHardwareInformation());
+            }
+
             base.EventBus.BindEvent<PluginEvents.InitCommandEvent>(InitCommand);
-            base.EventBus.BindEvent<PluginEvents.ProgramReadyEvent>((e) => HardwareInformationHelper.PrintHardwareInformation());
             base.EventBus.BindEvent<PluginEvents.ProgramReadyEvent>((e) => IO.CurrentIO.WriteColor(string.Format(DefaultLanguage.LANG_TOURNEY_HINT, Setting.EnableTourneyMode), ConsoleColor.Green));
         }
 
         public override void OnEnable()
         {
-            m_config_manager = new PluginConfigurationManager(this);
-            m_config_manager.AddItem(new SettingIni());
+
+
 
             SyncHost = getHoster();
             Sync.Tools.IO.CurrentIO.WriteColor(PLUGIN_NAME + " By " + PLUGIN_AUTHOR, ConsoleColor.DarkCyan);
