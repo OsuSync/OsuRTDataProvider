@@ -39,9 +39,9 @@ namespace OsuRTDataProvider.Listen
             ["Mania"] = OsuPlayMode.Mania,
         };
 
-        static private List<Tuple<int, Action>> m_action_list = new List<Tuple<int, Action>>();
-        static private Task m_listen_task;
-        static private bool m_stop = false;
+        static private List<Tuple<int, Action>> s_listen_update_list = new List<Tuple<int, Action>>();
+        static private Task s_listen_task;
+        static private bool s_stop_flag = false;
 
         #region Event
 
@@ -180,17 +180,17 @@ namespace OsuRTDataProvider.Listen
 
         static OsuListenerManager()
         {
-            m_stop = false;
+            s_stop_flag = false;
 
-            m_listen_task = Task.Run(() =>
+            s_listen_task = Task.Run(() =>
             {
                 Thread.CurrentThread.Name = "OsuRTDataProviderThread";
                 Thread.Sleep(2000);
-                while (!m_stop)
+                while (!s_stop_flag)
                 {
-                    for (int i = 0; i < m_action_list.Count; i++)
+                    for (int i = 0; i < s_listen_update_list.Count; i++)
                     {
-                        var action = m_action_list[i];
+                        var action = s_listen_update_list[i];
                         action.Item2();
                     }
 
@@ -208,18 +208,18 @@ namespace OsuRTDataProvider.Listen
 
         public void Start()
         {
-            m_action_list.Add(new Tuple<int, Action>(m_osu_id, ListenLoopUpdate));
+            s_listen_update_list.Add(new Tuple<int, Action>(m_osu_id, ListenLoopUpdate));
         }
 
         public void Stop()
         {
-            var tuple = m_action_list.Where(t => t.Item1 == m_osu_id).FirstOrDefault();
-            m_action_list.Remove(tuple);
+            var tuple = s_listen_update_list.Where(t => t.Item1 == m_osu_id).FirstOrDefault();
+            s_listen_update_list.Remove(tuple);
 
-            if (m_action_list.Count == 0)
+            if (s_listen_update_list.Count == 0)
             {
-                m_stop = true;
-                m_listen_task.Wait();
+                s_stop_flag = true;
+                s_listen_task.Wait();
             }
         }
 
@@ -385,7 +385,7 @@ namespace OsuRTDataProvider.Listen
 
                 process_list = Process.GetProcessesByName("osu!");
 
-                if (m_stop) return;
+                if (s_stop_flag) return;
                 if (process_list.Length != 0)
                 {
                     if (m_is_tourney)

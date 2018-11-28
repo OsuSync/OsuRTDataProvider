@@ -16,7 +16,6 @@ namespace OsuRTDataProvider
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
         public const string VERSION = "1.4.4";
-        public static SyncHost SyncHost { get; private set; }
 
         private PluginConfigurationManager m_config_manager;
 
@@ -60,10 +59,6 @@ namespace OsuRTDataProvider
 
         public override void OnEnable()
         {
-
-
-
-            SyncHost = getHoster();
             Sync.Tools.IO.CurrentIO.WriteColor(PLUGIN_NAME + " By " + PLUGIN_AUTHOR, ConsoleColor.DarkCyan);
 
             if (Setting.EnableTourneyMode)
