@@ -651,13 +651,21 @@ namespace OsuRTDataProvider.Listen
         private OsuInternalStatus m_last_test = OsuInternalStatus.Menu;
         private OsuStatus GetCurrentOsuStatus()
         {
-            if (m_osu_process == null) return OsuStatus.NoFoundProcess;
-            if (m_osu_process.HasExited == true) return OsuStatus.NoFoundProcess;
-
-            if (m_status_finder == null)
+            try
             {
-                m_status_finder = InitFinder<OsuStatusFinder>(LANG_INIT_STATUS_FINDER_SUCCESS, LANG_INIT_STATUS_FINDER_FAILED);
-                return OsuStatus.Unkonwn;
+                if (m_osu_process == null) return OsuStatus.NoFoundProcess;
+                if (m_osu_process.HasExited == true) return OsuStatus.NoFoundProcess;
+
+                if (m_status_finder == null)
+                {
+                    m_status_finder = InitFinder<OsuStatusFinder>(LANG_INIT_STATUS_FINDER_SUCCESS,
+                        LANG_INIT_STATUS_FINDER_FAILED);
+                    return OsuStatus.Unkonwn;
+                }
+            }
+            catch (Win32Exception e)
+            {
+                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]:{e.Message}", ConsoleColor.Red);
             }
 
             OsuInternalStatus mode = m_status_finder.GetCurrentOsuModes();
