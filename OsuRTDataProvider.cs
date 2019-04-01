@@ -20,13 +20,13 @@ using OppaiWNet.Wrap;
 
 namespace OnlinePPOutput
 {
-    public class OnlinePPOutputPlugin : Plugin,IConfigurable
+    public class OsuRTDataProvider : Plugin,IConfigurable
     {
         public ConfigurationElement OsuApi { get; set; }
         public ConfigurationElement OsuScoreDBFilePath { get; set; }
         public ConfigurationElement OsuID { get; set; }
 
-        Logger<OnlinePPOutputPlugin> logger = new Logger<OnlinePPOutputPlugin>();
+        Logger<OsuRTDataProvider> logger = new Logger<OsuRTDataProvider>();
 
         MemoryMappedFile file;
         public const int MMF_CAPACITY = 4096;
@@ -35,7 +35,7 @@ namespace OnlinePPOutput
         PluginConfigurationManager config;
         private Task current_task;
 
-        public OnlinePPOutputPlugin() : base("OnlinePPOutputPlugin", "MikiraSora")
+        public OsuRTDataProvider() : base("OnlinePPOutputPlugin", "MikiraSora")
         {
             file = MemoryMappedFile.CreateOrOpen("online_pp", MMF_CAPACITY, MemoryMappedFileAccess.ReadWrite);
             EventBus.BindEvent<PluginEvents.LoadCompleteEvent>(OnLoaded);
@@ -207,7 +207,7 @@ namespace OnlinePPOutput
             return null;
         }
 
-        ~OnlinePPOutputPlugin()
+        ~OsuRTDataProvider()
         {
             Clear();
             file.Dispose();

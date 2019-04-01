@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BeatmapHashHelper.cs" />
-    <Compile Include="OnlinePPOutputPlugin.cs" />
+    <Compile Include="OsuRTDataProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
