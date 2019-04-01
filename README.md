@@ -1,4 +1,4 @@
-[中文](https://github.com/KedamaOvO/OsuRTDataProvider-Release/blob/master/README-CN.md)  
+[中文](https://github.com/KedamaOvO/OsuRTDataProvider/blob/master/README-CN.md)  
 # What is this?
 OsuRTDataProvider is an [OsuSync](https://github.com/Deliay/osuSync) plugin.  
 Experimental Support OSU!Tourney.  
