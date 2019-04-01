@@ -30,7 +30,7 @@ namespace OsuRTDataProvider.BeatmapInfo
             }
         }
 
-        private int m_beatmap_id = -1;
+        private int m_beatmap_set_id = -1;
 
         /// <summary>
         /// Return set id.
@@ -40,7 +40,7 @@ namespace OsuRTDataProvider.BeatmapInfo
         {
             get
             {
-                if (m_beatmap_id > 0) return m_beatmap_id;
+                if (m_beatmap_set_id > 0) return m_beatmap_set_id;
 
                 if (Folder.Length > 0)
                 {
@@ -50,13 +50,13 @@ namespace OsuRTDataProvider.BeatmapInfo
                     {
                         string id = name.Substring(0, len);
 
-                        if (int.TryParse(id, out m_beatmap_id))
-                            return m_beatmap_id;
+                        if (int.TryParse(id, out m_beatmap_set_id))
+                            return m_beatmap_set_id;
                     }
                 }
                 return -1;
             }
-            private set => m_beatmap_id = value;
+            private set => m_beatmap_set_id = value;
         }
 
         public string Version { get; private set; } = string.Empty;
