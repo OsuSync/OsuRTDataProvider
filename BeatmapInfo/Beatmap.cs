@@ -157,12 +157,12 @@ namespace OsuRTDataProvider.BeatmapInfo
         {
             if (a is null && b is null)
             {
-                return true;
+                return false;
             }
             if (a is null && !(b is null) ||
               !(a is null) && b is null)
             {
-                return false;
+                return true;
             }
             return !a.Equals(b);
         }
