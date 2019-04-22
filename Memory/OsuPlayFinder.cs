@@ -107,7 +107,8 @@ namespace OsuRTDataProvider.Memory
         public int GetCurrentScore()
         {
             TryReadIntPtrFromMemory(m_acc_address, out var tmpPtr);
-
+            if(m_use_acc_address2)
+                TryReadIntPtrFromMemory(tmpPtr + 0x44, out tmpPtr);
             TryReadIntFromMemory(tmpPtr + 0xF4, out var value);
             return value;
         }

@@ -141,11 +141,29 @@ namespace OsuRTDataProvider.BeatmapInfo
 
         public static bool operator ==(Beatmap a, Beatmap b)
         {
+            if(a is null && b is null)
+            {
+                return true;
+            }
+            if(a is null && !(b is null)||
+              !(a is null) && b is null)
+            {
+                return false;
+            }
             return a.Equals(b);
         }
 
         public static bool operator !=(Beatmap a, Beatmap b)
         {
+            if (a is null && b is null)
+            {
+                return true;
+            }
+            if (a is null && !(b is null) ||
+              !(a is null) && b is null)
+            {
+                return false;
+            }
             return !a.Equals(b);
         }
 
