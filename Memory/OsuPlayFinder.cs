@@ -11,13 +11,7 @@ namespace OsuRTDataProvider.Memory
         //0xbf,0x01,0x00,0x00,0x00,0xeb,0x03,0x83,0xcf,0xff,0xa1,0,0,0,0,0x83,0x3d,0,0,0,0,0x02,0x0f,0x85
         private static readonly string s_acc_pattern = "\xbf\x01\x00\x00\x00\xeb\x03\x83\xcf\xff\xa1\x0\x0\x0\x0\x83\x3d\x0\x0\x0\x0\x02\x0f\x85";
 
-        //0x73,0x7a,0x8b,0x0d,0x0,0x0,0x0,0x0,0x85,0xc9,0x74,0x1f
-        private static readonly string s_acc_pattern2 = "\x73\x7a\x8b\x0d\x0\x0\x0\x0\x85\xc9\x74\x1f\x8d\x55\xf0";
-
         private static readonly string s_acc_mask = "xxxxxxxxxxx????xx????xxx";
-        private static readonly string s_acc_mask2 = "xxxx????xxxxxxx";
-
-        private bool m_use_acc_address2 = false;
 
         //0x5e,0x5f,0x5d,0xc3,0xa1,0x0,0x0,0x0,0x0,0x89,0x0,0x04
         private static readonly string s_time_pattern = "\x5e\x5f\x5d\xc3\xa1\x0\x0\x0\x0\x89\x0\x04";
@@ -55,19 +49,6 @@ namespace OsuRTDataProvider.Memory
 
                 m_accuracy_address_success = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
                 EncryptLog($"Playing Accuracy Base Address (1):0x{(int)m_acc_address:X8}");
-
-                if (!m_accuracy_address_success)
-                {
-                    EncryptLog($"Use Accuracy Address2");
-
-                    m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern2), s_acc_mask2, 4);
-                    EncryptLog($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
-
-                    m_accuracy_address_success = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
-                    EncryptLog($"Playing Accuracy Base Address (1):0x{(int)m_acc_address:X8}");
-
-                    m_use_acc_address2 = true;
-                }
 
                 //Find Time Address
                 m_time_address = SigScan.FindPattern(StringToByte(s_time_pattern), s_time_mask, 5);
@@ -107,8 +88,6 @@ namespace OsuRTDataProvider.Memory
         public int GetCurrentScore()
         {
             TryReadIntPtrFromMemory(m_acc_address, out var tmpPtr);
-            if(m_use_acc_address2)
-                TryReadIntPtrFromMemory(tmpPtr + 0x44, out tmpPtr);
             TryReadIntFromMemory(tmpPtr + 0xF4, out var value);
             return value;
         }
@@ -215,8 +194,7 @@ namespace OsuRTDataProvider.Memory
             get
             {
                 TryReadIntPtrFromMemory(m_acc_address, out var tmp_ptr);
-                if (!m_use_acc_address2)
-                    TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
+                TryReadIntPtrFromMemory(tmp_ptr + 0x60, out tmp_ptr);
                 return tmp_ptr;
             }
         }
