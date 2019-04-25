@@ -148,7 +148,7 @@ namespace OsuRTDataProvider.Listen
         private OsuPlayFinder m_play_finder = null;
         private OsuStatusFinder m_status_finder = null;
         private OsuBeatmapFinder m_beatmap_finder = null;
-        private OsuPlayModesFinder m_mode_finder = null;
+        private OsuPlayModeFinder m_mode_finder = null;
 
         #region last status
 
@@ -512,7 +512,7 @@ namespace OsuRTDataProvider.Listen
 
                     if (Setting.GameMode == "Auto" && m_mode_finder == null)
                     {
-                        m_mode_finder = InitFinder<OsuPlayModesFinder>(LANG_INIT_MODE_FINDER_SUCCESS, LANG_INIT_MODE_FINDER_FAILED);
+                        m_mode_finder = InitFinder<OsuPlayModeFinder>(LANG_INIT_MODE_FINDER_SUCCESS, LANG_INIT_MODE_FINDER_FAILED);
                     }
                 }
 

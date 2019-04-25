@@ -12,10 +12,10 @@ namespace OsuRTDataProvider.Memory
         private static readonly string s_acc_pattern = "\xbf\x01\x00\x00\x00\xeb\x03\x83\xcf\xff\xa1\x0\x0\x0\x0\x83\x3d\x0\x0\x0\x0\x02\x0f\x85";
 
         //0x73,0x7a,0x8b,0x0d,0x0,0x0,0x0,0x0,0x85,0xc9,0x74,0x1f
-        private static readonly string s_acc_pattern2 = "\x73\x7a\x8b\x0d\x0\x0\x0\x0\x85\xc9\x74\x1f";
+        private static readonly string s_acc_pattern2 = "\x73\x7a\x8b\x0d\x0\x0\x0\x0\x85\xc9\x74\x1f\x8d\x55\xf0";
 
         private static readonly string s_acc_mask = "xxxxxxxxxxx????xx????xxx";
-        private static readonly string s_acc_mask2 = "xxxx????xxxx";
+        private static readonly string s_acc_mask2 = "xxxx????xxxxxxx";
 
         private bool m_use_acc_address2 = false;
 
