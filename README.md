@@ -131,3 +131,10 @@ OSU! Clinet Version Requirements: **b20171225.2 After**
             Rank
         }
 ```
+
+# How to use?(Dev)
+```csharp
+var ortdp = getHoster().EnumPluings().FirstOrDefault(p => p.Name == "OsuRTDataProvider") as OsuRTDataProviderPlugin;
+ortdp.ListenerManager.OnBeatmapChanged+=(b)=>{/*...*/};
+```
+
