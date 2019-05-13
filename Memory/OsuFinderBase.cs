@@ -50,6 +50,7 @@ namespace OsuRTDataProvider.Memory
                 msg = Convert.ToBase64String(cipherbytes);
             }
 #endif
+
             output.Write($"[OsuRTDataProvider]{msg}");
         }
 
