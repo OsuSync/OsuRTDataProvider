@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -379,8 +380,9 @@ namespace OsuRTDataProvider.Listen
 
         private void FindOsuProcess()
         {
-            if (_find_osu_process_timer % _find_osu_retry_time == 0)
+            if (_find_osu_process_timer > _find_osu_retry_time)
             {
+                _find_osu_process_timer = 0;
                 Process[] process_list;
 
                 process_list = Process.GetProcessesByName("osu!");
@@ -418,12 +420,34 @@ namespace OsuRTDataProvider.Listen
             _find_osu_process_timer += Setting.ListenInterval;
         }
 
+        private static string GetExecPath(Process process)
+        {
+            var wmiQueryString = $"SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process WHERE ProcessId = {process.Id}";
+            using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+            using (var results = searcher.Get())
+            {
+                var query = from p in Process.GetProcesses()
+                            join mo in results.Cast<ManagementObject>()
+                            on p.Id equals (int)(uint)mo["ProcessId"]
+                            select new
+                            {
+                                Process = p,
+                                Path = (string)mo["ExecutablePath"],
+                                CommandLine = (string)mo["CommandLine"],
+                            };
+                var path = query.FirstOrDefault(p => p.Process.Id == process.Id)?.Path ?? null;
+                return path;
+            }
+        }
+
         private void FindOsuSongPath()
         {
             string osu_path = "";
             try
             {
-                osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
+                string osu_exec_path = GetExecPath(m_osu_process);
+                if (osu_exec_path == null) return;
+                osu_path = Path.GetDirectoryName(osu_exec_path);
                 string osu_config_file = Path.Combine(osu_path, $"osu!.{PathHelper.WindowsPathStrip(Environment.UserName)}.cfg");
                 string song_path;
 
