@@ -41,24 +41,24 @@ namespace OsuRTDataProvider.Memory
             {
                 //Find mods address
                 m_mods_address = SigScan.FindPattern(StringToByte(s_global_mods_pattern), s_global_mods_mask, 5);
-                EncryptLog($"Mods Base Address (0):0x{(int)m_mods_address:X8}");
+                LogHelper.EncryptLog($"Mods Base Address (0):0x{(int)m_mods_address:X8}");
 
                 m_mods_address_success = TryReadIntPtrFromMemory(m_mods_address, out m_mods_address);
-                EncryptLog($"Mods Base Address (1):0x{(int)m_mods_address:X8}");
+                LogHelper.EncryptLog($"Mods Base Address (1):0x{(int)m_mods_address:X8}");
 
                 //Find acc Address
                 m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern2), s_acc_mask2, 4);
-                EncryptLog($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
+                LogHelper.EncryptLog($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
 
                 m_accuracy_address_success = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
-                EncryptLog($"Playing Accuracy Base Address (1):0x{(int)m_acc_address:X8}");
+                LogHelper.EncryptLog($"Playing Accuracy Base Address (1):0x{(int)m_acc_address:X8}");
 
                 //Find Time Address
                 m_time_address = SigScan.FindPattern(StringToByte(s_time_pattern), s_time_mask, 5);
-                EncryptLog($"Time Base Address (0):0x{(int)m_time_address:X8}");
+                LogHelper.EncryptLog($"Time Base Address (0):0x{(int)m_time_address:X8}");
 
                 m_time_address_success = TryReadIntPtrFromMemory(m_time_address, out m_time_address);
-                EncryptLog($"Time Base Address (1):0x{(int)m_time_address:X8}");
+                LogHelper.EncryptLog($"Time Base Address (1):0x{(int)m_time_address:X8}");
             }
             SigScan.ResetRegion();
 

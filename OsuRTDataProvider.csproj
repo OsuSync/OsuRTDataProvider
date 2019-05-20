@@ -89,6 +89,7 @@
     <Compile Include="Listen\OSUListenerManager.cs" />
     <Compile Include="Listen\ProvideData.cs" />
     <Compile Include="Listen\PlayMode.cs" />
+    <Compile Include="Memory\LogHelper.cs" />
     <Compile Include="Memory\OsuBeatmapFinder.cs" />
     <Compile Include="Memory\OsuFinderBase.cs" />
     <Compile Include="Memory\OsuInternalStatus.cs" />
