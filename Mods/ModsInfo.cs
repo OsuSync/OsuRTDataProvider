@@ -9,6 +9,7 @@ namespace OsuRTDataProvider.Mods
         [Flags]
         public enum Mods : uint
         {
+            NoMod = 0u,
             None = 0u,
             NoFail = 1u << 0,
             Easy = 1u << 1,
@@ -46,6 +47,7 @@ namespace OsuRTDataProvider.Mods
 
         private static Dictionary<string, string> s_name_to_sname = new Dictionary<string, string>
         {
+            ["NoMod"] = "",
             ["None"] = "",
             ["NoFail"] = "NF",
             ["Easy"] = "EZ",
