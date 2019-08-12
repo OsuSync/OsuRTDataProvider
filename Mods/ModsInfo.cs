@@ -197,7 +197,13 @@ namespace OsuRTDataProvider.Mods
         {
             get
             {
-                return Mod.ToString().Replace(" ", string.Empty);
+                var mods_str = Mod.ToString().Replace(" ", string.Empty);
+                mods_str = mods_str.Replace("None", "NoMod");
+                if (mods_str.Contains("NoMod,"))
+                {
+                    mods_str = mods_str.Replace("NoMod,", "");
+                }
+                return mods_str;
             }
         }
 
@@ -219,7 +225,7 @@ namespace OsuRTDataProvider.Mods
                     else return "Error";
                     b.Append(',');
                 }
-                return b.Remove(b.Length - 1, 1).ToString();
+                return b.Remove(b.Length - 1, 1).ToString().Trim(',');
             }
         }
 
