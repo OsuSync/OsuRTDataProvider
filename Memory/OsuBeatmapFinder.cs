@@ -12,11 +12,11 @@ namespace OsuRTDataProvider.Memory
 
         private static readonly string s_beatmap_mask = "xx????xxxxx????xxxx";
 
-        private static readonly int s_beatmap_offset = 0xc0;
-        private static readonly int s_beatmap_set_offset = 0xc4;
+        private static readonly int s_beatmap_offset = 0xc4;
+        private static readonly int s_beatmap_set_offset = 0xc8;
 
-        private static readonly int s_beatmap_folder_offset = 0x70;
-        private static readonly int s_beatmap_filename_offset = 0x88;
+        private static readonly int s_beatmap_folder_offset = 0x74;
+        private static readonly int s_beatmap_filename_offset = 0x8c;
 
         private const int MAX_RETRY_COUNT = 10;
 
