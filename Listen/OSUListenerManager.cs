@@ -476,7 +476,6 @@ namespace OsuRTDataProvider.Listen
                                     Setting.SongsPath = Path.Combine(osu_path, song_path);
                             }
                         }
-
                         else if (line.Contains("LastVersion"))
                         {
                             Setting.OsuVersion = line.Split('=')[1].Trim();

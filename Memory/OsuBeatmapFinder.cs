@@ -18,12 +18,30 @@ namespace OsuRTDataProvider.Memory
         private static readonly int s_beatmap_folder_offset = 0x74;
         private static readonly int s_beatmap_filename_offset = 0x8c;
 
+        private int BeatmapAddressOffset { get; }
+        private int BeatmapSetAddressOffset { get; }
+        private int BeatmapFolderAddressOffset { get; }
+        private int BeatmapFileNameAddressOffset { get; }
+
         private const int MAX_RETRY_COUNT = 10;
 
         private IntPtr m_beatmap_address;
 
         public OsuBeatmapFinder(Process osu) : base(osu)
         {
+            BeatmapAddressOffset = s_beatmap_offset;
+            BeatmapSetAddressOffset = s_beatmap_set_offset;
+            BeatmapFolderAddressOffset = s_beatmap_folder_offset;
+            BeatmapFileNameAddressOffset = s_beatmap_filename_offset;
+
+            //兼容20190816以前的屙屎
+            if (Setting.CurrentOsuVersionValue < Utils.ConvertVersionStringToValue("20190816"))
+            {
+                BeatmapAddressOffset -= 4;
+                BeatmapSetAddressOffset -= 4;
+                BeatmapFolderAddressOffset -= 4;
+                BeatmapFileNameAddressOffset -= 4;
+            }
         }
 
         public override bool TryInit()
@@ -49,8 +67,8 @@ namespace OsuRTDataProvider.Memory
         public Beatmap GetCurrentBeatmap(int osu_id)
         {
             TryReadIntPtrFromMemory(m_beatmap_address, out IntPtr cur_beatmap_address);
-            TryReadIntFromMemory(cur_beatmap_address + s_beatmap_offset, out int id);
-            TryReadIntFromMemory(cur_beatmap_address + s_beatmap_set_offset, out int set_id);
+            TryReadIntFromMemory(cur_beatmap_address + BeatmapAddressOffset, out int id);
+            TryReadIntFromMemory(cur_beatmap_address + BeatmapSetAddressOffset, out int set_id);
 
             string filename = GetCurrentBeatmapFilename();
             string folder = GetCurrentBeatmapFolder();
@@ -93,7 +111,7 @@ namespace OsuRTDataProvider.Memory
         private string GetCurrentBeatmapFolder()
         {
             TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
-            bool success = TryReadStringFromMemory(cur_beatmap_address + s_beatmap_folder_offset, out string str);
+            bool success = TryReadStringFromMemory(cur_beatmap_address + BeatmapFolderAddressOffset, out string str);
             if (!success) return "";
             return str;
         }
@@ -101,7 +119,7 @@ namespace OsuRTDataProvider.Memory
         private string GetCurrentBeatmapFilename()
         {
             TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
-            bool success = TryReadStringFromMemory(cur_beatmap_address + s_beatmap_filename_offset, out string str);
+            bool success = TryReadStringFromMemory(cur_beatmap_address + BeatmapFileNameAddressOffset, out string str);
             if (!success) return "";
             return str;
         }

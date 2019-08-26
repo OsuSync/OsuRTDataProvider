@@ -1,6 +1,8 @@
 ﻿using Sync.Tools.ConfigurationAttribute;
 using Sync.Tools;
 using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace OsuRTDataProvider
 {
@@ -94,5 +96,7 @@ namespace OsuRTDataProvider
 
         public static string SongsPath = string.Empty;//不保存
         public static string OsuVersion = string.Empty;
+
+        public static double CurrentOsuVersionValue => Utils.ConvertVersionStringToValue(OsuVersion);
     }
 }
