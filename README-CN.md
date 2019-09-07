@@ -1,7 +1,7 @@
-[English](https://github.com/KedamaOvO/OsuRTDataProvider/blob/master/README.md)  
-# 这是什么
+[English](https://github.com/KedamaOvO/OsuRTDataProvider-Release/blob/master/README.md)  
+# OsuRTDataProvider是什么？
 OsuRTDataProvider是一个 [OsuSync](https://github.com/Deliay/osuSync) 插件.  
-实验性的支持Osu!Tourney。  
+它支持OSU!和OSU!Tourney。  
   
 OsuRTDataProvider能实时的从[OSU!](https://osu.ppy.sh)中获取以下内容(只支持正式版):
 * BeatmapID
@@ -12,13 +12,15 @@ OsuRTDataProvider能实时的从[OSU!](https://osu.ppy.sh)中获取以下内容(
 * 300数量
 * 100数量
 * 50数量
+* Katu数量
+* Geki数量
 * Miss数量
 * Mods
 * 播放时间
 * 分数
 * 游戏模式
 
-OSU!客户端版本要求: **b20171225.2 之后**
+OSU!客户端版本要求: **b20190816 之后**
 
 # 怎么使用
 1. 下载 [OsuSync](https://github.com/Deliay/osuSync)。
