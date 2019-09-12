@@ -148,7 +148,7 @@ namespace OsuRTDataProvider.Memory
 
                 if (Setting.DebugMode)
                 {
-                    LogHelper.EncryptLog($"BaseAddress: 0x{mem_basic_info.BaseAddress:X8} RegionSize: 0x{mem_basic_info.RegionSize:X8} AllocationBase: 0x{mem_basic_info.AllocationBase:X8} Protect: {mem_basic_info.Protect} Commit: {mem_basic_info.State==MEM_COMMIT}(0x{mem_basic_info.State:X8})");
+                    //LogHelper.EncryptLog($"BaseAddress: 0x{mem_basic_info.BaseAddress:X8} RegionSize: 0x{mem_basic_info.RegionSize:X8} AllocationBase: 0x{mem_basic_info.AllocationBase:X8} Protect: {mem_basic_info.Protect} Commit: {mem_basic_info.State==MEM_COMMIT}(0x{mem_basic_info.State:X8})");
                 }
 
                 proc_min_address_l += (long)mem_basic_info.RegionSize;

@@ -35,8 +35,14 @@ namespace OsuRTDataProvider.Memory
             BeatmapFileNameAddressOffset = s_beatmap_filename_offset;
 
             //兼容20190816以前的屙屎
-            if (Setting.CurrentOsuVersionValue < Utils.ConvertVersionStringToValue("20190816"))
+
+            var cmp_ver20190816 = Utils.ConvertVersionStringToValue("20190816");
+
+            Logger.Info($"osu!version compatible condition: {Setting.CurrentOsuVersionValue} < {cmp_ver20190816} ?");
+
+            if (Setting.CurrentOsuVersionValue < cmp_ver20190816)
             {
+                Logger.Warn("BeatmapAddressOffset and others =-4 for osu!ver < 20190816");
                 BeatmapAddressOffset -= 4;
                 BeatmapSetAddressOffset -= 4;
                 BeatmapFolderAddressOffset -= 4;

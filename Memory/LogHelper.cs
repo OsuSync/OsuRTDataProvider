@@ -12,6 +12,7 @@ namespace OsuRTDataProvider.Memory
     {
         public static void EncryptLog(string plainText)
         {
+            /*
             string msg = plainText;
             ISyncOutput output = IO.CurrentIO;
 
@@ -28,6 +29,10 @@ namespace OsuRTDataProvider.Memory
 #endif
 
             output.Write($"[OsuRTDataProvider]{msg}");
+            */
+
+            //now is directly output to default in DebugMode
+            Logger.Debug(plainText);
         }
     }
 }

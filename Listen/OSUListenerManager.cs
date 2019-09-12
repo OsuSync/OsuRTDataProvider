@@ -479,7 +479,7 @@ namespace OsuRTDataProvider.Listen
                         else if (line.Contains("LastVersion"))
                         {
                             Setting.OsuVersion = line.Split('=')[1].Trim();
-                            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]OSU Client Verison:{Setting.OsuVersion}");
+                            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]OSU Client Verison:{Setting.OsuVersion} ORTDP Version:{OsuRTDataProviderPlugin.VERSION}");
                             break;
                         }
                     }

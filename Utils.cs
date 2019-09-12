@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sync.Tools;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ namespace OsuRTDataProvider
         {
             if (double.TryParse(Regex.Match(osu_version_string, @"\d+(\.\d*)?").Value.ToString(), out var ver))
             {
+
                 return ver;
             }
 
@@ -21,5 +23,21 @@ namespace OsuRTDataProvider
 #endif
             return 0;
         }
+    }
+
+    public static class Logger
+    {
+        static Logger<OsuRTDataProviderPlugin> logger=new Logger<OsuRTDataProviderPlugin>();
+
+        public static void Info(string message) => logger.LogInfomation(message);
+
+        public static void Debug(string message)
+        {
+            if (Setting.DebugMode)
+                logger.LogInfomation(message);
+        }
+
+        public static void Error(string message) => logger.LogError(message);
+        public static void Warn(string message) => logger.LogWarning(message);
     }
 }
