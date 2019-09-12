@@ -106,12 +106,13 @@ namespace OsuRTDataProvider.Memory
         private void InitMemoryRegionInfo()
         {
             SYSTEM_INFO sys_info;
+            //Get the maximum and minimum addresses of the process. 
             GetSystemInfo(out sys_info);
             IntPtr proc_min_address = sys_info.minimumApplicationAddress;
             IntPtr proc_max_address = sys_info.maximumApplicationAddress;
 
-            long proc_min_address_l = (long)proc_min_address;
-            long proc_max_address_l = (long)proc_max_address;
+            long current_address = (long)proc_min_address;
+            long lproc_max_address = (long)proc_max_address;
 
             IntPtr handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_WM_READ, false, m_vProcess.Id);
 
@@ -125,9 +126,10 @@ namespace OsuRTDataProvider.Memory
 
             int mem_info_size = Marshal.SizeOf<MEMORY_BASIC_INFORMATION>();
 
-            while (proc_min_address_l < proc_max_address_l)
+            while (current_address < lproc_max_address)
             {
-                int size = VirtualQueryEx(handle, proc_min_address, out mem_basic_info, (uint)mem_info_size);
+                //Query the current memory page information.
+                int size = VirtualQueryEx(handle, new IntPtr(current_address), out mem_basic_info, (uint)mem_info_size);
 
                 if (size != mem_info_size)
                 {
@@ -135,13 +137,14 @@ namespace OsuRTDataProvider.Memory
                     break;
                 }
 
+                //Dump JIT code
                 if ((mem_basic_info.Protect & AllocationProtect.PAGE_EXECUTE_READWRITE)>0 && mem_basic_info.State == MEM_COMMIT)
                 {
                     var region = new MemoryRegion()
                     {
                         BaseAddress = mem_basic_info.BaseAddress,
                         AllocationBase = mem_basic_info.AllocationBase,
-                        RegionSize = (uint)mem_basic_info.RegionSize
+                        RegionSize = mem_basic_info.RegionSize
                     };
                     m_memoryRegionList.Add(region);
                 }
@@ -151,8 +154,7 @@ namespace OsuRTDataProvider.Memory
                 //    LogHelper.EncryptLog($"BaseAddress: 0x{mem_basic_info.BaseAddress:X8} RegionSize: 0x{mem_basic_info.RegionSize:X8} AllocationBase: 0x{mem_basic_info.AllocationBase:X8} Protect: {mem_basic_info.Protect} Commit: {mem_basic_info.State==MEM_COMMIT}(0x{mem_basic_info.State:X8})");
                 //}
 
-                proc_min_address_l += (long)mem_basic_info.RegionSize;
-                proc_min_address = new IntPtr(proc_min_address_l);
+                current_address += mem_basic_info.RegionSize;
             }
 
             CloseHandle(handle);
