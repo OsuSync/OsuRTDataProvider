@@ -39,31 +39,35 @@ namespace OsuRTDataProvider.Memory
 
             SigScan.Reload();
             {
-                //Find mods address
-                m_mods_address = SigScan.FindPattern(StringToByte(s_global_mods_pattern), s_global_mods_mask, 5);
-                LogHelper.EncryptLog($"Mods Base Address (0):0x{(int)m_mods_address:X8}");
+                if (Setting.EnableModsChangedAtListening)
+                {
+                    //Find mods address
+                    m_mods_address = SigScan.FindPattern(StringToByte(s_global_mods_pattern), s_global_mods_mask, 5);
+                    LogHelper.LogToFile($"Mods Base Address (0):0x{(int)m_mods_address:X8}");
 
-                
-                m_mods_address_success = TryReadIntPtrFromMemory(m_mods_address, out m_mods_address);
-                LogHelper.EncryptLog($"Mods Base Address (1):0x{(int)m_mods_address:X8}");
+                    m_mods_address_success = TryReadIntPtrFromMemory(m_mods_address, out m_mods_address);
+                    LogHelper.LogToFile($"Mods Base Address (1):0x{(int)m_mods_address:X8}");
+                }
                 
                 //Find acc Address
                 m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern2), s_acc_mask2, 4);
-                LogHelper.EncryptLog($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
+                LogHelper.LogToFile($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
 
                 m_accuracy_address_success = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
-                LogHelper.EncryptLog($"Playing Accuracy Base Address (1):0x{(int)m_acc_address:X8}");
+                LogHelper.LogToFile($"Playing Accuracy Base Address (1):0x{(int)m_acc_address:X8}");
 
                 //Find Time Address
                 m_time_address = SigScan.FindPattern(StringToByte(s_time_pattern), s_time_mask, 5);
-                LogHelper.EncryptLog($"Time Base Address (0):0x{(int)m_time_address:X8}");
+                LogHelper.LogToFile($"Time Base Address (0):0x{(int)m_time_address:X8}");
 
                 m_time_address_success = TryReadIntPtrFromMemory(m_time_address, out m_time_address);
-                LogHelper.EncryptLog($"Time Base Address (1):0x{(int)m_time_address:X8}");
+                LogHelper.LogToFile($"Time Base Address (1):0x{(int)m_time_address:X8}");
             }
             SigScan.ResetRegion();
 
-            success=m_time_address_success && m_accuracy_address_success /*&& m_mods_address_success*/;
+            success = m_time_address_success && m_accuracy_address_success;
+            if(Setting.EnableModsChangedAtListening)
+                 success = success && m_mods_address_success;
 
             if (m_acc_address == IntPtr.Zero || m_time_address == IntPtr.Zero)
                 success = false;

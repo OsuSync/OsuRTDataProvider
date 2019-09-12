@@ -57,10 +57,10 @@ namespace OsuRTDataProvider.Memory
             {
                 //Find Beatmap ID Address
                 m_beatmap_address = SigScan.FindPattern(StringToByte(s_beatmap_pattern), s_beatmap_mask, 11);
-                LogHelper.EncryptLog($"Beatmap Base Address (0):0x{(int)m_beatmap_address:X8}");
+                LogHelper.LogToFile($"Beatmap Base Address (0):0x{(int)m_beatmap_address:X8}");
 
                 success = TryReadIntPtrFromMemory(m_beatmap_address, out m_beatmap_address);
-                LogHelper.EncryptLog($"Beatmap Base Address (1):0x{(int)m_beatmap_address:X8}");
+                LogHelper.LogToFile($"Beatmap Base Address (1):0x{(int)m_beatmap_address:X8}");
             }
             SigScan.ResetRegion();
 
@@ -97,16 +97,14 @@ namespace OsuRTDataProvider.Memory
             {
                 Sync.Tools.IO.CurrentIO.WriteColor("-------------ORTDP(Exception)---------------", ConsoleColor.Red);
                 Sync.Tools.IO.CurrentIO.WriteColor(e.ToString(), ConsoleColor.Yellow);
-                if (Setting.DebugMode)
-                {
-                    Sync.Tools.IO.CurrentIO.WriteColor("--------------ORTDP(Detail)-----------------", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor($"Songs Path:{Setting.SongsPath}", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor($"Filename:{filename}", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor($"Folder:{folder}", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor($"BeatmapID:{id}", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor($"BeatmapSetID:{set_id}", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor("--------------------------------------------", ConsoleColor.Yellow);
-                }
+
+                Sync.Tools.IO.CurrentIO.WriteColor("--------------ORTDP(Detail)-----------------", ConsoleColor.Yellow);
+                Sync.Tools.IO.CurrentIO.WriteColor($"Songs Path:{Setting.SongsPath}", ConsoleColor.Yellow);
+                Sync.Tools.IO.CurrentIO.WriteColor($"Filename:{filename}", ConsoleColor.Yellow);
+                Sync.Tools.IO.CurrentIO.WriteColor($"Folder:{folder}", ConsoleColor.Yellow);
+                Sync.Tools.IO.CurrentIO.WriteColor($"BeatmapID:{id}", ConsoleColor.Yellow);
+                Sync.Tools.IO.CurrentIO.WriteColor($"BeatmapSetID:{set_id}", ConsoleColor.Yellow);
+                Sync.Tools.IO.CurrentIO.WriteColor("--------------------------------------------", ConsoleColor.Yellow);
             }
 
             return beatmap;
@@ -117,7 +115,7 @@ namespace OsuRTDataProvider.Memory
         private string GetCurrentBeatmapFolder()
         {
             TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
-            bool success = TryReadStringFromMemory(cur_beatmap_address + BeatmapFolderAddressOffset, out string str);
+            bool success = TryReadStringFromMemory(cur_beatmap_address + BeatmapFolderAddressOffset-4, out string str);
             if (!success) return "";
             return str;
         }

@@ -25,10 +25,10 @@ namespace OsuRTDataProvider.Memory
             SigScan.Reload();
             {
                 m_mode_address = SigScan.FindPattern(StringToByte(s_mode_pattern), s_mode_mask,5);
-                LogHelper.EncryptLog($"Mode Address (0):0x{(int)m_mode_address:X8}");
+                LogHelper.LogToFile($"Mode Address (0):0x{(int)m_mode_address:X8}");
 
                 success = TryReadIntPtrFromMemory(m_mode_address, out m_mode_address);
-                LogHelper.EncryptLog($"Mode Address (1):0x{(int)m_mode_address:X8}");
+                LogHelper.LogToFile($"Mode Address (1):0x{(int)m_mode_address:X8}");
             }
             SigScan.ResetRegion();
 
