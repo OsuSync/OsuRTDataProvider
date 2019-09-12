@@ -1,6 +1,6 @@
 [English](https://github.com/KedamaOvO/OsuRTDataProvider-Release/blob/master/README.md)  
 # OsuRTDataProvider是什么？
-OsuRTDataProvider是一个 [OsuSync](https://github.com/Deliay/osuSync) 插件.  
+OsuRTDataProvider是一个[OsuSync](https://github.com/Deliay/osuSync)插件,可以实时读取osu!数据.  
 它支持OSU!和OSU!Tourney。  
   
 OsuRTDataProvider能实时的从[OSU!](https://osu.ppy.sh)中获取以下内容(只支持正式版):
@@ -15,18 +15,21 @@ OsuRTDataProvider能实时的从[OSU!](https://osu.ppy.sh)中获取以下内容(
 * Katu数量
 * Geki数量
 * Miss数量
-* Mods
+* Mods 
 * 播放时间
 * 分数
 * 游戏模式
 
-OSU!客户端版本要求: **b20190816 之后**
+不同的OSU!客户端版本所需要的ORTDP插件版本也可能不同.
 
-# 怎么使用
+# 怎么使用(对于普通用户)
 1. 下载 [OsuSync](https://github.com/Deliay/osuSync)。
 2. 下载 [OsuRTDataProvider](https://github.com/KedamaOvO/OsuRTDataProvider-Release/releases)。
 3. 复制OsuRTDataProvider 到 {OsuSync Path}/Plugins 目录下。
 4. 运行 OsuSync。
+5. 安装其他依赖于此插件的插件，比如[实时pp显示插件](https://github.com/OsuSync/RealTimePPDisplayer).
+6. Enjoy!
+
 
 # Config.ini
 [OsuRTDataProvider.SettingIni]
@@ -34,11 +37,11 @@ OSU!客户端版本要求: **b20190816 之后**
 |Setting Name|Default Value|Description|
 | ----- | ----- | ----- |
 | ListenInterval | 100 | 监听数据的间隔(单位毫秒)。PS:如果太小可能会卡 |  
-|EnableTourneyMode | False | 启用Tourney模式?(实验性) |
+| EnableTourneyMode | False | 启用Tourney模式?(实验性) |
 | TeamSize | 1 | Tourney client的队伍大小|
-| ForceOsuSongsDirectory |  | 强制在指定路径中搜索Beatmap|
-| GameMode | Auto |如果ModeFinder初始化失败. 请手动设置游戏模式|
-| DisableProcessNotFoundInformation | False | 隐藏"没有发现osu.exe进程"|
+| ForceOsuSongsDirectory |  | 强制在指定路径中搜索Beatmap文件夹|
+| GameMode | Auto |如果ModeFinder初始化失败. 请手动设置游戏模式(osu,mania,ctb,taiko,auto)|
+| DisableProcessNotFoundInformation | False | 隐藏"没有发现osu.exe进程"的消息提示|
 | EnableModsChangedAtListening | False | 尝试在非Play状态监听Mods变化|
 
 # API
@@ -51,6 +54,13 @@ OSU!客户端版本要求: **b20190816 之后**
         public OsuListenerManager[] TourneyListenerManagers;
         public int TourneyListenerManagersCount;
 ```
+
+# 如何编译
+1. clone此repo
+2. clone[Sync](https://github.com/OsuSync/Sync)
+3. 引用sync项目进ortdp项目
+4. 编译.
+
 #### OsuListenerManager ***class***
 ##### Event
 ```csharp
