@@ -1,6 +1,7 @@
 ﻿using OsuRTDataProvider.BeatmapInfo;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 
 namespace OsuRTDataProvider.Memory
@@ -35,10 +36,9 @@ namespace OsuRTDataProvider.Memory
             BeatmapFileNameAddressOffset = s_beatmap_filename_offset;
 
             //兼容20190816以前的屙屎
-
             var cmp_ver20190816 = Utils.ConvertVersionStringToValue("20190816");
 
-            Logger.Info($"osu!version compatible condition: {Setting.CurrentOsuVersionValue} < {cmp_ver20190816} ?");
+            Logger.Info($"osu!version compatible condition: {Setting.CurrentOsuVersionValue.ToString(CultureInfo.InvariantCulture)} < {cmp_ver20190816} ?");
 
             if (Setting.CurrentOsuVersionValue < cmp_ver20190816)
             {
@@ -115,7 +115,7 @@ namespace OsuRTDataProvider.Memory
         private string GetCurrentBeatmapFolder()
         {
             TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
-            bool success = TryReadStringFromMemory(cur_beatmap_address + BeatmapFolderAddressOffset-4, out string str);
+            bool success = TryReadStringFromMemory(cur_beatmap_address + BeatmapFolderAddressOffset, out string str);
             if (!success) return "";
             return str;
         }
