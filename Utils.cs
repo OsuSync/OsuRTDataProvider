@@ -1,6 +1,7 @@
 ﻿using Sync.Tools;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -12,16 +13,13 @@ namespace OsuRTDataProvider
     {
         public static double ConvertVersionStringToValue(string osu_version_string)
         {
-            if (double.TryParse(Regex.Match(osu_version_string, @"\d+(\.\d*)?").Value.ToString(), out var ver))
+            if (double.TryParse(Regex.Match(osu_version_string, @"\d+(\.\d*)?").Value.ToString(),NumberStyles.Float, CultureInfo.InvariantCulture, out var ver))
             {
 
                 return ver;
             }
 
-#if DEBUG
-            throw new Exception("无法解析屙屎版本号:"+osu_version_string);
-#endif
-            return 0;
+            throw new Exception("Can't parse version: "+osu_version_string);
         }
     }
 

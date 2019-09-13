@@ -1,6 +1,7 @@
 ﻿using OsuRTDataProvider.BeatmapInfo;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -36,10 +37,9 @@ namespace OsuRTDataProvider.Memory
             BeatmapFileNameAddressOffset = s_beatmap_filename_offset;
 
             //兼容20190816以前的屙屎
-
             var cmp_ver20190816 = Utils.ConvertVersionStringToValue("20190816");
 
-            Logger.Info($"osu!version compatible condition: {Setting.CurrentOsuVersionValue} < {cmp_ver20190816} ?");
+            Logger.Info($"osu!version compatible condition: {Setting.CurrentOsuVersionValue.ToString(CultureInfo.InvariantCulture)} < {cmp_ver20190816} ?");
 
             if (Setting.CurrentOsuVersionValue < cmp_ver20190816)
             {
@@ -58,10 +58,10 @@ namespace OsuRTDataProvider.Memory
             {
                 //Find Beatmap ID Address
                 m_beatmap_address = SigScan.FindPattern(StringToByte(s_beatmap_pattern), s_beatmap_mask, 11);
-                LogHelper.EncryptLog($"Beatmap Base Address (0):0x{(int)m_beatmap_address:X8}");
+                LogHelper.LogToFile($"Beatmap Base Address (0):0x{(int)m_beatmap_address:X8}");
 
                 success = TryReadIntPtrFromMemory(m_beatmap_address, out m_beatmap_address);
-                LogHelper.EncryptLog($"Beatmap Base Address (1):0x{(int)m_beatmap_address:X8}");
+                LogHelper.LogToFile($"Beatmap Base Address (1):0x{(int)m_beatmap_address:X8}");
             }
             SigScan.ResetRegion();
 

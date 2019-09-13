@@ -183,6 +183,7 @@ namespace OsuRTDataProvider.Listen
         {
             s_stop_flag = false;
 
+            //Listen Thread
             s_listen_task = Task.Run(() =>
             {
                 Thread.CurrentThread.Name = "OsuRTDataProviderThread";
@@ -225,7 +226,7 @@ namespace OsuRTDataProvider.Listen
         }
 
         #region Get Current Data
-
+        
         private bool HasMask(ProvideDataMask mask, ProvideDataMask h)
         {
             return (mask & h) == h;
@@ -458,7 +459,6 @@ namespace OsuRTDataProvider.Listen
                     {
                         string line = sr.ReadLine();
 
-
                         if (line.Contains("BeatmapDirectory"))
                         {
                             if (Directory.Exists(Setting.ForceOsuSongsDirectory))
@@ -487,11 +487,7 @@ namespace OsuRTDataProvider.Listen
             }
             catch (Win32Exception e)
             {
-                if (Setting.DebugMode)
-                {
-                    Logger.Warn($"Unknown error, search for song path failed.");
-                    Logger.Warn($"Win32Exception: {e.ToString()}");
-                }
+                Logger.Error($"Win32Exception: {e.ToString()}");
             }
 
             if (string.IsNullOrWhiteSpace(Setting.SongsPath))
@@ -519,13 +515,10 @@ namespace OsuRTDataProvider.Listen
                 FindOsuProcess();
             }
 
+            //Waiting for osu to start
             if (status != OsuStatus.NoFoundProcess && status != OsuStatus.Unkonwn)
             {
-                if (m_beatmap_finder == null)
-                {
-                    m_beatmap_finder = InitFinder<OsuBeatmapFinder>(LANG_INIT_BEATMAP_FINDER_SUCCESS, LANG_INIT_BEATMAP_FINDER_FAILED);
-                }
-
+                //Wait for player to playing
                 if (status == OsuStatus.Playing)
                 {
                     if (m_play_finder == null)
@@ -537,6 +530,11 @@ namespace OsuRTDataProvider.Listen
                     {
                         m_mode_finder = InitFinder<OsuPlayModeFinder>(LANG_INIT_MODE_FINDER_SUCCESS, LANG_INIT_MODE_FINDER_FAILED);
                     }
+                }
+
+                if (m_beatmap_finder == null)
+                {
+                    m_beatmap_finder = InitFinder<OsuBeatmapFinder>(LANG_INIT_BEATMAP_FINDER_SUCCESS, LANG_INIT_BEATMAP_FINDER_FAILED);
                 }
 
                 if (m_mode_finder != null)
@@ -670,8 +668,9 @@ namespace OsuRTDataProvider.Listen
             }
         }
 
-
+#if DEBUG
         private OsuInternalStatus m_last_test = OsuInternalStatus.Menu;
+#endif
         private OsuStatus GetCurrentOsuStatus()
         {
             try
@@ -681,8 +680,10 @@ namespace OsuRTDataProvider.Listen
 
                 if (m_status_finder == null)
                 {
-                    m_status_finder = InitFinder<OsuStatusFinder>(LANG_INIT_STATUS_FINDER_SUCCESS,
-                        LANG_INIT_STATUS_FINDER_FAILED);
+                    m_status_finder = InitFinder<OsuStatusFinder>(
+                        LANG_INIT_STATUS_FINDER_SUCCESS,
+                        LANG_INIT_STATUS_FINDER_FAILED
+                        );
                     return OsuStatus.Unkonwn;
                 }
             }

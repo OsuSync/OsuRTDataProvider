@@ -41,7 +41,7 @@ namespace OsuRTDataProvider.Mods
             Key3 = 1u << 27,
             Key2 = 1u << 28,
             ScoreV2 = 1u << 29,
-
+            Mirror = 1u << 30,
             Unknown = 0xFFFFFFFFu
         }
 
@@ -79,7 +79,7 @@ namespace OsuRTDataProvider.Mods
             ["Cinema"] = "CN",
             ["Target"] = "TP",
             ["ScoreV2"] = "V2",
-
+            ["Mirror"] = "MR",
             ["Unknown"] = "Unknown"
         };
 
