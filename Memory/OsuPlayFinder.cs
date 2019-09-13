@@ -153,6 +153,21 @@ namespace OsuRTDataProvider.Memory
             return value;
         }
 
+        public double GetUnstableRate()
+        {
+            TryReadListFromMemory(ScoreBaseAddress + 0x38, out var list);
+            if (list == null)
+                return double.NaN;
+            var result = Utils.GetErrorStatisticsArray(list);
+            return result[4]*10;
+        }
+
+        public string GetPlayerName()
+        {
+            TryReadStringFromMemory(ScoreBaseAddress + 0x28, out var str);
+            return str;
+        }
+
         public ModsInfo GetCurrentModsAtListening()
         {
             IntPtr mods_ptr;
@@ -172,7 +187,6 @@ namespace OsuRTDataProvider.Memory
         public ModsInfo GetCurrentMods()
         {
             IntPtr mods_ptr;
-
 
             var tmp_ptr = ScoreBaseAddress;
             TryReadIntPtrFromMemory(tmp_ptr + 0x1c, out mods_ptr);

@@ -64,6 +64,8 @@ namespace OsuRTDataProvider.Listen
 
         public delegate void OnHitCountChangedEvt(int hit);
 
+        public delegate void OnUnstableRateChangedEvt(double ur);
+
         /// <summary>
         /// Available in Playing and Linsten.
         /// If too old beatmap, map.ID = -1.
@@ -142,6 +144,8 @@ namespace OsuRTDataProvider.Listen
         /// </summary>
         public event OnStatusChangedEvt OnStatusChanged;
 
+        public event OnUnstableRateChangedEvt OnUnstableRateChanged;
+
         #endregion Event
 
         private Process m_osu_process;
@@ -161,6 +165,7 @@ namespace OsuRTDataProvider.Listen
 
         private double m_last_hp = 0;
         private double m_last_acc = 0;
+        private double m_last_ur = 0.0;
         private int m_last_combo = 0;
         private int m_playing_time = 0;
         private int m_last_300 = 0;
@@ -169,6 +174,7 @@ namespace OsuRTDataProvider.Listen
         private int m_last_miss = 0;
         private int m_last_geki = 0;
         private int m_last_katu = 0;
+        
 
         private int m_last_score = 0;
 
@@ -559,7 +565,7 @@ namespace OsuRTDataProvider.Listen
                         m_last_mode = mode;
                     }
                 }
-
+                
                 if (m_play_finder != null)
                 {
                     Beatmap beatmap = Beatmap.Empty;
@@ -575,6 +581,7 @@ namespace OsuRTDataProvider.Listen
                     int score = 0;
                     double hp = 0.0;
                     double acc = 0.0;
+                    double ur = 0.0;
 
                     if (OnBeatmapChanged != null) beatmap = m_beatmap_finder.GetCurrentBeatmap(m_osu_id);
                     if (OnPlayingTimeChanged != null) pt = m_play_finder.GetPlayingTime();
@@ -590,6 +597,7 @@ namespace OsuRTDataProvider.Listen
 
                         if (status == OsuStatus.Playing)
                         {
+                            if (OnUnstableRateChanged != null) ur = m_play_finder.GetUnstableRate();
                             if (OnModsChanged != null) mods = m_play_finder.GetCurrentMods();
                             if (OnComboChanged != null) cb = m_play_finder.GetCurrentCombo();
                             if (OnCount300Changed != null) n300 = m_play_finder.Get300Count();
@@ -614,6 +622,9 @@ namespace OsuRTDataProvider.Listen
 
                         if (acc != m_last_acc)
                             OnAccuracyChanged?.Invoke(acc);
+
+                        if (ur != m_last_ur)
+                            OnUnstableRateChanged?.Invoke(ur);
 
                         if (score != m_last_score)
                             OnScoreChanged?.Invoke(score);
@@ -654,6 +665,7 @@ namespace OsuRTDataProvider.Listen
                     m_last_mods = mods;
                     m_last_hp = hp;
                     m_last_acc = acc;
+                    m_last_ur = ur;
                     m_last_combo = cb;
                     m_playing_time = pt;
                     m_last_300 = n300;
