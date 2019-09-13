@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace OsuRTDataProvider.Memory
 {
@@ -95,18 +96,23 @@ namespace OsuRTDataProvider.Memory
             }
             catch (Exception e)
             {
-                Sync.Tools.IO.CurrentIO.WriteColor("-------------ORTDP(Exception)---------------", ConsoleColor.Red);
-                Sync.Tools.IO.CurrentIO.WriteColor(e.ToString(), ConsoleColor.Yellow);
+                StringBuilder sb = new StringBuilder();
+
+                sb.AppendLine("------------- ORTDP(Exception)--------------- ");
+                sb.AppendLine(e.ToString());
+
                 if (Setting.DebugMode)
                 {
-                    Sync.Tools.IO.CurrentIO.WriteColor("--------------ORTDP(Detail)-----------------", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor($"Songs Path:{Setting.SongsPath}", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor($"Filename:{filename}", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor($"Folder:{folder}", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor($"BeatmapID:{id}", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor($"BeatmapSetID:{set_id}", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor("--------------------------------------------", ConsoleColor.Yellow);
+                    sb.AppendLine("--------------ORTDP(Detail)-----------------");
+                    sb.AppendLine($"Songs Path:{Setting.SongsPath}");
+                    sb.AppendLine($"Filename:{filename}");
+                    sb.AppendLine($"Folder:{folder}");
+                    sb.AppendLine($"BeatmapID:{id}");
+                    sb.AppendLine($"BeatmapSetID:{set_id}");
+                    sb.AppendLine("--------------------------------------------");
                 }
+
+                Logger.Warn(sb.ToString());
             }
 
             return beatmap;

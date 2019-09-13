@@ -62,9 +62,9 @@ namespace OsuRTDataProvider.Helper
         private static void Print(string str)
         {
 #if !DEBUG
-            Sync.Tools.IO.FileLogger.Write($"[OsuRTDataProvider]{str}");
-#else
-            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]{str}");
+            Sync.Tools.IO.FileLogger.Write($"{str}");
+#else   
+            Sync.Tools.IO.CurrentIO.Write($"{str}");
 #endif
         }
 

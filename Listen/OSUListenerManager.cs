@@ -361,12 +361,12 @@ namespace OsuRTDataProvider.Listen
                 if (finder.TryInit())
                 {
                     timer = 0;
-                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(success_fmt, m_osu_id), ConsoleColor.Green);
+                    Logger.Info(string.Format(success_fmt, m_osu_id));
                     return finder;
                 }
 
                 finder = null;
-                Sync.Tools.IO.CurrentIO.WriteColor(string.Format(failed_fmt, m_osu_id, _retry_time / 1000), ConsoleColor.Red);
+                Logger.Error(string.Format(failed_fmt, m_osu_id, _retry_time / 1000));
             }
             timer += Setting.ListenInterval;
             _finder_timer_dict[typeof(T)] = timer;
@@ -409,13 +409,13 @@ namespace OsuRTDataProvider.Listen
                     if (m_osu_process != null)
                     {
                         FindOsuSongPath();
-                        Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_FOUND, m_osu_id), ConsoleColor.Green);
+                        Logger.Info(string.Format(LANG_OSU_FOUND, m_osu_id));
                         return;
                     }
                 }
                 _find_osu_process_timer = 0;
                 if (!Setting.DisableProcessNotFoundInformation)
-                    Sync.Tools.IO.CurrentIO.WriteColor(string.Format(LANG_OSU_NOT_FOUND, m_osu_id), ConsoleColor.Red);
+                    Logger.Error(string.Format(LANG_OSU_NOT_FOUND, m_osu_id));
             }
             _find_osu_process_timer += Setting.ListenInterval;
         }
@@ -467,8 +467,8 @@ namespace OsuRTDataProvider.Listen
                             }
                             else
                             {
-                                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]ForceOsuSongsDirectory: {Setting.ForceOsuSongsDirectory}", ConsoleColor.Yellow);
-                                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]The ForceOsuSongsDirectory does not exist, try searching for the songs path.",ConsoleColor.Yellow);
+                                Logger.Info($"ForceOsuSongsDirectory: {Setting.ForceOsuSongsDirectory}");
+                                Logger.Info($"The ForceOsuSongsDirectory does not exist, try searching for the songs path.");
                                 song_path = line.Split('=')[1].Trim();
                                 if (Path.IsPathRooted(song_path))
                                     Setting.SongsPath = song_path;
@@ -479,7 +479,7 @@ namespace OsuRTDataProvider.Listen
                         else if (line.Contains("LastVersion"))
                         {
                             Setting.OsuVersion = line.Split('=')[1].Trim();
-                            Sync.Tools.IO.CurrentIO.Write($"[OsuRTDataProvider]OSU Client Verison:{Setting.OsuVersion} ORTDP Version:{OsuRTDataProviderPlugin.VERSION}");
+                            Logger.Info($"OSU Client Verison:{Setting.OsuVersion} ORTDP Version:{OsuRTDataProviderPlugin.VERSION}");
                             break;
                         }
                     }
@@ -489,18 +489,18 @@ namespace OsuRTDataProvider.Listen
             {
                 if (Setting.DebugMode)
                 {
-                    Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Unknown error, search for song path failed.", ConsoleColor.Yellow);
-                    Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Win32Exception: {e.ToString()}",ConsoleColor.Yellow);
+                    Logger.Warn($"Unknown error, search for song path failed.");
+                    Logger.Warn($"Win32Exception: {e.ToString()}");
                 }
             }
 
             if (string.IsNullOrWhiteSpace(Setting.SongsPath))
             {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Search failed, use default songs path.", ConsoleColor.Yellow);
+                Logger.Warn($"Search failed, use default songs path.");
                 Setting.SongsPath = Path.Combine(osu_path,"Songs");
             }
-            Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Osu Path: {osu_path}", ConsoleColor.Green);
-            Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Beatmap Path: {Setting.SongsPath}", ConsoleColor.Green);
+            Logger.Info($"Osu Path: {osu_path}");
+            Logger.Info($"Beatmap Path: {Setting.SongsPath}");
         }
         #endregion
 
@@ -649,7 +649,7 @@ namespace OsuRTDataProvider.Listen
                     }
                     catch (Exception e)
                     {
-                        Sync.Tools.IO.CurrentIO.WriteColor(e.ToString(), ConsoleColor.Red);
+                        Logger.Error(e.ToString());
                     }
 
                     m_last_beatmap = beatmap;
@@ -688,7 +688,7 @@ namespace OsuRTDataProvider.Listen
             }
             catch (Win32Exception e)
             {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]:{e.Message}", ConsoleColor.Red);
+                Logger.Error($":{e.Message}");
             }
 
             OsuInternalStatus mode = m_status_finder.GetCurrentOsuModes();
@@ -696,7 +696,7 @@ namespace OsuRTDataProvider.Listen
 #if DEBUG
             if (mode != m_last_test)
             {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[ORTDP Debug]Internal Status:{mode}", ConsoleColor.DarkYellow);
+                Logger.Info($"[ORTDP Debug]Internal Status:{mode}");
             }
             m_last_test = mode;
 #endif
@@ -732,6 +732,7 @@ namespace OsuRTDataProvider.Listen
                     return OsuStatus.SelectSong;
 
                 default:
+                    Logger.Warn($"Unknown OsuInternalStatus: {mode}");
                     return OsuStatus.Unkonwn;
             }
         }

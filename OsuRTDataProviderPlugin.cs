@@ -54,7 +54,7 @@ namespace OsuRTDataProvider
             }
 
             base.EventBus.BindEvent<PluginEvents.InitCommandEvent>(InitCommand);
-            base.EventBus.BindEvent<PluginEvents.ProgramReadyEvent>((e) => IO.CurrentIO.WriteColor(string.Format(DefaultLanguage.LANG_TOURNEY_HINT, Setting.EnableTourneyMode), ConsoleColor.Green));
+            base.EventBus.BindEvent<PluginEvents.ProgramReadyEvent>((e) => Logger.Info(string.Format(DefaultLanguage.LANG_TOURNEY_HINT, Setting.EnableTourneyMode)));
         }
 
         public override void OnEnable()
@@ -98,7 +98,7 @@ namespace OsuRTDataProvider
                          if (bool.TryParse(args[1], out bool f))
                          {
                              DebugOutput(f);
-                             Sync.Tools.IO.CurrentIO.WriteColor($"Debug mode = {Setting.DebugMode}", ConsoleColor.Green);
+                             Logger.Info($"Debug mode = {Setting.DebugMode}");
                          }
                      }
                      return true;
@@ -117,11 +117,11 @@ namespace OsuRTDataProvider
                 {
                     int id = i;
                     void OnTourneyStatusChanged(OsuStatus l, OsuStatus c)=>
-                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{id}]Current Game Status:{c}", ConsoleColor.Blue);
+                        Logger.Info($"[{id}]Current Game Status:{c}");
                     void OnTourneyModsChanged(ModsInfo m)=>
-                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{id}]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
+                        Logger.Info($"[{id}]Mods:{m}(0x{(uint)m.Mod:X8})");
                     void OnTourneyModeChanged(OsuPlayMode last, OsuPlayMode mode)=>
-                        IO.CurrentIO.WriteColor($"[OsuRTDataProvider][{id}]Mode:{mode}", ConsoleColor.Blue);
+                        Logger.Info($"[{id}]Mode:{mode}");
 
                     if (enable)
                     {
@@ -140,13 +140,13 @@ namespace OsuRTDataProvider
             else
             {
                 void OnStatusChanged(OsuStatus l, OsuStatus c) =>
-                    IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Current Game Status:{c}", ConsoleColor.Blue);
+                    Logger.Info($"Current Game Status:{c}");
                 void OnModsChanged(ModsInfo m) =>
-                    IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Mods:{m}(0x{(uint)m.Mod:X8})", ConsoleColor.Blue);
+                    Logger.Info($"Mods:{m}(0x{(uint)m.Mod:X8})");
                 void OnModeChanged(OsuPlayMode last, OsuPlayMode mode) =>
-                    IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Mode:{mode}", ConsoleColor.Blue);
+                    Logger.Info($"Mode:{mode}");
                 void OnBeatmapChanged(Beatmap map) =>
-                    IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Beatmap: {map.Artist} - {map.Title}[{map.Difficulty}]({map.BeatmapSetID},{map.BeatmapID},{map.FilenameFull})", ConsoleColor.Blue);
+                    Logger.Info($"Beatmap: {map.Artist} - {map.Title}[{map.Difficulty}]({map.BeatmapSetID},{map.BeatmapID},{map.FilenameFull})");
 
                 if (enable)
                 {

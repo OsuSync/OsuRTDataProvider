@@ -28,7 +28,7 @@ namespace OsuRTDataProvider.Memory
             }
 #endif
 
-            output.Write($"[OsuRTDataProvider]{msg}");
+            output.Write($"{msg}");
             */
 
             //now is directly output to default in DebugMode

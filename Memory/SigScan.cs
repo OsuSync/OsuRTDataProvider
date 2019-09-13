@@ -117,7 +117,7 @@ namespace OsuRTDataProvider.Memory
 
             if (handle == IntPtr.Zero)
             {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Error Code:0x{Marshal.GetLastWin32Error():X8}", ConsoleColor.Red);
+                Logger.Error($"Error Code:0x{Marshal.GetLastWin32Error():X8}");
                 return;
             }
 
@@ -131,7 +131,7 @@ namespace OsuRTDataProvider.Memory
 
                 if (size != mem_info_size)
                 {
-                    Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Error Code:0x{Marshal.GetLastWin32Error():X8}", ConsoleColor.Red);
+                    Logger.Error($"Error Code:0x{Marshal.GetLastWin32Error():X8}");
                     break;
                 }
 
@@ -159,7 +159,7 @@ namespace OsuRTDataProvider.Memory
 
             if(m_memoryRegionList.Count==0)
             {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]Error:List is Empty", ConsoleColor.Red);
+                Logger.Error($"Error:List is Empty");
             }
         }
 
@@ -205,7 +205,7 @@ namespace OsuRTDataProvider.Memory
             }
             catch (Exception ex)
             {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]:{ex.Message}", ConsoleColor.Red);
+                Logger.Error($":{ex.Message}");
                 return false;
             }
         }
@@ -284,7 +284,7 @@ namespace OsuRTDataProvider.Memory
             }
             catch (Exception ex)
             {
-                Sync.Tools.IO.CurrentIO.WriteColor($"[OsuRTDataProvider]:{ex.Message}", ConsoleColor.Red);
+                Logger.Error($":{ex.Message}");
                 return IntPtr.Zero;
             }
         }

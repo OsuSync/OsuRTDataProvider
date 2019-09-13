@@ -64,7 +64,7 @@ namespace OsuRTDataProvider
                 if (Setting.TeamSize > 8 || Setting.TeamSize < 1)
                 {
                     Setting.TeamSize = 1;
-                    IO.CurrentIO.Write("TeameSize∈[1,8]");
+                    Logger.Info("TeameSize∈[1,8]");
                 }
             }
             catch (Exception)
