@@ -48,7 +48,7 @@ namespace OsuRTDataProvider
         [Bool]
         public ConfigurationElement EnableModsChangedAtListening
         {
-            set { }//Setting.EnableModsChangedAtListening = bool.Parse(value);
+            set => Setting.EnableModsChangedAtListening = bool.Parse(value);
             get => Setting.EnableModsChangedAtListening.ToString();
         }
 
