@@ -15,7 +15,7 @@ namespace OsuRTDataProvider
     {
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
-        public const string VERSION = "1.4.9";
+        public const string VERSION = "1.4.11";
 
         private PluginConfigurationManager m_config_manager;
 
@@ -54,7 +54,10 @@ namespace OsuRTDataProvider
             }
 
             base.EventBus.BindEvent<PluginEvents.InitCommandEvent>(InitCommand);
-            base.EventBus.BindEvent<PluginEvents.ProgramReadyEvent>((e) => Logger.Info(string.Format(DefaultLanguage.LANG_TOURNEY_HINT, Setting.EnableTourneyMode)));
+            base.EventBus.BindEvent<PluginEvents.ProgramReadyEvent>((e) => {
+                Logger.Info(string.Format(DefaultLanguage.LANG_TOURNEY_HINT, Setting.EnableTourneyMode));
+                UpdateChecker.CheckUpdate();
+            });
         }
 
         public override void OnEnable()
@@ -91,6 +94,14 @@ namespace OsuRTDataProvider
         {
             @e.Commands.Dispatch.bind("ortdp", (args) =>
              {
+                 if(args.Count >= 1)
+                 {
+                     if(args[0] == "releases")
+                     {
+                         System.Diagnostics.Process.Start("https://github.com/OsuSync/OsuRTDataProvider/releases");
+                     }
+                 }
+
                  if (args.Count >= 2)
                  {
                      if (args[0] == "debug")

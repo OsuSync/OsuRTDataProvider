@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OsuRTDataProvider
 {
-    public class Utils
+    public static class Utils
     {
         public static double ConvertVersionStringToValue(string osu_version_string)
         {
@@ -20,6 +20,49 @@ namespace OsuRTDataProvider
             }
 
             throw new Exception("Can't parse version: "+osu_version_string);
+        }
+
+        public static List<double> GetErrorStatisticsArray(List<int> list)
+        {
+            if (list == null || list.Count == 0)
+                return null;
+            List<double> result = new List<double>(4);
+            double total = 0, _total = 0, totalAll = 0;
+            int count = 0, _count = 0;
+            int max = 0, min = int.MaxValue;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i] > max)
+                    max = list[i];
+                if (list[i] < min)
+                    min = list[i];
+                totalAll += list[i];
+                if (list[i] >= 0)
+                {
+                    total += list[i];
+                    count++;
+                }
+                else
+                {
+                    _total += list[i];
+                    _count++;
+                }
+            }
+            double avarage = totalAll / list.Count;
+            double variance = 0;
+            for (int i = 0; i < list.Count; i++)
+            {
+                variance += Math.Pow(list[i] - avarage, 2);
+            }
+            variance = variance / list.Count;
+            result.Add(_count == 0 ? 0 : _total / _count); //0
+            result.Add(count == 0 ? 0 : total / count); //1
+            result.Add(avarage); //2
+            result.Add(variance); //3
+            result.Add(Math.Sqrt(variance)); //4
+            result.Add(max); //5
+            result.Add(min); //6
+            return result;
         }
     }
 

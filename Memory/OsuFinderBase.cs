@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -12,15 +13,15 @@ namespace OsuRTDataProvider.Memory
         protected SigScan SigScan { get; private set; }
         protected Process OsuProcess { get; private set; }
 
-        private int _read_max_string_length = 4096;
+        private int max_bytes_length = 40960;
 
         public int ReadMaxStringLength
         {
-            get => _read_max_string_length;
+            get => max_bytes_length;
             set
             {
-                _read_max_string_length = value;
-                _str_buf = new byte[_read_max_string_length];
+                max_bytes_length = value;
+                _bytes_buf = new byte[max_bytes_length];
             }
         }
 
@@ -29,7 +30,7 @@ namespace OsuRTDataProvider.Memory
             OsuProcess = process;
             SigScan = new SigScan(OsuProcess);
 
-            _str_buf = new byte[ReadMaxStringLength];
+            _bytes_buf = new byte[ReadMaxStringLength];
         }
 
         private List<byte> _a = new List<byte>(64);
@@ -95,7 +96,7 @@ namespace OsuRTDataProvider.Memory
             return false;
         }
 
-        private byte[] _str_buf;
+        private byte[] _bytes_buf;
 
         protected bool TryReadStringFromMemory(IntPtr address, out string str)
         {
@@ -109,9 +110,39 @@ namespace OsuRTDataProvider.Memory
 
                 if (len > ReadMaxStringLength || len <= 0) return false;
 
-                if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, _str_buf, (uint)len, out int ret_size_ptr))
+                if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, _bytes_buf, (uint)len, out int ret_size_ptr))
                 {
-                    str = Encoding.Unicode.GetString(_str_buf, 0, len);
+                    str = Encoding.Unicode.GetString(_bytes_buf, 0, len);
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return false;
+        }
+
+        protected bool TryReadListFromMemory(IntPtr address, out List<int> list)
+        {
+            list = null;
+            int type_size = Marshal.SizeOf<int>();
+            TryReadIntPtrFromMemory(address, out IntPtr list_ptr);
+
+            try
+            {
+                TryReadIntFromMemory(list_ptr + 0xc, out int len);
+
+                if (len > ReadMaxStringLength || len <= 0) return false;
+
+                TryReadIntPtrFromMemory(list_ptr + 0x4, out var array_ptr);
+
+                if (SigScan.ReadProcessMemory(OsuProcess.Handle, array_ptr + 0x8, _bytes_buf, (uint)(len * type_size), out int ret_size_ptr))
+                {
+                    int[] data = new int[len];
+                    Buffer.BlockCopy(_bytes_buf, 0, data, 0, len * type_size);
+                    list = new List<int>(data);
                     return true;
                 }
             }

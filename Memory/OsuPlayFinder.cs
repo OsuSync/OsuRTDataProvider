@@ -17,8 +17,8 @@ namespace OsuRTDataProvider.Memory
         private static readonly string s_time_pattern = "\x5e\x5f\x5d\xc3\xa1\x0\x0\x0\x0\x89\x0\x04";
         private static readonly string s_time_mask = "xxxxx????x?x";
 
-        private static readonly string s_global_mods_pattern = "\x85\xC0\x75\x62\xA1\x00\x00\x00\x00\x89\x45\xC0\x8B\x40\x04";
-        private static readonly string s_global_mods_mask = "xxxxx????xxxxxx";
+        private static readonly string s_global_mods_pattern = "\x8b\x15\x0\x0\x0\x0\x8b\x4a\x04\x8b\x7a\x08\xff\x72\x0c";
+        private static readonly string s_global_mods_mask = "xx????xxxxxxxxx";
 
         #endregion Address Arguments
 
@@ -42,7 +42,7 @@ namespace OsuRTDataProvider.Memory
                 if (Setting.EnableModsChangedAtListening)
                 {
                     //Find mods address
-                    m_mods_address = SigScan.FindPattern(StringToByte(s_global_mods_pattern), s_global_mods_mask, 5);
+                    m_mods_address = SigScan.FindPattern(StringToByte(s_global_mods_pattern), s_global_mods_mask, 2);
                     LogHelper.LogToFile($"Mods Base Address (0):0x{(int)m_mods_address:X8}");
 
                     m_mods_address_success = TryReadIntPtrFromMemory(m_mods_address, out m_mods_address);
@@ -153,6 +153,21 @@ namespace OsuRTDataProvider.Memory
             return value;
         }
 
+        public double GetUnstableRate()
+        {
+            TryReadListFromMemory(ScoreBaseAddress + 0x38, out var list);
+            if (list == null)
+                return double.NaN;
+            var result = Utils.GetErrorStatisticsArray(list);
+            return result[4]*10;
+        }
+
+        public string GetPlayerName()
+        {
+            TryReadStringFromMemory(ScoreBaseAddress + 0x28, out var str);
+            return str;
+        }
+
         public ModsInfo GetCurrentModsAtListening()
         {
             IntPtr mods_ptr;
@@ -172,7 +187,6 @@ namespace OsuRTDataProvider.Memory
         public ModsInfo GetCurrentMods()
         {
             IntPtr mods_ptr;
-
 
             var tmp_ptr = ScoreBaseAddress;
             TryReadIntPtrFromMemory(tmp_ptr + 0x1c, out mods_ptr);
