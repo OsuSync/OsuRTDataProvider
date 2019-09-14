@@ -9,6 +9,8 @@ namespace OsuRTDataProvider
         public static LanguageElement LANG_OSU_FOUND = "[ID:{0}]Found osu!.exe process";
         public static LanguageElement LANG_TOURNEY_HINT = "Tourney Mode: {0}";
 
+        public static LanguageElement CHECK_GOTO_RELEASE_PAGE_HINT = "Enter \"ortdp releases\" to open the releases page in your browser.";
+        public static LanguageElement LANG_CHECK_ORTDP_UPDATE = "Found a new version of OsuRTDataProvider({0})";
         public static LanguageElement LANG_INIT_STATUS_FINDER_FAILED = "[ID:{0}]Init StatusFinder Failed! Retry after {1} seconds";
         public static LanguageElement LANG_INIT_STATUS_FINDER_SUCCESS = "[ID:{0}]Init StatusFinder Success!";
         public static LanguageElement LANG_INIT_PLAY_FINDER_FAILED = "[ID:{0}]Init PlayFinder Failed! Retry after {1} seconds";
