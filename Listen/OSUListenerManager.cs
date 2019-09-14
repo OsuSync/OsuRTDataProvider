@@ -697,7 +697,7 @@ namespace OsuRTDataProvider.Listen
 #if DEBUG
             if (mode != m_last_test)
             {
-                Logger.Info($"[ORTDP Debug]Internal Status:{mode}");
+                Logger.Info($"Internal Status:{mode}");
             }
             m_last_test = mode;
 #endif
