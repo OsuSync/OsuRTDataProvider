@@ -124,10 +124,10 @@ namespace OsuRTDataProvider.Memory
             return false;
         }
 
-        protected bool TryReadListFromMemory(IntPtr address, out List<int> list)
+        protected bool TryReadListFromMemory<T>(IntPtr address, out List<T> list)where T:struct
         {
             list = null;
-            int type_size = Marshal.SizeOf<int>();
+            int type_size = Marshal.SizeOf<T>();
             TryReadIntPtrFromMemory(address, out IntPtr list_ptr);
 
             try
@@ -140,9 +140,9 @@ namespace OsuRTDataProvider.Memory
 
                 if (SigScan.ReadProcessMemory(OsuProcess.Handle, array_ptr + 0x8, _bytes_buf, (uint)(len * type_size), out int ret_size_ptr))
                 {
-                    int[] data = new int[len];
+                    T[] data = new T[len];
                     Buffer.BlockCopy(_bytes_buf, 0, data, 0, len * type_size);
-                    list = new List<int>(data);
+                    list = new List<T>(data);
                     return true;
                 }
             }

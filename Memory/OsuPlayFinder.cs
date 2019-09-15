@@ -1,4 +1,5 @@
-﻿using OsuRTDataProvider.Mods;
+﻿using OsuRTDataProvider.Listen;
+using OsuRTDataProvider.Mods;
 using System;
 using System.Diagnostics;
 
@@ -153,16 +154,21 @@ namespace OsuRTDataProvider.Memory
             return value;
         }
 
-        public double GetUnstableRate()
+        public ErrorStatisticsResult GetUnstableRate()
         {
-            TryReadListFromMemory(ScoreBaseAddress + 0x38, out var list);
+            TryReadListFromMemory<int>(ScoreBaseAddress + 0x38, out var list);
             if (list == null)
-                return double.NaN;
+                return ErrorStatisticsResult.Empty;
             var result = Utils.GetErrorStatisticsArray(list);
-            return result[4]*10;
+            return new ErrorStatisticsResult
+            {
+                ErrorMin = result[0],
+                ErrorMax = result[1],
+                UnstableRate = result[4] * 10,
+            };
         }
 
-        public string GetPlayerName()
+        public string GetCurrentPlayerName()
         {
             TryReadStringFromMemory(ScoreBaseAddress + 0x28, out var str);
             return str;

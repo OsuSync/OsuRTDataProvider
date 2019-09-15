@@ -94,8 +94,11 @@ namespace OsuRTDataProvider
         public static bool DisableProcessNotFoundInformation = false;
         public static bool EnableModsChangedAtListening = false;
 
-        public static string SongsPath = string.Empty;//不保存
+        #region NoSave
+        public static string SongsPath = string.Empty;
         public static string OsuVersion = string.Empty;
+        public static string Username = string.Empty;
+        #endregion
 
         public static double CurrentOsuVersionValue => Utils.ConvertVersionStringToValue(OsuVersion);
     }

@@ -22,6 +22,7 @@ namespace OsuRTDataProvider
             throw new Exception("Can't parse version: "+osu_version_string);
         }
 
+        //https://gist.github.com/peppy/3a11cb58c856b6af7c1916422f668899
         public static List<double> GetErrorStatisticsArray(List<int> list)
         {
             if (list == null || list.Count == 0)

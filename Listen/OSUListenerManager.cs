@@ -64,7 +64,9 @@ namespace OsuRTDataProvider.Listen
 
         public delegate void OnHitCountChangedEvt(int hit);
 
-        public delegate void OnUnstableRateChangedEvt(double ur);
+        public delegate void OnErrorStatisticsChangedEvt(ErrorStatisticsResult result);
+
+        public delegate void OnPlayerChangedEvt(string player);
 
         /// <summary>
         /// Available in Playing and Linsten.
@@ -144,8 +146,15 @@ namespace OsuRTDataProvider.Listen
         /// </summary>
         public event OnStatusChangedEvt OnStatusChanged;
 
-        public event OnUnstableRateChangedEvt OnUnstableRateChanged;
+        /// <summary>
+        /// Get ErrorStatistics(UnstableRate and Error Hit).
+        /// </summary>
+        public event OnErrorStatisticsChangedEvt OnErrorStatisticsChanged;
 
+        /// <summary>
+        /// Get player name in playing.
+        /// </summary>
+        public event OnPlayerChangedEvt OnPlayerChanged;
         #endregion Event
 
         private Process m_osu_process;
@@ -158,14 +167,14 @@ namespace OsuRTDataProvider.Listen
         #region last status
 
         private OsuStatus m_last_osu_status = OsuStatus.Unkonwn;
-
+        private string m_last_playername = string.Empty;
         private OsuPlayMode m_last_mode = OsuPlayMode.Unknown;
         private Beatmap m_last_beatmap = Beatmap.Empty;
         private ModsInfo m_last_mods = ModsInfo.Empty;
 
         private double m_last_hp = 0;
         private double m_last_acc = 0;
-        private double m_last_ur = 0.0;
+        private ErrorStatisticsResult m_last_error_statistics = ErrorStatisticsResult.Empty;
         private int m_last_combo = 0;
         private int m_playing_time = 0;
         private int m_last_300 = 0;
@@ -351,18 +360,18 @@ namespace OsuRTDataProvider.Listen
         #endregion Get Current Data
 
         #region Init Finder
-        private const long _retry_time = 3000;
+        private const long RETRY_INTERVAL = 3000;
 
-        Dictionary<Type, long> _finder_timer_dict = new Dictionary<Type, long>();
+        private Dictionary<Type, long> finder_timer_dict = new Dictionary<Type, long>();
         private T InitFinder<T>(string success_fmt, string failed_fmt) where T : OsuFinderBase
         {
-            if (!_finder_timer_dict.ContainsKey(typeof(T)))
-                _finder_timer_dict.Add(typeof(T), 0);
+            if (!finder_timer_dict.ContainsKey(typeof(T)))
+                finder_timer_dict.Add(typeof(T), 0);
 
             T finder = null;
-            long timer = _finder_timer_dict[typeof(T)];
+            long timer = finder_timer_dict[typeof(T)];
 
-            if (timer % _retry_time == 0)
+            if (timer % RETRY_INTERVAL == 0)
             {
                 finder = typeof(T).GetConstructors()[0].Invoke(new object[] { m_osu_process }) as T;
                 if (finder.TryInit())
@@ -373,23 +382,23 @@ namespace OsuRTDataProvider.Listen
                 }
 
                 finder = null;
-                Logger.Error(string.Format(failed_fmt, m_osu_id, _retry_time / 1000));
+                Logger.Error(string.Format(failed_fmt, m_osu_id, RETRY_INTERVAL / 1000));
             }
             timer += Setting.ListenInterval;
-            _finder_timer_dict[typeof(T)] = timer;
+            finder_timer_dict[typeof(T)] = timer;
             return finder;
         }
         #endregion
 
         #region Find Osu Setting
-        private long _find_osu_process_timer = 0;
-        private const long _find_osu_retry_time = 5000;
+        private long find_osu_process_timer = 0;
+        private const long FIND_OSU_RETRY_INTERVAL = 5000;
 
         private void FindOsuProcess()
         {
-            if (_find_osu_process_timer > _find_osu_retry_time)
+            if (find_osu_process_timer > FIND_OSU_RETRY_INTERVAL)
             {
-                _find_osu_process_timer = 0;
+                find_osu_process_timer = 0;
                 Process[] process_list;
 
                 process_list = Process.GetProcessesByName("osu!");
@@ -415,19 +424,19 @@ namespace OsuRTDataProvider.Listen
 
                     if (m_osu_process != null)
                     {
-                        FindOsuSongPath();
+                        FindSongPathAndUsername();
                         Logger.Info(string.Format(LANG_OSU_FOUND, m_osu_id));
                         return;
                     }
                 }
-                _find_osu_process_timer = 0;
+                find_osu_process_timer = 0;
                 if (!Setting.DisableProcessNotFoundInformation)
                     Logger.Error(string.Format(LANG_OSU_NOT_FOUND, m_osu_id));
             }
-            _find_osu_process_timer += Setting.ListenInterval;
+            find_osu_process_timer += Setting.ListenInterval;
         }
 
-        private void FindOsuSongPath()
+        private void FindSongPathAndUsername()
         {
             string osu_path = "";
             try
@@ -443,7 +452,7 @@ namespace OsuRTDataProvider.Listen
                     {
                         string line = sr.ReadLine();
 
-                        if (line.Contains("BeatmapDirectory"))
+                        if (line.StartsWith("BeatmapDirectory"))
                         {
                             if (Directory.Exists(Setting.ForceOsuSongsDirectory))
                             {
@@ -460,11 +469,14 @@ namespace OsuRTDataProvider.Listen
                                     Setting.SongsPath = Path.Combine(osu_path, song_path);
                             }
                         }
-                        else if (line.Contains("LastVersion"))
+                        else if (line.StartsWith("Username"))
+                        {
+                            Setting.Username = line.Split('=')[1].Trim();
+                        }
+                        else if (line.StartsWith("LastVersion"))
                         {
                             Setting.OsuVersion = line.Split('=')[1].Trim();
                             Logger.Info($"OSU Client Verison:{Setting.OsuVersion} ORTDP Version:{OsuRTDataProviderPlugin.VERSION}");
-                            break;
                         }
                     }
                 }
@@ -472,6 +484,10 @@ namespace OsuRTDataProvider.Listen
             catch (Win32Exception e)
             {
                 Logger.Error($"Win32Exception: {e.ToString()}");
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"Exception: {e.ToString()}");
             }
 
             if (string.IsNullOrWhiteSpace(Setting.SongsPath))
@@ -548,6 +564,7 @@ namespace OsuRTDataProvider.Listen
                 {
                     Beatmap beatmap = Beatmap.Empty;
                     ModsInfo mods = ModsInfo.Empty;
+                    ErrorStatisticsResult error_statistics = ErrorStatisticsResult.Empty;
                     int cb = 0;
                     int pt = 0;
                     int n300 = 0;
@@ -559,13 +576,14 @@ namespace OsuRTDataProvider.Listen
                     int score = 0;
                     double hp = 0.0;
                     double acc = 0.0;
-                    double ur = 0.0;
+                    string playername = Setting.Username;
+                    
 
                     if (OnBeatmapChanged != null) beatmap = m_beatmap_finder.GetCurrentBeatmap(m_osu_id);
                     if (OnPlayingTimeChanged != null) pt = m_play_finder.GetPlayingTime();
                     if (Setting.EnableModsChangedAtListening && status != OsuStatus.Playing)
                         if (OnModsChanged != null) mods = m_play_finder.GetCurrentModsAtListening();
-
+                    
                     try
                     {
                         if (beatmap != Beatmap.Empty && beatmap != m_last_beatmap)
@@ -575,7 +593,7 @@ namespace OsuRTDataProvider.Listen
 
                         if (status == OsuStatus.Playing)
                         {
-                            if (OnUnstableRateChanged != null) ur = m_play_finder.GetUnstableRate();
+                            if (OnErrorStatisticsChanged != null) error_statistics = m_play_finder.GetUnstableRate();
                             if (OnModsChanged != null) mods = m_play_finder.GetCurrentMods();
                             if (OnComboChanged != null) cb = m_play_finder.GetCurrentCombo();
                             if (OnCount300Changed != null) n300 = m_play_finder.Get300Count();
@@ -587,6 +605,7 @@ namespace OsuRTDataProvider.Listen
                             if (OnAccuracyChanged != null) acc = m_play_finder.GetCurrentAccuracy();
                             if (OnHealthPointChanged != null) hp = m_play_finder.GetCurrentHP();
                             if (OnScoreChanged != null) score = m_play_finder.GetCurrentScore();
+                            if (OnPlayerChanged != null) playername = m_play_finder.GetCurrentPlayerName();
                         }
 
                         if (mods != ModsInfo.Empty && !ModsInfo.VaildMods(mods))
@@ -601,8 +620,11 @@ namespace OsuRTDataProvider.Listen
                         if (acc != m_last_acc)
                             OnAccuracyChanged?.Invoke(acc);
 
-                        if (ur != m_last_ur)
-                            OnUnstableRateChanged?.Invoke(ur);
+                        if (!error_statistics.Equals(m_last_error_statistics))
+                            OnErrorStatisticsChanged?.Invoke(error_statistics);
+
+                        if (playername != m_last_playername)
+                            OnPlayerChanged(playername);
 
                         if (score != m_last_score)
                             OnScoreChanged?.Invoke(score);
@@ -643,7 +665,7 @@ namespace OsuRTDataProvider.Listen
                     m_last_mods = mods;
                     m_last_hp = hp;
                     m_last_acc = acc;
-                    m_last_ur = ur;
+                    m_last_error_statistics = error_statistics;
                     m_last_combo = cb;
                     m_playing_time = pt;
                     m_last_300 = n300;
@@ -654,6 +676,7 @@ namespace OsuRTDataProvider.Listen
                     m_last_miss = nmiss;
                     m_last_score = score;
                     m_last_osu_status = status;
+                    m_last_playername = playername;
                 }
             }
         }

@@ -1,4 +1,4 @@
-﻿using OsuRTDataProvider.BeatmapInfo;
+using OsuRTDataProvider.BeatmapInfo;
 using OsuRTDataProvider.Helper;
 using OsuRTDataProvider.Listen;
 using OsuRTDataProvider.Mods;
@@ -133,12 +133,18 @@ namespace OsuRTDataProvider
                         Logger.Info($"[{id}]Mods:{m}(0x{(uint)m.Mod:X8})");
                     void OnTourneyModeChanged(OsuPlayMode last, OsuPlayMode mode)=>
                         Logger.Info($"[{id}]Mode:{mode}");
+                    void OnTourneyBeatmapChanged(Beatmap map) =>
+                        Logger.Info($"[{id}]Beatmap: {map.Artist} - {map.Title}[{map.Difficulty}]({map.BeatmapSetID},{map.BeatmapID},{map.FilenameFull})");
+                    void OnTourneyPlayerChanged(string playername) =>
+                        Logger.Info($"[{id}]Current Player: {playername}");
 
                     if (enable)
                     {
                         m_listener_managers[i].OnStatusChanged += OnTourneyStatusChanged;
                         m_listener_managers[i].OnModsChanged += OnTourneyModsChanged;
                         m_listener_managers[i].OnPlayModeChanged += OnTourneyModeChanged;
+                        m_listener_managers[i].OnBeatmapChanged += OnTourneyBeatmapChanged;
+                        m_listener_managers[i].OnPlayerChanged += OnTourneyPlayerChanged;
                     }
                     else
                     {
@@ -158,6 +164,8 @@ namespace OsuRTDataProvider
                     Logger.Info($"Mode:{mode}");
                 void OnBeatmapChanged(Beatmap map) =>
                     Logger.Info($"Beatmap: {map.Artist} - {map.Title}[{map.Difficulty}]({map.BeatmapSetID},{map.BeatmapID},{map.FilenameFull})");
+                void OnPlayerChanged(string playername) =>
+                    Logger.Info($"Current Player: {playername}");
 
                 if (enable)
                 {
@@ -165,6 +173,7 @@ namespace OsuRTDataProvider
                     m_listener_managers[0].OnModsChanged += OnModsChanged;
                     m_listener_managers[0].OnPlayModeChanged += OnModeChanged;
                     m_listener_managers[0].OnBeatmapChanged += OnBeatmapChanged;
+                    m_listener_managers[0].OnPlayerChanged += OnPlayerChanged;
                 }
                 else
                 {
@@ -172,6 +181,7 @@ namespace OsuRTDataProvider
                     m_listener_managers[0].OnModsChanged -= OnModsChanged;
                     m_listener_managers[0].OnPlayModeChanged -= OnModeChanged;
                     m_listener_managers[0].OnBeatmapChanged -= OnBeatmapChanged;
+                    m_listener_managers[0].OnPlayerChanged -= OnPlayerChanged;
                 }
             }
 
