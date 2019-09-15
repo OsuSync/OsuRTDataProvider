@@ -22,11 +22,12 @@ namespace OsuRTDataProvider.Listen
         GameMode = 1u << 11,
         Beatmap = 1u << 12,
         Score = 1u << 13,
+        ErrorStatistics =  1u<<14,
 
         HitCount = Count300 | Count100 | Count50 | CountMiss | CountGeki | CountKatu,
     }
 
-    public struct ProvideData
+    public class ProvideData
     {
         public int ClientID;
         public OsuStatus Status;
@@ -34,6 +35,7 @@ namespace OsuRTDataProvider.Listen
         public OsuPlayMode PlayMode;
         public Beatmap Beatmap;
         public ModsInfo Mods;
+        public ErrorStatisticsResult ErrorStatistics;
 
         public double HealthPoint;
         public double Accuracy;

@@ -249,7 +249,7 @@ namespace OsuRTDataProvider.Listen
 
         public ProvideData GetCurrentData(ProvideDataMask mask)
         {
-            ProvideData data;
+            ProvideData data = new ProvideData();
 
             data.ClientID = m_osu_id;
             data.Status = m_last_osu_status;
@@ -352,6 +352,12 @@ namespace OsuRTDataProvider.Listen
             {
                 if (OnScoreChanged == null) OnScoreChanged += (s) => { };
                 data.Score = m_last_score;
+            }
+
+            if (HasMask(mask, ProvideDataMask.ErrorStatistics))
+            {
+                if (OnErrorStatisticsChanged == null) OnErrorStatisticsChanged += (e) => { };
+                data.ErrorStatistics = m_last_error_statistics;
             }
 
             return data;
