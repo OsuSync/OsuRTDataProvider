@@ -17,8 +17,8 @@ namespace OsuRTDataProvider.Memory
         private static readonly string s_time_pattern = "\x5e\x5f\x5d\xc3\xa1\x0\x0\x0\x0\x89\x0\x04";
         private static readonly string s_time_mask = "xxxxx????x?x";
 
-        private static readonly string s_global_mods_pattern = "\x8b\x15\x0\x0\x0\x0\x8b\x4a\x04\x8b\x7a\x08\xff\x72\x0c";
-        private static readonly string s_global_mods_mask = "xx????xxxxxxxxx";
+        private static readonly string s_global_mods_pattern = "\x8b\x0\x8b\x15\x0\x0\x0\x0\x8b\x4a\x04\x8b\x7a\x08\xff\x72\x0c\x8b\xd7";
+        private static readonly string s_global_mods_mask = "x?xx????xxxxxxxxxxx";
 
         #endregion Address Arguments
 
@@ -42,7 +42,7 @@ namespace OsuRTDataProvider.Memory
                 if (Setting.EnableModsChangedAtListening)
                 {
                     //Find mods address
-                    m_mods_address = SigScan.FindPattern(StringToByte(s_global_mods_pattern), s_global_mods_mask, 2);
+                    m_mods_address = SigScan.FindPattern(StringToByte(s_global_mods_pattern), s_global_mods_mask, 4);
                     LogHelper.LogToFile($"Mods Base Address (0):0x{(int)m_mods_address:X8}");
 
                     m_mods_address_success = TryReadIntPtrFromMemory(m_mods_address, out m_mods_address);
