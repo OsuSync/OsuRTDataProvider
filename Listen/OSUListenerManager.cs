@@ -360,6 +360,12 @@ namespace OsuRTDataProvider.Listen
                 data.ErrorStatistics = m_last_error_statistics;
             }
 
+            if (HasMask(mask, ProvideDataMask.Playername))
+            {
+                if (OnPlayerChanged == null) OnPlayerChanged += (e) => { };
+                data.Playername = m_last_playername;
+            }
+
             return data;
         }
 
@@ -583,15 +589,15 @@ namespace OsuRTDataProvider.Listen
                     double hp = 0.0;
                     double acc = 0.0;
                     string playername = Setting.Username;
-                    
 
-                    if (OnBeatmapChanged != null) beatmap = m_beatmap_finder.GetCurrentBeatmap(m_osu_id);
-                    if (OnPlayingTimeChanged != null) pt = m_play_finder.GetPlayingTime();
-                    if (Setting.EnableModsChangedAtListening && status != OsuStatus.Playing)
-                        if (OnModsChanged != null) mods = m_play_finder.GetCurrentModsAtListening();
-                    
                     try
                     {
+                        if (OnBeatmapChanged != null) beatmap = m_beatmap_finder.GetCurrentBeatmap(m_osu_id);
+                        if (OnPlayingTimeChanged != null) pt = m_play_finder.GetPlayingTime();
+                        if (Setting.EnableModsChangedAtListening && status != OsuStatus.Playing)
+                            if (OnModsChanged != null) mods = m_play_finder.GetCurrentModsAtListening();
+
+
                         if (beatmap != Beatmap.Empty && beatmap != m_last_beatmap)
                         {
                             OnBeatmapChanged?.Invoke(beatmap);
@@ -613,6 +619,9 @@ namespace OsuRTDataProvider.Listen
                             if (OnScoreChanged != null) score = m_play_finder.GetCurrentScore();
                             if (OnPlayerChanged != null) playername = m_play_finder.GetCurrentPlayerName();
                         }
+
+                        if (status != m_last_osu_status)
+                            OnStatusChanged?.Invoke(m_last_osu_status, status);
 
                         if (mods != ModsInfo.Empty && !ModsInfo.VaildMods(mods))
                             mods = m_last_mods;
@@ -658,9 +667,6 @@ namespace OsuRTDataProvider.Listen
 
                         if (pt != m_playing_time)
                             OnPlayingTimeChanged?.Invoke(pt);
-
-                        if (status != m_last_osu_status)
-                            OnStatusChanged?.Invoke(m_last_osu_status, status);
                     }
                     catch (Exception e)
                     {

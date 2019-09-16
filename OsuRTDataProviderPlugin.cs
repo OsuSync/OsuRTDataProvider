@@ -1,4 +1,4 @@
-using OsuRTDataProvider.BeatmapInfo;
+﻿using OsuRTDataProvider.BeatmapInfo;
 using OsuRTDataProvider.Helper;
 using OsuRTDataProvider.Listen;
 using OsuRTDataProvider.Mods;
@@ -15,7 +15,7 @@ namespace OsuRTDataProvider
     {
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
-        public const string VERSION = "1.4.11";
+        public const string VERSION = "1.5.0";
 
         private PluginConfigurationManager m_config_manager;
 

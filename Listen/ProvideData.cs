@@ -23,6 +23,7 @@ namespace OsuRTDataProvider.Listen
         Beatmap = 1u << 12,
         Score = 1u << 13,
         ErrorStatistics =  1u<<14,
+        Playername = 1u<<15,
 
         HitCount = Count300 | Count100 | Count50 | CountMiss | CountGeki | CountKatu,
     }
@@ -31,6 +32,7 @@ namespace OsuRTDataProvider.Listen
     {
         public int ClientID;
         public OsuStatus Status;
+        public string Playername;
 
         public OsuPlayMode PlayMode;
         public Beatmap Beatmap;
