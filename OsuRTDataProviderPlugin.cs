@@ -6,6 +6,7 @@ using Sync;
 using Sync.Plugins;
 using Sync.Tools;
 using System;
+using System.IO;
 using static OsuRTDataProvider.Listen.OsuListenerManager;
 
 namespace OsuRTDataProvider
@@ -58,6 +59,12 @@ namespace OsuRTDataProvider
                 Logger.Info(string.Format(DefaultLanguage.LANG_TOURNEY_HINT, Setting.EnableTourneyMode));
                 UpdateChecker.CheckUpdate();
             });
+
+            try
+            {
+                File.Delete("OsuRTDataProviderRelease.dll");
+            }
+            catch (Exception) { }
         }
 
         public override void OnEnable()
