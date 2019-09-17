@@ -485,7 +485,7 @@ namespace OsuRTDataProvider.Listen
                         {
                             Setting.Username = line.Split('=')[1].Trim();
                         }
-                        else if (line.StartsWith("LastVersion"))
+                        else if (line.StartsWith("LastVersion")&&!line.StartsWith("LastVersionPermissionsFailed"))
                         {
                             Setting.OsuVersion = line.Split('=')[1].Trim();
                             Logger.Info($"OSU Client Verison:{Setting.OsuVersion} ORTDP Version:{OsuRTDataProviderPlugin.VERSION}");
