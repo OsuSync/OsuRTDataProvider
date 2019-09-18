@@ -451,12 +451,25 @@ namespace OsuRTDataProvider.Listen
         private void FindSongPathAndUsername()
         {
             string osu_path = "";
+            find_osu_filename:
             try
             {
                 osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
-                string osu_config_file = Path.Combine(osu_path, $"osu!.{PathHelper.WindowsPathStrip(Environment.UserName)}.cfg");
-                string song_path;
+            }
+            catch (Win32Exception e)
+            {
+                if(Setting.DebugMode)
+                    Logger.Warn($"Win32Exception: {e.ToString()}");
+                Logger.Warn("Can't get osu path, Retry after 2 seconds.");
+                Thread.Sleep(2000);
+                goto find_osu_filename;
+            }
+            string osu_config_file = Path.Combine(osu_path, $"osu!.{PathHelper.WindowsPathStrip(Environment.UserName)}.cfg");
+            string song_path;
 
+
+            try
+            {
                 using (var fs = File.OpenRead(osu_config_file))
                 using (var sr = new StreamReader(fs))
                 {
@@ -492,10 +505,6 @@ namespace OsuRTDataProvider.Listen
                         }
                     }
                 }
-            }
-            catch (Win32Exception e)
-            {
-                Logger.Error($"Win32Exception: {e.ToString()}");
             }
             catch (Exception e)
             {
