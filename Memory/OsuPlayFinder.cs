@@ -9,10 +9,13 @@ namespace OsuRTDataProvider.Memory
     {
         #region Address Arguments
 
-        //0x73,0x7a,0x8b,0x0d,0x0,0x0,0x0,0x0,0x85,0xc9,0x74,0x1f
-        private static readonly string s_acc_pattern2 = "\xa1\x0\x0\x0\x0\x8d\x56\x08\xe8\x0\x0\x0\x0\x83\x7f\x04\x00";
+        //0xA1,0,0,0,0,0x8D,0x56,0x08,0xE8,0,0,0,0,0x83,0x7f,0x04,0x00
+        private static readonly string s_acc_pattern = "\xa1\x0\x0\x0\x0\x8d\x56\x08\xe8\x0\x0\x0\x0\x83\x7f\x04\x00";
+        private static readonly string s_acc_mask = "x????xxxx????xxxx";
 
-        private static readonly string s_acc_mask2 = "x????xxxx????xxxx";
+        //0x73,0x7a,0x8b,0x0d,0x0,0x0,0x0,0x0,0x85,0xc9,0x74,0x1f
+        private static readonly string s_acc_pattern_fallback = "\x73\x7a\x8b\x0d\x0\x0\x0\x0\x85\xc9\x74\x1f\x8d\x55\xf0";
+        private static readonly string s_acc_mask_fallback = "xxxx????xxxxxxx";
 
         //0x5e,0x5f,0x5d,0xc3,0xa1,0x0,0x0,0x0,0x0,0x89,0x0,0x04
         private static readonly string s_time_pattern = "\x5e\x5f\x5d\xc3\xa1\x0\x0\x0\x0\x89\x0\x04";
@@ -51,11 +54,21 @@ namespace OsuRTDataProvider.Memory
                 }
                 
                 //Find acc Address
-                m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern2), s_acc_mask2, 1);
+                m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern), s_acc_mask, 1);
                 LogHelper.LogToFile($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
 
                 m_accuracy_address_success = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
                 LogHelper.LogToFile($"Playing Accuracy Base Address (1):0x{(int)m_acc_address:X8}");
+
+                if (!m_accuracy_address_success)//use s_acc_pattern_fallback
+                {
+                    LogHelper.LogToFile("Use Fallback Accuracy Pattern");
+                    m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern_fallback), s_acc_mask_fallback, 4);
+                    LogHelper.LogToFile($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
+
+                    m_accuracy_address_success = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
+                    LogHelper.LogToFile($"Playing Accuracy Base Address (1):0x{(int)m_acc_address:X8}");
+                }
 
                 //Find Time Address
                 m_time_address = SigScan.FindPattern(StringToByte(s_time_pattern), s_time_mask, 5);
