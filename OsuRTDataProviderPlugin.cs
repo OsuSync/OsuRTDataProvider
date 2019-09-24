@@ -7,6 +7,7 @@ using Sync.Plugins;
 using Sync.Tools;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using static OsuRTDataProvider.Listen.OsuListenerManager;
 
 namespace OsuRTDataProvider
@@ -16,7 +17,7 @@ namespace OsuRTDataProvider
     {
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
-        public const string VERSION = "1.5.4";
+        public const string VERSION = "1.5.5";
 
         private PluginConfigurationManager m_config_manager;
 
@@ -57,7 +58,7 @@ namespace OsuRTDataProvider
             base.EventBus.BindEvent<PluginEvents.InitCommandEvent>(InitCommand);
             base.EventBus.BindEvent<PluginEvents.ProgramReadyEvent>((e) => {
                 Logger.Info(string.Format(DefaultLanguage.LANG_TOURNEY_HINT, Setting.EnableTourneyMode));
-                UpdateChecker.CheckUpdate();
+                Task.Run(()=>UpdateChecker.CheckUpdate());
             });
 
             try

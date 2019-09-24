@@ -767,7 +767,6 @@ namespace OsuRTDataProvider.Listen
                     return OsuStatus.SelectSong;
 
                 default:
-                    Logger.Warn($"Unknown OsuInternalStatus: {mode}");
                     return OsuStatus.Unkonwn;
             }
         }
