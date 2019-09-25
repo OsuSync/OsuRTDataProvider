@@ -16,13 +16,32 @@ namespace OsuRTDataProvider
         }
 
         [Bool(RequireRestart = true)]
-        public ConfigurationElement EnableTourneyMode { get; set; }
+        public ConfigurationElement EnableTourneyMode
+        {
+            get => Setting.EnableTourneyMode.ToString();
+            set => Setting.EnableTourneyMode = bool.Parse(value);
+        }
 
         [Integer(MinValue = 1,MaxValue = 8,RequireRestart = true)]
-        public ConfigurationElement TeamSize { get; set; }
+        public ConfigurationElement TeamSize {
+            get => Setting.TeamSize.ToString();
+            set
+            {
+                Setting.TeamSize = int.Parse(value);
+                if (Setting.TeamSize < 1 && Setting.TeamSize >= 8)
+                {
+                    Setting.TeamSize = 0;
+                    Logger.Info("TeameSize∈[1,8]");
+                }
+            }
+        }
 
         [Bool(RequireRestart = true)]
-        public ConfigurationElement DebugMode { get; set; }
+        public ConfigurationElement DebugMode
+        {
+            get => Setting.DebugMode.ToString();
+            set => Setting.DebugMode = bool.Parse(value);
+        }
 
         [Path(IsDirectory = true, RequireRestart = true)]
         public ConfigurationElement ForceOsuSongsDirectory
@@ -54,28 +73,10 @@ namespace OsuRTDataProvider
 
         public void onConfigurationLoad()
         {
-            try
-            {
-                Setting.DebugMode = bool.Parse(DebugMode);
-                Setting.ListenInterval = int.Parse(ListenInterval);
-                Setting.EnableTourneyMode = bool.Parse(EnableTourneyMode);
-                Setting.TeamSize = int.Parse(TeamSize);
-                Setting.ForceOsuSongsDirectory = ForceOsuSongsDirectory;
-                if (Setting.TeamSize > 8 || Setting.TeamSize < 1)
-                {
-                    Setting.TeamSize = 1;
-                    Logger.Info("TeameSize∈[1,8]");
-                }
-            }
-            catch (Exception)
-            {
-                onConfigurationSave();
-            }
         }
 
         public void onConfigurationReload()
         {
-            onConfigurationLoad();
         }
 
         public void onConfigurationSave()
