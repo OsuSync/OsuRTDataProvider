@@ -28,10 +28,10 @@ namespace OsuRTDataProvider
             set
             {
                 Setting.TeamSize = int.Parse(value);
-                if (Setting.TeamSize < 1 && Setting.TeamSize >= 8)
+                if (Setting.TeamSize < 1 && Setting.TeamSize > 8)
                 {
                     Setting.TeamSize = 0;
-                    Logger.Info("TeameSize∈[1,8]");
+                    Logger.Info("TeamSize must be between 1 and 8.");
                 }
             }
         }
