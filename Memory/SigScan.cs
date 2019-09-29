@@ -389,7 +389,7 @@ namespace OsuRTDataProvider.Memory
         public static extern bool ReadProcessMemory(
             IntPtr hProcess,
             IntPtr lpBaseAddress,
-            [Out()] byte[] lpBuffer,
+            [Out] byte[] lpBuffer,
             uint dwSize,
             out int lpNumberOfBytesRead
             );
