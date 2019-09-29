@@ -13,15 +13,16 @@ namespace OsuRTDataProvider.Memory
         protected SigScan SigScan { get; private set; }
         protected Process OsuProcess { get; private set; }
 
-        private int max_bytes_length = 40960;
+        private int max_bytes_length = 4096;
+        private byte[] _bytes_buf;
 
-        public int ReadMaxStringLength
+        public int ReadBufferMaxLength
         {
             get => max_bytes_length;
             set
             {
                 max_bytes_length = value;
-                _bytes_buf = new byte[max_bytes_length];
+                _bytes_buf = new byte[value];
             }
         }
 
@@ -30,7 +31,7 @@ namespace OsuRTDataProvider.Memory
             OsuProcess = process;
             SigScan = new SigScan(OsuProcess);
 
-            _bytes_buf = new byte[ReadMaxStringLength];
+            _bytes_buf = new byte[ReadBufferMaxLength];
         }
 
         private List<byte> _a = new List<byte>(64);
@@ -96,8 +97,6 @@ namespace OsuRTDataProvider.Memory
             return false;
         }
 
-        private byte[] _bytes_buf;
-
         protected bool TryReadStringFromMemory(IntPtr address, out string str)
         {
             str = null;
@@ -105,10 +104,15 @@ namespace OsuRTDataProvider.Memory
 
             try
             {
-                TryReadIntFromMemory(str_base + 0x4, out int len);
-                len *= 2;
+                if (!TryReadIntFromMemory(str_base + 0x4, out int len))
+                    return false;
+                if (len <= 0) return false;
 
-                if (len > ReadMaxStringLength || len <= 0) return false;
+                len *= 2;
+                if (len > ReadBufferMaxLength)
+                {
+                    ReadBufferMaxLength = (int)(len * 1.5);
+                }
 
                 if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, _bytes_buf, (uint)len, out int ret_size_ptr))
                 {
@@ -132,16 +136,22 @@ namespace OsuRTDataProvider.Memory
 
             try
             {
-                TryReadIntFromMemory(list_ptr + 0xc, out int len);
+                if(!TryReadIntFromMemory(list_ptr + 0xc, out int len))
+                    return false;
+                if (len <= 0) return false;
 
-                if (len > ReadMaxStringLength || len <= 0) return false;
+                len *= type_size;
+                if (len > ReadBufferMaxLength)
+                {
+                    ReadBufferMaxLength = (int)(len * 1.5);
+                }
 
                 TryReadIntPtrFromMemory(list_ptr + 0x4, out var array_ptr);
 
-                if (SigScan.ReadProcessMemory(OsuProcess.Handle, array_ptr + 0x8, _bytes_buf, (uint)(len * type_size), out int ret_size_ptr))
+                if (SigScan.ReadProcessMemory(OsuProcess.Handle, array_ptr + 0x8, _bytes_buf, (uint)len, out int ret_size_ptr))
                 {
                     T[] data = new T[len];
-                    Buffer.BlockCopy(_bytes_buf, 0, data, 0, len * type_size);
+                    Buffer.BlockCopy(_bytes_buf, 0, data, 0, len);
                     list = new List<T>(data);
                     return true;
                 }
