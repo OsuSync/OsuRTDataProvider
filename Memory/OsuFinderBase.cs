@@ -108,15 +108,15 @@ namespace OsuRTDataProvider.Memory
                     return false;
                 if (len <= 0) return false;
 
-                len *= 2;
+                int bytes = len * 2;
                 if (len > ReadBufferMaxLength)
                 {
-                    ReadBufferMaxLength = (int)(len * 1.5);
+                    ReadBufferMaxLength = (int)(bytes * 1.5);
                 }
 
-                if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, _bytes_buf, (uint)len, out int ret_size_ptr))
+                if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, _bytes_buf, (uint)bytes, out int ret_size_ptr))
                 {
-                    str = Encoding.Unicode.GetString(_bytes_buf, 0, len);
+                    str = Encoding.Unicode.GetString(_bytes_buf, 0, bytes);
                     return true;
                 }
             }
@@ -140,18 +140,18 @@ namespace OsuRTDataProvider.Memory
                     return false;
                 if (len <= 0) return false;
 
-                len *= type_size;
+                int bytes = len * type_size;
                 if (len > ReadBufferMaxLength)
                 {
-                    ReadBufferMaxLength = (int)(len * 1.5);
+                    ReadBufferMaxLength = (int)(bytes * 1.5);
                 }
 
                 TryReadIntPtrFromMemory(list_ptr + 0x4, out var array_ptr);
 
-                if (SigScan.ReadProcessMemory(OsuProcess.Handle, array_ptr + 0x8, _bytes_buf, (uint)len, out int ret_size_ptr))
+                if (SigScan.ReadProcessMemory(OsuProcess.Handle, array_ptr + 0x8, _bytes_buf, (uint)bytes, out int ret_size_ptr))
                 {
                     T[] data = new T[len];
-                    Buffer.BlockCopy(_bytes_buf, 0, data, 0, len);
+                    Buffer.BlockCopy(_bytes_buf, 0, data, 0, bytes);
                     list = new List<T>(data);
                     return true;
                 }
