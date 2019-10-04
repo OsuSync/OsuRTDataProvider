@@ -14,9 +14,12 @@ namespace OsuRTDataProvider.Memory
         protected Process OsuProcess { get; private set; }
 
         private int max_bytes_length = 4096;
-        private byte[] _bytes_buf;
+        private byte[] _bytes_buf = new byte[4096];
 
-        public int ReadBufferMaxLength
+        private const int STRING_BUFFER_LENGTH_MAX = 4096;
+        private byte[] _string_bytes_buf = new byte[4096];
+
+        public int ReadBufferLengthMax
         {
             get => max_bytes_length;
             set
@@ -30,8 +33,6 @@ namespace OsuRTDataProvider.Memory
         {
             OsuProcess = process;
             SigScan = new SigScan(OsuProcess);
-
-            _bytes_buf = new byte[ReadBufferMaxLength];
         }
 
         private List<byte> _a = new List<byte>(64);
@@ -106,18 +107,17 @@ namespace OsuRTDataProvider.Memory
             {
                 if (!TryReadIntFromMemory(str_base + 0x4, out int len))
                     return false;
-                if (len <= 0) return false;
 
-                int bytes = len * 2;
-                if (len > ReadBufferMaxLength)
-                {
-                    ReadBufferMaxLength = (int)(bytes * 1.5);
-                }
+                len *= 2;
+                if (len > STRING_BUFFER_LENGTH_MAX || len <= 0) return false;
 
-                if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, _bytes_buf, (uint)bytes, out int ret_size_ptr))
+                if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, _string_bytes_buf, (uint)len, out int ret_size))
                 {
-                    str = Encoding.Unicode.GetString(_bytes_buf, 0, bytes);
-                    return true;
+                    if (len == ret_size)
+                    {
+                        str = Encoding.Unicode.GetString(_string_bytes_buf, 0, len);
+                        return true;
+                    }
                 }
             }
             catch (Exception)
@@ -141,19 +141,22 @@ namespace OsuRTDataProvider.Memory
                 if (len <= 0) return false;
 
                 int bytes = len * type_size;
-                if (len > ReadBufferMaxLength)
+                if (bytes > ReadBufferLengthMax)
                 {
-                    ReadBufferMaxLength = (int)(bytes * 1.5);
+                    ReadBufferLengthMax = (int)(bytes * 1.5);
                 }
 
                 TryReadIntPtrFromMemory(list_ptr + 0x4, out var array_ptr);
 
-                if (SigScan.ReadProcessMemory(OsuProcess.Handle, array_ptr + 0x8, _bytes_buf, (uint)bytes, out int ret_size_ptr))
+                if (SigScan.ReadProcessMemory(OsuProcess.Handle, array_ptr + 0x8, _bytes_buf, (uint)bytes, out int ret_size))
                 {
-                    T[] data = new T[len];
-                    Buffer.BlockCopy(_bytes_buf, 0, data, 0, bytes);
-                    list = new List<T>(data);
-                    return true;
+                    if (bytes == ret_size)
+                    {
+                        T[] data = new T[len];
+                        Buffer.BlockCopy(_bytes_buf, 0, data, 0, bytes);
+                        list = new List<T>(data);
+                        return true;
+                    }
                 }
             }
             catch (Exception)
