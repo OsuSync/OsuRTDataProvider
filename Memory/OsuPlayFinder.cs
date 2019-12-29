@@ -1,4 +1,4 @@
-﻿using OsuRTDataProvider.Listen;
+using OsuRTDataProvider.Listen;
 using OsuRTDataProvider.Mods;
 using System;
 using System.Diagnostics;
@@ -112,7 +112,7 @@ namespace OsuRTDataProvider.Memory
             TryReadIntPtrFromMemory(m_acc_address, out var tmpPtr);
 
             TryReadIntPtrFromMemory(tmpPtr + 0x44, out tmpPtr);
-            TryReadIntFromMemory(tmpPtr + 0xF4, out var value);
+            TryReadIntFromMemory(tmpPtr + 0xF8, out var value);
             return value;
         }
 
