@@ -21,8 +21,8 @@ namespace OsuRTDataProvider.Memory
         private static readonly string s_time_pattern = "\x5e\x5f\x5d\xc3\xa1\x0\x0\x0\x0\x89\x0\x04";
         private static readonly string s_time_mask = "xxxxx????x?x";
 
-        private static readonly string s_global_mods_pattern = "\x8b\x0\x8b\x15\x0\x0\x0\x0\x8b\x4a\x04\x8b\x7a\x08\xff\x72\x0c\x8b\xd7";
-        private static readonly string s_global_mods_mask = "x?xx????xxxxxxxxxxx";
+        private static readonly string s_global_mods_pattern = "\x8B\xF1\xA1\x00\x00\x00\x00\x25\x00\x00\x40\x00\x85\xC0";
+        private static readonly string s_global_mods_mask = "xxx????xxxxxxx";
 
         #endregion Address Arguments
 
@@ -46,7 +46,7 @@ namespace OsuRTDataProvider.Memory
                 if (Setting.EnableModsChangedAtListening)
                 {
                     //Find mods address
-                    m_mods_address = SigScan.FindPattern(StringToByte(s_global_mods_pattern), s_global_mods_mask, 4);
+                    m_mods_address = SigScan.FindPattern(StringToByte(s_global_mods_pattern), s_global_mods_mask, 3);
                     LogHelper.LogToFile($"Mods Base Address (0):0x{(int)m_mods_address:X8}");
 
                     m_mods_address_success = TryReadIntPtrFromMemory(m_mods_address, out m_mods_address);
@@ -189,16 +189,16 @@ namespace OsuRTDataProvider.Memory
 
         public ModsInfo GetCurrentModsAtListening()
         {
-            IntPtr mods_ptr;
-            TryReadIntPtrFromMemory(m_mods_address, out mods_ptr);
-
-            if (TryReadIntFromMemory(mods_ptr + 0x8, out int salt) &&
-                TryReadIntFromMemory(mods_ptr + 0xc, out int mods))
+            if (TryReadIntFromMemory(m_mods_address, out var mods))
             {
+                //if (TryReadIntFromMemory(mods_ptr + 0x8, out int salt) &&
+                //    TryReadIntFromMemory(mods_ptr + 0xc, out int mods))
+                //{
                 return new ModsInfo()
                 {
-                    Mod = (ModsInfo.Mods)(mods ^ salt)
+                    Mod = (ModsInfo.Mods)(mods)
                 };
+                //}
             }
             return ModsInfo.Empty;
         }
