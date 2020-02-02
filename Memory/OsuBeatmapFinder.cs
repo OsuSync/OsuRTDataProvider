@@ -9,10 +9,9 @@ namespace OsuRTDataProvider.Memory
 {
     internal class OsuBeatmapFinder : OsuFinderBase
     {
-        //0x83,0x3d,0x0,0x0,0x0,0x0,0x01,0x74,0x0a,0x8b,0x35,0x0,0x0,0x0,0x0,0x85,0xf6,0x75,0x04
-        private static readonly string s_beatmap_pattern = "\x56\x8B\xF1\x8B\xFA\x8B\x0D\x00\x00\x00\x00\x85\xC9";
+        private static readonly string s_beatmap_pattern = "\xDB\x5D\xEC\x8B\x45\xEC\xA3\x0\x0\x0\x0\x83\x3D\x0\x0\x0\x0\x00";
 
-        private static readonly string s_beatmap_mask = "xxxxxxx????xx";
+        private static readonly string s_beatmap_mask = "xxxxxxx????xx????x";
 
         private static readonly int s_beatmap_offset = 0xc4;
         private static readonly int s_beatmap_set_offset = 0xc8;
@@ -57,7 +56,7 @@ namespace OsuRTDataProvider.Memory
             SigScan.Reload();
             {
                 //Find Beatmap ID Address
-                m_beatmap_address = SigScan.FindPattern(StringToByte(s_beatmap_pattern), s_beatmap_mask, 7);
+                m_beatmap_address = SigScan.FindPattern(StringToByte(s_beatmap_pattern), s_beatmap_mask, 13);
                 LogHelper.LogToFile($"Beatmap Base Address (0):0x{(int)m_beatmap_address:X8}");
 
                 success = TryReadIntPtrFromMemory(m_beatmap_address, out m_beatmap_address);
