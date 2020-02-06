@@ -9,9 +9,9 @@ namespace OsuRTDataProvider.Memory
 {
     internal class OsuBeatmapFinder : OsuFinderBase
     {
-        private static readonly string s_beatmap_pattern = "\xDB\x5D\xEC\x8B\x45\xEC\xA3\x0\x0\x0\x0\x83\x3D\x0\x0\x0\x0\x00";
+        private static readonly string s_beatmap_pattern = "\xDB\x5D\xE8\x8B\x45\xE8\xA3\x0\x0\x0\x0\x8B\x35\x0\x0\x0\x0\x85\xF6";
 
-        private static readonly string s_beatmap_mask = "xxxxxxx????xx????x";
+        private static readonly string s_beatmap_mask = "xxxxxxx????xx????xx";
 
         private static readonly int s_beatmap_offset = 0xc4;
         private static readonly int s_beatmap_set_offset = 0xc8;
