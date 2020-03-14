@@ -98,6 +98,19 @@ namespace OsuRTDataProvider.Memory
             return false;
         }
 
+        protected bool TryReadSingleFromMemory(IntPtr address, out float value)
+        {
+            int ret_size_ptr = 0;
+            value = float.NaN;
+
+            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(float), out ret_size_ptr))
+            {
+                value = BitConverter.ToSingle(_number_buf, 0);
+                return true;
+            }
+            return false;
+        }
+
         protected bool TryReadStringFromMemory(IntPtr address, out string str)
         {
             str = null;

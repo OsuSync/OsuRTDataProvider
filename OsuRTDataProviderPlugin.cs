@@ -6,6 +6,7 @@ using Sync;
 using Sync.Plugins;
 using Sync.Tools;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using static OsuRTDataProvider.Listen.OsuListenerManager;
@@ -145,6 +146,11 @@ namespace OsuRTDataProvider
                         Logger.Info($"[{id}]Beatmap: {map.Artist} - {map.Title}[{map.Difficulty}]({map.BeatmapSetID},{map.BeatmapID},{map.FilenameFull})");
                     void OnTourneyPlayerChanged(string playername) =>
                         Logger.Info($"[{id}]Current Player: {playername}");
+                    void OnTourneyHitEventsChanged(PlayType playType, List<HitEvent> hitEvents)
+                    {
+                        string log = $"Play Type: {playType}, end time: {(hitEvents.Count == 0 ? -1 : hitEvents[hitEvents.Count - 1].timeStamp)}, count: {hitEvents.Count}";
+                        Logger.Info(log);
+                    };
 
                     if (enable)
                     {
@@ -153,12 +159,14 @@ namespace OsuRTDataProvider
                         m_listener_managers[i].OnPlayModeChanged += OnTourneyModeChanged;
                         m_listener_managers[i].OnBeatmapChanged += OnTourneyBeatmapChanged;
                         m_listener_managers[i].OnPlayerChanged += OnTourneyPlayerChanged;
+                        m_listener_managers[i].OnHitEventsChanged += OnTourneyHitEventsChanged;
                     }
                     else
                     {
                         m_listener_managers[i].OnStatusChanged -= OnTourneyStatusChanged;
                         m_listener_managers[i].OnModsChanged -= OnTourneyModsChanged;
                         m_listener_managers[i].OnPlayModeChanged -= OnTourneyModeChanged;
+                        m_listener_managers[i].OnHitEventsChanged -= OnTourneyHitEventsChanged;
                     }
                 }
             }
@@ -174,6 +182,11 @@ namespace OsuRTDataProvider
                     Logger.Info($"Beatmap: {map.Artist} - {map.Title}[{map.Difficulty}]({map.BeatmapSetID},{map.BeatmapID},{map.FilenameFull})");
                 void OnPlayerChanged(string playername) =>
                     Logger.Info($"Current Player: {playername}");
+                void OnHitEventsChanged(PlayType playType, List<HitEvent> hitEvents)
+                {
+                    string log = $"Play Type: {playType}, end time: {(hitEvents.Count == 0 ? -1 : hitEvents[hitEvents.Count - 1].timeStamp)}, count: {hitEvents.Count}";
+                    Logger.Info(log);
+                };
 
                 if (enable)
                 {
@@ -182,6 +195,7 @@ namespace OsuRTDataProvider
                     m_listener_managers[0].OnPlayModeChanged += OnModeChanged;
                     m_listener_managers[0].OnBeatmapChanged += OnBeatmapChanged;
                     m_listener_managers[0].OnPlayerChanged += OnPlayerChanged;
+                    m_listener_managers[0].OnHitEventsChanged += OnHitEventsChanged;
                 }
                 else
                 {
@@ -190,6 +204,7 @@ namespace OsuRTDataProvider
                     m_listener_managers[0].OnPlayModeChanged -= OnModeChanged;
                     m_listener_managers[0].OnBeatmapChanged -= OnBeatmapChanged;
                     m_listener_managers[0].OnPlayerChanged -= OnPlayerChanged;
+                    m_listener_managers[0].OnHitEventsChanged -= OnHitEventsChanged;
                 }
             }
 
