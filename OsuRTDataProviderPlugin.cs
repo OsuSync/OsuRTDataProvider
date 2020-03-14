@@ -148,7 +148,7 @@ namespace OsuRTDataProvider
                         Logger.Info($"[{id}]Current Player: {playername}");
                     void OnTourneyHitEventsChanged(PlayType playType, List<HitEvent> hitEvents)
                     {
-                        string log = $"Play Type: {playType}, end time: {(hitEvents.Count == 0 ? -1 : hitEvents[hitEvents.Count - 1].timeStamp)}, count: {hitEvents.Count}";
+                        string log = $"[{id}]Play Type: {playType}, end time: {(hitEvents.Count == 0 ? -1 : hitEvents[hitEvents.Count - 1].timeStamp)}, count: {hitEvents.Count}";
                         Logger.Info(log);
                     };
 
