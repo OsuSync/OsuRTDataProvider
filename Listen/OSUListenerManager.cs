@@ -573,11 +573,11 @@ namespace OsuRTDataProvider.Listen
                     {
                         m_mode_finder = InitFinder<OsuPlayModeFinder>(LANG_INIT_MODE_FINDER_SUCCESS, LANG_INIT_MODE_FINDER_FAILED);
                     }
-                }
 
-                if (m_hit_event_finder == null)
-                {
-                    m_hit_event_finder = InitFinder<OsuHitEventFinder>(LANG_INIT_HIT_EVENT_SUCCESS, LANG_INIT_HIT_EVENT_FAIL);
+                    if (m_hit_event_finder == null)
+                    {
+                        m_hit_event_finder = InitFinder<OsuHitEventFinder>(LANG_INIT_HIT_EVENT_SUCCESS, LANG_INIT_HIT_EVENT_FAIL);
+                    }
                 }
 
                 if (m_beatmap_finder == null)
