@@ -610,8 +610,15 @@ namespace OsuRTDataProvider.Listen
 
                 if (OnHitEventsChanged != null && m_hit_event_finder != null)
                 {
-                    m_hit_event_finder.GetHitEvents(status, out m_play_type, out m_hit_events);
-                    OnHitEventsChanged?.Invoke(m_play_type, m_hit_events);
+                    // Hit events should work with playing time
+                    if (OnPlayingTimeChanged == null) OnPlayingTimeChanged += (t) => { };
+
+                    bool hasChanged;
+                    m_hit_event_finder.GetHitEvents(status, m_playing_time, out m_play_type, out m_hit_events, out hasChanged);
+                    if (hasChanged)
+                    {
+                        OnHitEventsChanged?.Invoke(m_play_type, m_hit_events);
+                    }
                 }
 
                 if (m_play_finder != null)

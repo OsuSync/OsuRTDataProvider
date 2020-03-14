@@ -146,13 +146,10 @@ namespace OsuRTDataProvider
                         Logger.Info($"[{id}]Beatmap: {map.Artist} - {map.Title}[{map.Difficulty}]({map.BeatmapSetID},{map.BeatmapID},{map.FilenameFull})");
                     void OnTourneyPlayerChanged(string playername) =>
                         Logger.Info($"[{id}]Current Player: {playername}");
-
-                    string last_hit_events_log = string.Empty;
                     void OnTourneyHitEventsChanged(PlayType playType, List<HitEvent> hitEvents)
                     {
                         string log = $"Play Type: {playType}, end time: {(hitEvents.Count == 0 ? -1 : hitEvents[hitEvents.Count - 1].timeStamp)}, count: {hitEvents.Count}";
-                        if (log != last_hit_events_log) Logger.Info(log);
-                        last_hit_events_log = log;
+                        Logger.Info(log);
                     };
 
                     if (enable)
@@ -185,13 +182,10 @@ namespace OsuRTDataProvider
                     Logger.Info($"Beatmap: {map.Artist} - {map.Title}[{map.Difficulty}]({map.BeatmapSetID},{map.BeatmapID},{map.FilenameFull})");
                 void OnPlayerChanged(string playername) =>
                     Logger.Info($"Current Player: {playername}");
-
-                string last_hit_events_log = string.Empty;
                 void OnHitEventsChanged(PlayType playType, List<HitEvent> hitEvents)
                 {
                     string log = $"Play Type: {playType}, end time: {(hitEvents.Count == 0 ? -1 : hitEvents[hitEvents.Count - 1].timeStamp)}, count: {hitEvents.Count}";
-                    if (log != last_hit_events_log) Logger.Info(log);
-                    last_hit_events_log = log;
+                    Logger.Info(log);
                 };
 
                 if (enable)

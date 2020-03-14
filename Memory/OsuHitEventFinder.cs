@@ -12,6 +12,7 @@ namespace OsuRTDataProvider.Memory
         private OsuReplayHitEventFinder replay;
         private OsuPlayingHitEventFinder playing;
         private OsuStatus preStatus = OsuStatus.Unkonwn;
+        private long preTime = long.MaxValue;
         private PlayType currentPlayType = PlayType.Unknown;
         public static readonly List<HitEvent> EMPTY_EVENTS = new List<HitEvent>();
 
@@ -29,33 +30,43 @@ namespace OsuRTDataProvider.Memory
             return success;
         }
 
-        public void GetHitEvents(OsuStatus osuStatus, out PlayType playType, out List<HitEvent> hitEvents)
+        public void GetHitEvents(OsuStatus osuStatus, long playTime, out PlayType playType, out List<HitEvent> hitEvents, out bool hasChanged)
         {
+            hasChanged = false;
             playType = PlayType.Unknown;
             hitEvents = EMPTY_EVENTS;
             if (osuStatus != OsuStatus.Playing)
             {
+                hasChanged = this.preStatus == OsuStatus.Playing;
+                if (hasChanged) Logger.Debug($"Hit events changed due to osustatus: {OsuStatus.Playing} -> {osuStatus}");
+
                 this.preStatus = osuStatus;
                 this.currentPlayType = PlayType.Unknown;
                 return;
             }
 
-            if (this.preStatus != OsuStatus.Playing)
+            if (this.preStatus != OsuStatus.Playing || preTime > playTime)
             {
                 replay.Clear();
                 playing.Clear();
+                if (preStatus != OsuStatus.Playing)
+                    Logger.Debug($"Hit events changed due to osustatus: {preStatus} -> {OsuStatus.Playing}");
+                else
+                    Logger.Debug($"Hit events changed due to playing time: {preTime} -> {playTime}");
+                hasChanged = true;
             }
             this.preStatus = OsuStatus.Playing;
+            this.preTime = playTime;
 
             if (currentPlayType == PlayType.Replay || currentPlayType == PlayType.Unknown)
             {
-                hitEvents = replay.GetEvents();
+                hasChanged |= replay.GetEvents(out hitEvents);
                 currentPlayType = hitEvents.Count == 0 ? PlayType.Unknown : PlayType.Replay;
             }
 
             if (currentPlayType == PlayType.Playing || currentPlayType == PlayType.Unknown)
             {
-                hitEvents = playing.GetEvents();
+                hasChanged |= playing.GetEvents(out hitEvents);
                 currentPlayType = hitEvents.Count == 0 ? PlayType.Unknown : PlayType.Playing;
             }
 
@@ -213,9 +224,11 @@ namespace OsuRTDataProvider.Memory
             CurrentEvents.Clear();
         }
 
-        public List<HitEvent> GetEvents()
+        // Return if the events are changed.
+        public bool GetEvents(out List<HitEvent> hitEvents)
         {
 
+            hitEvents = CurrentEvents;
             PreOffsets = new int[4] { -1, -1, -1, -1 };
 
             int increment = 0;
@@ -241,7 +254,7 @@ namespace OsuRTDataProvider.Memory
                 LogHelper.LogToFile($"Sync hit events: count = {increment}, time = {time}ms, speed = {(time != 0 ? (increment / (double)time) : -1)}/ms");
             }
 
-            return CurrentEvents;
+            return increment != 0;
         }
     }
 }
