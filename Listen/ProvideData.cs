@@ -1,6 +1,7 @@
 ﻿using OsuRTDataProvider.BeatmapInfo;
 using OsuRTDataProvider.Mods;
 using System;
+using System.Collections.Generic;
 using static OsuRTDataProvider.Listen.OsuListenerManager;
 
 namespace OsuRTDataProvider.Listen
@@ -24,6 +25,7 @@ namespace OsuRTDataProvider.Listen
         Score = 1u << 13,
         ErrorStatistics =  1u<<14,
         Playername = 1u<<15,
+        HitEvent = 1u << 16,
 
         HitCount = Count300 | Count100 | Count50 | CountMiss | CountGeki | CountKatu,
     }
@@ -50,5 +52,8 @@ namespace OsuRTDataProvider.Listen
         public int CountKatu;
         public int Time;
         public int Score;
+
+        public PlayType PlayType;
+        public List<HitEvent> HitEvents;
     }
 }

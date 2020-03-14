@@ -68,6 +68,8 @@ namespace OsuRTDataProvider.Listen
 
         public delegate void OnPlayerChangedEvt(string player);
 
+        public delegate void OnHitEventsChangedEvt(PlayType playType, List<HitEvent> hitEvents);
+
         /// <summary>
         /// Available in Playing and Linsten.
         /// If too old beatmap, map.ID = -1.
@@ -155,6 +157,11 @@ namespace OsuRTDataProvider.Listen
         /// Get player name in playing.
         /// </summary>
         public event OnPlayerChangedEvt OnPlayerChanged;
+
+        /// <summary>
+        /// Get play type and hit events in playing.
+        /// </summary>
+        public event OnHitEventsChangedEvt OnHitEventsChanged;
         #endregion Event
 
         private Process m_osu_process;
@@ -163,6 +170,7 @@ namespace OsuRTDataProvider.Listen
         private OsuStatusFinder m_status_finder = null;
         private OsuBeatmapFinder m_beatmap_finder = null;
         private OsuPlayModeFinder m_mode_finder = null;
+        private OsuHitEventFinder m_hit_event_finder = null;
 
         #region last status
 
@@ -186,6 +194,9 @@ namespace OsuRTDataProvider.Listen
         
 
         private int m_last_score = 0;
+
+        private List<HitEvent> m_hit_events = new List<HitEvent>();
+        private PlayType m_play_type = PlayType.Unknown;
 
         #endregion last status
 
@@ -269,6 +280,9 @@ namespace OsuRTDataProvider.Listen
             data.Accuracy = 0;
             data.Time = 0;
             data.Score = 0;
+
+            data.PlayType = PlayType.Unknown;
+            data.HitEvents = new List<HitEvent>();
 
             if (HasMask(mask, ProvideDataMask.Beatmap))
             {
@@ -364,6 +378,13 @@ namespace OsuRTDataProvider.Listen
             {
                 if (OnPlayerChanged == null) OnPlayerChanged += (e) => { };
                 data.Playername = m_last_playername;
+            }
+
+            if (HasMask(mask, ProvideDataMask.HitEvent))
+            {
+                if (OnHitEventsChanged == null) OnHitEventsChanged += (t, l) => { };
+                data.PlayType = m_play_type;
+                data.HitEvents = m_hit_events;
             }
 
             return data;
@@ -532,6 +553,7 @@ namespace OsuRTDataProvider.Listen
                 m_status_finder = null;
                 m_beatmap_finder = null;
                 m_mode_finder = null;
+                m_hit_event_finder = null;
 
                 FindOsuProcess();
             }
@@ -551,6 +573,11 @@ namespace OsuRTDataProvider.Listen
                     {
                         m_mode_finder = InitFinder<OsuPlayModeFinder>(LANG_INIT_MODE_FINDER_SUCCESS, LANG_INIT_MODE_FINDER_FAILED);
                     }
+                }
+
+                if (m_hit_event_finder == null)
+                {
+                    m_hit_event_finder = InitFinder<OsuHitEventFinder>(LANG_INIT_HIT_EVENT_SUCCESS, LANG_INIT_HIT_EVENT_FAIL);
                 }
 
                 if (m_beatmap_finder == null)
@@ -580,7 +607,13 @@ namespace OsuRTDataProvider.Listen
                         m_last_mode = mode;
                     }
                 }
-                
+
+                if (OnHitEventsChanged != null && m_hit_event_finder != null)
+                {
+                    m_hit_event_finder.GetHitEvents(status, out m_play_type, out m_hit_events);
+                    OnHitEventsChanged?.Invoke(m_play_type, m_hit_events);
+                }
+
                 if (m_play_finder != null)
                 {
                     Beatmap beatmap = Beatmap.Empty;
