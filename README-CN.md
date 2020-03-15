@@ -72,6 +72,9 @@ OsuRTDataProvider能实时的从[OSU!](https://osu.ppy.sh)中获取以下内容(
         public delegate void OnPlayingTimeChangedEvt(int ms);
         public delegate void OnHitCountChangedEvt(int hit);
         public delegate void OnStatusChangedEvt(OsuStatus last_status, OsuStatus status);
+        public delegate void OnErrorStatisticsChangedEvt(ErrorStatisticsResult result);
+        public delegate void OnPlayerChangedEvt(string player);
+        public delegate void OnHitEventsChangedEvt(PlayType playType, List<HitEvent> hitEvents);
 
         /// <summary>
         /// Playing和Linsten时可用.
@@ -129,6 +132,24 @@ OsuRTDataProvider能实时的从[OSU!](https://osu.ppy.sh)中获取以下内容(
         /// 任何时候可用.
         /// </summary>
         public event OnStatusChangedEvt OnStatusChanged;
+
+        /// <summary>
+        /// Playing可用
+        /// 错误分析(UnstableRate and Error Hit).
+        /// </summary>
+        public event OnErrorStatisticsChangedEvt OnErrorStatisticsChanged;
+
+        /// <summary>
+        /// Playing可用
+        /// 玩家名改变(发生在观看replay时)
+        /// </summary>
+        public event OnPlayerChangedEvt OnPlayerChanged;
+
+        /// <summary>
+        /// Playing可用
+        /// 打击事件改变 (https://osu.ppy.sh/help/wiki/osu!_File_Formats/Osr_(file_format))
+        /// </summary>
+        public event OnHitEventsChangedEvt OnHitEventsChanged;
 ```
 
 ##### OsuStatus ***enum***

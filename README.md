@@ -62,6 +62,9 @@ OSU! Clinet Version Requirements: **b20190816 After**
         public delegate void OnPlayingTimeChangedEvt(int ms);
         public delegate void OnHitCountChangedEvt(int hit);
         public delegate void OnStatusChangedEvt(OsuStatus last_status, OsuStatus status);
+        public delegate void OnErrorStatisticsChangedEvt(ErrorStatisticsResult result);
+        public delegate void OnPlayerChangedEvt(string player);
+        public delegate void OnHitEventsChangedEvt(PlayType playType, List<HitEvent> hitEvents);
 
         /// <summary>
         /// Available at Playing and Linsten.
@@ -119,6 +122,21 @@ OSU! Clinet Version Requirements: **b20190816 After**
         /// Available at Any.
         /// </summary>
         public event OnStatusChangedEvt OnStatusChanged;
+
+        /// <summary>
+        /// Get ErrorStatistics(UnstableRate and Error Hit).
+        /// </summary>
+        public event OnErrorStatisticsChangedEvt OnErrorStatisticsChanged;
+
+        /// <summary>
+        /// Get player name in playing.
+        /// </summary>
+        public event OnPlayerChangedEvt OnPlayerChanged;
+
+        /// <summary>
+        /// Get play type and hit events in playing. (https://osu.ppy.sh/help/wiki/osu!_File_Formats/Osr_(file_format))
+        /// </summary>
+        public event OnHitEventsChangedEvt OnHitEventsChanged;
 ```
 
 ##### OsuStatus ***enum***
