@@ -205,11 +205,12 @@ namespace OsuRTDataProvider.Memory
                 }
             }
 
-            float x, y, z;
+            float x, y;
+            int z;
             int timeStamp;
             success &= TryReadSingleFromMemory(Addresses[4] + 4, out x);
             success &= TryReadSingleFromMemory(Addresses[4] + 8, out y);
-            success &= TryReadSingleFromMemory(Addresses[4] + 12, out z);
+            success &= TryReadIntFromMemory(Addresses[4] + 12, out z);
             success &= TryReadIntFromMemory(Addresses[4] + 16, out timeStamp);
 
             if (success)

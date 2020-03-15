@@ -14,17 +14,31 @@ namespace OsuRTDataProvider.Listen
         Unknown = -1
     }
 
+    [Flags]
+    public enum KeysDownFlags
+    {
+        M1 = 1,
+        M2 = 2,
+        K1 = 4,
+        K2 = 8,
+        Smoke = 16,
+    }
+
     public class HitEvent
     {
-        public int timeStamp;
-        public float x, y, z;
+        public int TimeStamp { get; }
+        public KeysDownFlags KeysDown => (KeysDownFlags)Z;
+        public float X { get; }
+        public float Y { get; }
+        private int Z;
 
-        public HitEvent(float x, float y, float z, int timeStamp)
+
+        public HitEvent(float x, float y, int z, int timeStamp)
         {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.timeStamp = timeStamp;
+            this.X = x;
+            this.Y = y;
+            this.Z = z;
+            this.TimeStamp = timeStamp;
         }
     }
 }
