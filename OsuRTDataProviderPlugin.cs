@@ -8,6 +8,7 @@ using Sync.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using static OsuRTDataProvider.Listen.OsuListenerManager;
 
@@ -18,7 +19,7 @@ namespace OsuRTDataProvider
     {
         public const string PLUGIN_NAME = "OsuRTDataProvider";
         public const string PLUGIN_AUTHOR = "KedamaOvO";
-        public const string VERSION = "1.6.0";
+        public const string VERSION = "1.6.1";
 
         private PluginConfigurationManager m_config_manager;
 
@@ -148,7 +149,8 @@ namespace OsuRTDataProvider
                         Logger.Info($"[{id}]Current Player: {playername}");
                     void OnTourneyHitEventsChanged(PlayType playType, List<HitEvent> hitEvents)
                     {
-                        string log = $"[{id}]Play Type: {playType}, end time: {(hitEvents.Count == 0 ? -1 : hitEvents[hitEvents.Count - 1].timeStamp)}, count: {hitEvents.Count}";
+                        string log = $"[{id}]Play Type: {playType}, end time: {(hitEvents.Count == 0 ? -1 : hitEvents[hitEvents.Count - 1].TimeStamp)}, count: {hitEvents.Count}";
+                        log += $" LastKeysDown:{hitEvents.LastOrDefault()?.KeysDown}";
                         Logger.Info(log);
                     };
 
@@ -184,7 +186,8 @@ namespace OsuRTDataProvider
                     Logger.Info($"Current Player: {playername}");
                 void OnHitEventsChanged(PlayType playType, List<HitEvent> hitEvents)
                 {
-                    string log = $"Play Type: {playType}, end time: {(hitEvents.Count == 0 ? -1 : hitEvents[hitEvents.Count - 1].timeStamp)}, count: {hitEvents.Count}";
+                    string log = $"Play Type: {playType}, end time: {(hitEvents.Count == 0 ? -1 : hitEvents[hitEvents.Count - 1].TimeStamp)}, count: {hitEvents.Count}";
+                    log += $" LastKeysDown:{hitEvents.LastOrDefault()?.KeysDown}";
                     Logger.Info(log);
                 };
 
