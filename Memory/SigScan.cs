@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Runtime.InteropServices;
 
 //Clone Form https://github.com/Deathmax/dxgw2/blob/master/Trainer_Rewrite/SigScan.cs
@@ -49,7 +50,7 @@ namespace OsuRTDataProvider.Memory
         {
             public IntPtr AllocationBase { get; set; }
             public IntPtr BaseAddress { get; set; }
-            public uint RegionSize { get; set; }
+            public ulong RegionSize { get; set; }
             public byte[] DumpedRegion { get; set; }
         }
 
@@ -111,8 +112,8 @@ namespace OsuRTDataProvider.Memory
             IntPtr proc_min_address = sys_info.minimumApplicationAddress;
             IntPtr proc_max_address = sys_info.maximumApplicationAddress;
 
-            long current_address = (long)proc_min_address;
-            long lproc_max_address = (long)proc_max_address;
+            ulong current_address = (ulong)proc_min_address;
+            ulong lproc_max_address = (ulong)proc_max_address;
 
             IntPtr handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_WM_READ, false, m_vProcess.Id);
 
@@ -122,16 +123,14 @@ namespace OsuRTDataProvider.Memory
                 return;
             }
 
-            MEMORY_BASIC_INFORMATION mem_basic_info = new MEMORY_BASIC_INFORMATION();
-
-            int mem_info_size = Marshal.SizeOf<MEMORY_BASIC_INFORMATION>();
+            MemoryBasicInformation mem_basic_info = new MemoryBasicInformation();
 
             while (current_address < lproc_max_address)
             {
                 //Query the current memory page information.
-                int size = VirtualQueryEx(handle, new IntPtr(current_address), out mem_basic_info, (uint)mem_info_size);
+                bool ok = QueryMemoryBasicInformation(handle, (IntPtr)current_address, ref mem_basic_info);
 
-                if (size != mem_info_size)
+                if (!ok)
                 {
                     Logger.Error($"Error Code:0x{Marshal.GetLastWin32Error():X8}");
                     break;
@@ -196,11 +195,11 @@ namespace OsuRTDataProvider.Memory
 
                     // Dump the memory.
                     bReturn = ReadProcessMemory(
-                        this.m_vProcess.Handle, region.BaseAddress, region.DumpedRegion, region.RegionSize, out nBytesRead
+                        this.m_vProcess.Handle, region.BaseAddress, region.DumpedRegion, (uint)region.RegionSize, out nBytesRead
                         );
 
                     // Validation checks.
-                    if (bReturn == false || nBytesRead != region.RegionSize)
+                    if (bReturn == false || nBytesRead != (int)region.RegionSize)
                         return false;
                 }
                 return true;
@@ -226,7 +225,7 @@ namespace OsuRTDataProvider.Memory
         private bool MaskCheck(MemoryRegion region, int nOffset, byte[] btPattern, string strMask)
         {
             // Loop the pattern and compare to the mask and dump.
-            for (int x = 0; x < btPattern.Length && (nOffset + x) < region.RegionSize; x++)
+            for (int x = 0; x < btPattern.Length && (ulong)(nOffset + x) < region.RegionSize; x++)
             {
                 // If the mask char is a wildcard, just continue.
                 if (strMask[x] == '?')
@@ -306,6 +305,57 @@ namespace OsuRTDataProvider.Memory
 
         #region "sigScan Class Properties"
 
+        private bool isX64()
+        {
+            return IntPtr.Size == 8;
+        }
+
+        private bool QueryMemoryBasicInformation(IntPtr handle, IntPtr current_address, ref MemoryBasicInformation memoryBasicInformation)
+        {
+            if (isX64())
+            {
+                MEMORY_BASIC_INFORMATION_X64 mem_basic_info = new MEMORY_BASIC_INFORMATION_X64();
+                int mem_info_size = Marshal.SizeOf<MEMORY_BASIC_INFORMATION_X64>();
+                int size = VirtualQueryEx_X64(handle, current_address, out mem_basic_info, (uint)mem_info_size);
+
+                if (size != mem_info_size)
+                {
+                    Logger.Error($"(X64)Error Code:0x{Marshal.GetLastWin32Error():X8}");
+                    return false;
+                }
+
+                memoryBasicInformation.RegionSize = mem_basic_info.RegionSize;
+                memoryBasicInformation.BaseAddress = mem_basic_info.BaseAddress;
+                memoryBasicInformation.AllocationProtect = mem_basic_info.AllocationProtect;
+                memoryBasicInformation.AllocationBase = mem_basic_info.AllocationBase;
+                memoryBasicInformation.Type = mem_basic_info.Type;
+                memoryBasicInformation.State = mem_basic_info.State;
+                memoryBasicInformation.Protect = mem_basic_info.Protect;
+                return true;
+            }
+            else
+            {
+                MEMORY_BASIC_INFORMATION_X86 mem_basic_info = new MEMORY_BASIC_INFORMATION_X86();
+                int mem_info_size = Marshal.SizeOf<MEMORY_BASIC_INFORMATION_X86>();
+                int size = VirtualQueryEx_X86(handle, current_address, out mem_basic_info, (uint)mem_info_size);
+
+                if (size != mem_info_size)
+                {
+                    Logger.Error($"(X86)Error Code:0x{Marshal.GetLastWin32Error():X8}");
+                    return false;
+                }
+
+                memoryBasicInformation.RegionSize = mem_basic_info.RegionSize;
+                memoryBasicInformation.BaseAddress = mem_basic_info.BaseAddress;
+                memoryBasicInformation.AllocationProtect = mem_basic_info.AllocationProtect;
+                memoryBasicInformation.AllocationBase = mem_basic_info.AllocationBase;
+                memoryBasicInformation.Type = mem_basic_info.Type;
+                memoryBasicInformation.State = mem_basic_info.State;
+                memoryBasicInformation.Protect = mem_basic_info.Protect;
+                return true;
+            }
+        }
+
         public Process Process
         {
             get { return this.m_vProcess; }
@@ -316,9 +366,20 @@ namespace OsuRTDataProvider.Memory
 
         #region PInvoke
 
-#if !X64
+        private struct MemoryBasicInformation
+        {
+            public IntPtr BaseAddress;
+            public IntPtr AllocationBase;
+            public uint AllocationProtect;
+            public ulong RegionSize;
+            public uint State;
+            public AllocationProtect Protect;
+            public uint Type;
+        }
+
+
         [StructLayout(LayoutKind.Sequential)]
-        public struct MEMORY_BASIC_INFORMATION
+        private struct MEMORY_BASIC_INFORMATION_X86
         {
             public IntPtr BaseAddress;
             public IntPtr AllocationBase;
@@ -328,9 +389,9 @@ namespace OsuRTDataProvider.Memory
             public AllocationProtect Protect;
             public uint Type;
         }
-#else
-        [StructLayout(LayoutKind.Sequential,Pack = 16)]
-        public struct MEMORY_BASIC_INFORMATION
+
+        [StructLayout(LayoutKind.Sequential, Pack = 16)]
+        private struct MEMORY_BASIC_INFORMATION_X64
         {
             public IntPtr BaseAddress;
             public IntPtr AllocationBase;
@@ -342,7 +403,6 @@ namespace OsuRTDataProvider.Memory
             public uint Type;
             public uint __alignment2;
         }
-#endif
         public enum AllocationProtect : uint
         {
             PAGE_EXECUTE = 0x00000010,
@@ -394,8 +454,11 @@ namespace OsuRTDataProvider.Memory
             out int lpNumberOfBytesRead
             );
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern int VirtualQueryEx(IntPtr hProcess, IntPtr lpAddress, out MEMORY_BASIC_INFORMATION lpBuffer, uint dwLength);
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "VirtualQueryEx")]
+        private static extern int VirtualQueryEx_X86(IntPtr hProcess, IntPtr lpAddress, out MEMORY_BASIC_INFORMATION_X86 lpBuffer, uint dwLength);
+
+        [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "VirtualQueryEx")]
+        private static extern int VirtualQueryEx_X64(IntPtr hProcess, IntPtr lpAddress, out MEMORY_BASIC_INFORMATION_X64 lpBuffer, uint dwLength);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern void GetSystemInfo(out SYSTEM_INFO lpSystemInfo);
