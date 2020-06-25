@@ -104,7 +104,7 @@ namespace OsuRTDataProvider.Memory
         private const int PAGE_READWRITE = 0x04;
         private const int PROCESS_WM_READ = 0x0010;
 
-        private void InitMemoryRegionInfo()
+        private unsafe void InitMemoryRegionInfo()
         {
             SYSTEM_INFO sys_info;
             //Get the maximum and minimum addresses of the process. 
@@ -112,8 +112,8 @@ namespace OsuRTDataProvider.Memory
             IntPtr proc_min_address = sys_info.minimumApplicationAddress;
             IntPtr proc_max_address = sys_info.maximumApplicationAddress;
 
-            ulong current_address = (ulong)proc_min_address;
-            ulong lproc_max_address = (ulong)proc_max_address;
+            byte* current_address = (byte*)proc_min_address.ToPointer();
+            byte* lproc_max_address = (byte*)proc_max_address.ToPointer();
 
             IntPtr handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_WM_READ, false, m_vProcess.Id);
 
