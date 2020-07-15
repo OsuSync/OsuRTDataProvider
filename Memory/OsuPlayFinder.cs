@@ -112,37 +112,37 @@ namespace OsuRTDataProvider.Memory
             TryReadIntPtrFromMemory(m_acc_address, out var tmpPtr);
 
             TryReadIntPtrFromMemory(tmpPtr + 0x44, out tmpPtr);
-            TryReadIntFromMemory(tmpPtr + 0xF8, out var value);
+            TryReadIntFromMemory(tmpPtr + 0xfc, out var value);
             return value;
         }
 
         public int GetCurrentCombo()
         {
-            TryReadShortFromMemory(ScoreBaseAddress + 0x90, out var value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x94, out var value);
             return value;
         }
 
         public int GetMissCount()
         {
-            TryReadShortFromMemory(ScoreBaseAddress + 0x8e, out var value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x92, out var value);
             return value;
         }
 
         public int Get300Count()
         {
-            TryReadShortFromMemory(ScoreBaseAddress + 0x86, out ushort value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x8a, out ushort value);
             return value;
         }
 
         public int Get100Count()
         {
-            TryReadShortFromMemory(ScoreBaseAddress + 0x84, out var value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x88, out var value);
             return value;
         }
 
         public int Get50Count()
         {
-            TryReadShortFromMemory(ScoreBaseAddress + 0x88, out var value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x8c, out var value);
             return value;
         }
 
@@ -153,7 +153,7 @@ namespace OsuRTDataProvider.Memory
         /// <returns></returns>
         public int GetGekiCount()
         {
-            TryReadShortFromMemory(ScoreBaseAddress + 0x8a, out var value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x8e, out var value);
             return value;
         }
 
@@ -163,7 +163,7 @@ namespace OsuRTDataProvider.Memory
         /// </summary>
         public int GetKatuCount()
         {
-            TryReadShortFromMemory(ScoreBaseAddress + 0x8c, out var value);
+            TryReadShortFromMemory(ScoreBaseAddress + 0x90, out var value);
             return value;
         }
 
