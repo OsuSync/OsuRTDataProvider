@@ -112,7 +112,7 @@ namespace OsuRTDataProvider.Memory
             TryReadIntPtrFromMemory(m_acc_address, out var tmpPtr);
 
             TryReadIntPtrFromMemory(tmpPtr + 0x44, out tmpPtr);
-            TryReadIntFromMemory(tmpPtr + 0xfc, out var value);
+            TryReadIntFromMemory(tmpPtr + 0xf8, out var value);
             return value;
         }
 
