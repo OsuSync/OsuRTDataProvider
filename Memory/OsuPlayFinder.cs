@@ -9,9 +9,9 @@ namespace OsuRTDataProvider.Memory
     {
         #region Address Arguments
 
-        //0xA1,0,0,0,0,0x8D,0x56,0x08,0xE8,0,0,0,0,0x83,0x7f,0x04,0x00
-        private static readonly string s_acc_pattern = "\xa1\x0\x0\x0\x0\x8d\x56\x08\xe8\x0\x0\x0\x0\x83\x7f\x04\x00";
-        private static readonly string s_acc_mask = "x????xxxx????xxxx";
+        //0xA1,0,0,0,0,0x8D,0x56,0x0C,0xE8,0x00,0x00,0x00,0x00,0x8B,0x47,0x04
+        private static readonly string s_acc_pattern = "\xA1\x0\x0\x0\x0\x8D\x56\x0C\xE8\x00\x00\x00\x00\x8B\x47\x04";
+        private static readonly string s_acc_mask = "x????xxxx????xxx";
 
         //0x73,0x7a,0x8b,0x0d,0x0,0x0,0x0,0x0,0x85,0xc9,0x74,0x1f
         private static readonly string s_acc_pattern_fallback = "\x73\x7a\x8b\x0d\x0\x0\x0\x0\x85\xc9\x74\x1f\x8d\x55\xf0";
