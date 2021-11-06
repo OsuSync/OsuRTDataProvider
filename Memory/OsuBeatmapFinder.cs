@@ -53,7 +53,6 @@ namespace OsuRTDataProvider.Memory
             }
             else if(Setting.CurrentOsuVersionValue >= cmp_ver20211014)
             {
-                Logger.Warn("BeatmapFileNameAddressOffset += 4 for osu!ver >= 20211014");
                 BeatmapFileNameAddressOffset += 4;
             }
         }
