@@ -8,6 +8,10 @@ namespace OsuRTDataProvider.Memory
     {
         //85 ff 74 57? a1 ?? ?? ?? ?? 89 45 e4           
 
+        //private static readonly string s_mode_pattern = "\x73\x01\x00\x00\x83\x3D\x00\x00\x00\x00\x01\x0F\x84\x66\";
+        //private static readonly string s_mode_mask = "xxxxxx????xxxx";
+        //Another playmode pattern.
+        //It can be used when the main pattern fails.
         private static readonly string s_mode_pattern = "\xEC\x57\x56\x53\x3B\x0D\x00\x00\x00\x00\x74\x60\x89\x0D";
 
         private static readonly string s_mode_mask = "xxxxxx????xxxx";
