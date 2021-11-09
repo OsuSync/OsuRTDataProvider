@@ -762,7 +762,6 @@ namespace OsuRTDataProvider.Listen
             }
 
             OsuInternalStatus mode = m_status_finder.GetCurrentOsuModes();
-            //Removed redundant output existed here before.
             switch (mode)
             {
                 case OsuInternalStatus.Edit:
