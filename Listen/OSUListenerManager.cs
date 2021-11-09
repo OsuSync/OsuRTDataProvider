@@ -687,7 +687,7 @@ namespace OsuRTDataProvider.Listen
                             OnErrorStatisticsChanged?.Invoke(error_statistics);
 
                         if (playername != m_last_playername)
-                            OnPlayerChanged(playername);
+                            OnPlayerChanged?.Invoke(playername); // Added null check
 
                         if (score != m_last_score)
                             OnScoreChanged?.Invoke(score);
@@ -739,11 +739,7 @@ namespace OsuRTDataProvider.Listen
                     m_last_playername = playername;
                 }
             }
-        }
-
-#if DEBUG
-        private OsuInternalStatus m_last_test = OsuInternalStatus.Menu;
-#endif
+        }       
         private OsuStatus GetCurrentOsuStatus()
         {
             try
@@ -766,15 +762,6 @@ namespace OsuRTDataProvider.Listen
             }
 
             OsuInternalStatus mode = m_status_finder.GetCurrentOsuModes();
-
-#if DEBUG
-            if (mode != m_last_test)
-            {
-                Logger.Info($"Internal Status:{mode}");
-            }
-            m_last_test = mode;
-#endif
-
             switch (mode)
             {
                 case OsuInternalStatus.Edit:
