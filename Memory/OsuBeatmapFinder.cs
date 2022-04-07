@@ -1,4 +1,4 @@
-﻿using OsuRTDataProvider.BeatmapInfo;
+using OsuRTDataProvider.BeatmapInfo;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -38,9 +38,12 @@ namespace OsuRTDataProvider.Memory
             //兼容20190816以前的屙屎
             var cmp_ver20190816 = Utils.ConvertVersionStringToValue("20190816");
 
-            //兼容20211014的屙屎（暂时不知道下个版本能否正常使用）
+            //兼容20211014后的屙屎
             var cmp_ver20211014 = Utils.ConvertVersionStringToValue("20211014");
-            
+
+            //兼容20220406.3后的屙屎
+            var cmp_ver202204063 = Utils.ConvertVersionStringToValue("20220406.3");
+
             Logger.Info($"osu!version compatible condition: {Setting.CurrentOsuVersionValue.ToString(CultureInfo.InvariantCulture)} < {cmp_ver20190816} ?");
 
             if (Setting.CurrentOsuVersionValue < cmp_ver20190816)
@@ -51,9 +54,14 @@ namespace OsuRTDataProvider.Memory
                 BeatmapFolderAddressOffset -= 4;
                 BeatmapFileNameAddressOffset -= 4;
             }
-            else if(Setting.CurrentOsuVersionValue >= cmp_ver20211014)
+            else if(Setting.CurrentOsuVersionValue >= cmp_ver20211014 && Setting.CurrentOsuVersionValue < cmp_ver202204063)
             {
                 BeatmapFileNameAddressOffset += 4;
+            }
+            else
+            {
+                BeatmapFolderAddressOffset += 4;
+                BeatmapFileNameAddressOffset += 8;
             }
         }
 
