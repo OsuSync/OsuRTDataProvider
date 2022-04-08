@@ -71,6 +71,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Sync, Version=2.18.5.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>F:\syna app\Sync.exe</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
@@ -92,6 +95,7 @@
     <Compile Include="Listen\OSUListenerManager.cs" />
     <Compile Include="Listen\ProvideData.cs" />
     <Compile Include="Listen\PlayMode.cs" />
+    <Compile Include="Memory\OffsetInfo.cs" />
     <Compile Include="Memory\OsuHitEventFinder.cs" />
     <Compile Include="Memory\LogHelper.cs" />
     <Compile Include="Memory\OsuBeatmapFinder.cs" />
@@ -115,7 +119,6 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /y $(TargetPath) $(SolutionDir)\Sync\bin\$(ConfigurationName)\Plugins</PostBuildEvent>
