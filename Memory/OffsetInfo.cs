@@ -7,6 +7,12 @@ namespace OsuRTDataProvider.Memory
 {
     public class OffsetInfo
     {
+        //Version,BeatmapAddressOffset,BeatmapFolderAddressOffset,BeatmapSetAddressOffset,BeatmapFileNameAddressOffset,VersionCompareOperator
+        private const string VersionOffsetString = 
+            "20190806,-4,-4,-4,-4,<|" + 
+            "20211014,4,0,0,0,>=|" + 
+            "202204063,0,4,0,8,>=";
+
         public static Dictionary<double, OffsetInfo> Versions;
         public int BeatmapAddressOffset { get; set; }
         public int BeatmapSetAddressOffset { get; set; }
@@ -29,22 +35,28 @@ namespace OsuRTDataProvider.Memory
             BeatmapSetAddressOffset = offsetInfo.BeatmapSetAddressOffset;
             BeatmapFileNameAddressOffset = offsetInfo.BeatmapFileNameAddressOffset;
         }
-        //Version,BeatmapAddressOffset,BeatmapFolderAddressOffset,BeatmapSetAddressOffset,BeatmapFileNameAddressOffset,VersionCompareOp
-        private static string _versionOffsetString = 
-            "20190806,-4,-4,-4,-4,<|" +
-            "20211014,4,0,0,0,>=|" +
-            "202204063,0,4,0,8,>=";
+       
 
-        private static object StaticLock = new object();
+        private static readonly object s_staticLock = new object();
 
         static void InitVersionDict()
         {
-            lock (StaticLock)
+            lock (s_staticLock)
             {
                 Versions = new Dictionary<double, OffsetInfo>();
+
+                //Linq below is as same as
+                //var offsetStr = VersionOffsetString.Split('|');
+                //List<string[]> versions = new List<string[]>();
+                //foreach(var offsetDescriptor in offsetStr)
+                //{
+                //     versions.Add(offsetDescriptor.Split(','));
+                //}
+
+
                 var versions =
                     from offsetStr
-                        in _versionOffsetString.Split('|')
+                        in VersionOffsetString.Split('|')
                     select
                         offsetStr.Split(',');
                 foreach (var ver in versions)
@@ -106,7 +118,7 @@ namespace OsuRTDataProvider.Memory
 
                 if (!compareResult)
                     continue;
-                IO.CurrentIO.WriteColor($"Matched version {ver.Key}", ConsoleColor.Yellow);
+
                 return ver.Value;
             }
 

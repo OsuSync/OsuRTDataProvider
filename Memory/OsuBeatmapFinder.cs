@@ -43,24 +43,12 @@ namespace OsuRTDataProvider.Memory
             var cmp_ver202204063 = Utils.ConvertVersionStringToValue("20220406.3");
             
             Logger.Info($"osu!version compatible condition: {Setting.CurrentOsuVersionValue.ToString(CultureInfo.InvariantCulture)} < {cmp_ver20190816} ?");
-            
+
+
+            //Add offsets to VersionOffsetString in class OffsetInfo
             OffsetInfo versionOffset = OffsetInfo.AutoMatch(Setting.CurrentOsuVersionValue);
             CurrentOffset.AddOffset(versionOffset);
 
-
-            /*if (Setting.CurrentOsuVersionValue < cmp_ver20190816)
-            {
-                Logger.Warn("BeatmapAddressOffset and others -= 4 for osu!ver < 20190816");
-                CurrentOffset.AddOffset(OffsetInfo.GetByVersion(cmp_ver20190816));
-            }
-            else if(Setting.CurrentOsuVersionValue >= cmp_ver20211014 && Setting.CurrentOsuVersionValue < cmp_ver202204063)
-            {
-                CurrentOffset.AddOffset(OffsetInfo.GetByVersion(cmp_ver20211014));
-            }
-            else
-            {
-                CurrentOffset.AddOffset(OffsetInfo.GetByVersion(cmp_ver202204063));
-            }*/
         }
         
 
