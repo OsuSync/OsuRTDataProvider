@@ -21,7 +21,7 @@ namespace OsuRTDataProvider.Memory
         private static readonly int s_beatmap_folder_offset = 0x74;
         private static readonly int s_beatmap_filename_offset = 0x8c;
 
-        private OffsetInfo CurrentOffset { get; } = new OffsetInfo()
+        private BeatmapOffsetInfo CurrentOffset { get; } = new BeatmapOffsetInfo()
         {
             BeatmapAddressOffset = s_beatmap_offset,
             BeatmapSetAddressOffset = s_beatmap_set_offset,
@@ -40,14 +40,13 @@ namespace OsuRTDataProvider.Memory
 
             //兼容20211014的屙屎（暂时不知道下个版本能否正常使用）
             var cmp_ver20211014 = Utils.ConvertVersionStringToValue("20211014");
-            var cmp_ver202204063 = Utils.ConvertVersionStringToValue("20220406.3");
+            var cmp_ver20220406_3 = Utils.ConvertVersionStringToValue("20220406.3");
             
             Logger.Info($"osu!version compatible condition: {Setting.CurrentOsuVersionValue.ToString(CultureInfo.InvariantCulture)} < {cmp_ver20190816} ?");
 
 
-            //Add offsets to VersionOffsetString in class OffsetInfo
-            OffsetInfo versionOffset = OffsetInfo.AutoMatch(Setting.CurrentOsuVersionValue);
-            CurrentOffset.AddOffset(versionOffset);
+            BeatmapOffsetInfo versionBeatmapOffset = BeatmapOffsetInfo.MatchVersion(Setting.CurrentOsuVersionValue);
+            CurrentOffset.AddOffset(versionBeatmapOffset);
 
         }
         
