@@ -1,4 +1,4 @@
-﻿using OsuRTDataProvider.BeatmapInfo;
+using OsuRTDataProvider.BeatmapInfo;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -38,7 +38,7 @@ namespace OsuRTDataProvider.Memory
             //兼容20190816以前的屙屎
             var cmp_ver20190816 = Utils.ConvertVersionStringToValue("20190816");
 
-            //兼容20211014的屙屎（暂时不知道下个版本能否正常使用）
+            //兼容20211014后的屙屎
             var cmp_ver20211014 = Utils.ConvertVersionStringToValue("20211014");
             var cmp_ver20220406_3 = Utils.ConvertVersionStringToValue("20220406.3");
             
@@ -47,7 +47,6 @@ namespace OsuRTDataProvider.Memory
 
             BeatmapOffsetInfo versionBeatmapOffset = BeatmapOffsetInfo.MatchVersion(Setting.CurrentOsuVersionValue);
             CurrentOffset.AddOffset(versionBeatmapOffset);
-
         }
         
 
