@@ -250,10 +250,6 @@ namespace OsuRTDataProvider.Memory
 
             sw.Stop();
             long time = sw.ElapsedMilliseconds;
-            if (increment != 0)
-            {
-                LogHelper.LogToFile($"Sync hit events: count = {increment}, time = {time}ms, speed = {(time != 0 ? (increment / (double)time) : -1)}/ms");
-            }
 
             return increment != 0;
         }
