@@ -1,5 +1,6 @@
 using OsuRTDataProvider.BeatmapInfo;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -9,6 +10,7 @@ namespace OsuRTDataProvider.Memory
 {
     internal class OsuBeatmapFinder : OsuFinderBase
     {
+        
         private static readonly string s_beatmap_pattern = "\x74\x24\x8B\x0D\x0\x0\x0\x0\x85\xC9\x74\x1A";
 
         private static readonly string s_beatmap_mask = "xxxx????xxxx";
@@ -19,51 +21,34 @@ namespace OsuRTDataProvider.Memory
         private static readonly int s_beatmap_folder_offset = 0x74;
         private static readonly int s_beatmap_filename_offset = 0x8c;
 
-        private int BeatmapAddressOffset { get; }
-        private int BeatmapSetAddressOffset { get; }
-        private int BeatmapFolderAddressOffset { get; }
-        private int BeatmapFileNameAddressOffset { get; }
+        private BeatmapOffsetInfo CurrentOffset { get; } = new BeatmapOffsetInfo()
+        {
+            BeatmapAddressOffset = s_beatmap_offset,
+            BeatmapSetAddressOffset = s_beatmap_set_offset,
+            BeatmapFolderAddressOffset = s_beatmap_folder_offset,
+            BeatmapFileNameAddressOffset = s_beatmap_filename_offset
+        };
 
         private const int MAX_RETRY_COUNT = 10;
 
         private IntPtr m_beatmap_address;
-
+        
         public OsuBeatmapFinder(Process osu) : base(osu)
         {
-            BeatmapAddressOffset = s_beatmap_offset;
-            BeatmapSetAddressOffset = s_beatmap_set_offset;
-            BeatmapFolderAddressOffset = s_beatmap_folder_offset;
-            BeatmapFileNameAddressOffset = s_beatmap_filename_offset;
-
             //兼容20190816以前的屙屎
             var cmp_ver20190816 = Utils.ConvertVersionStringToValue("20190816");
 
             //兼容20211014后的屙屎
             var cmp_ver20211014 = Utils.ConvertVersionStringToValue("20211014");
-
-            //兼容20220406.3后的屙屎
-            var cmp_ver202204063 = Utils.ConvertVersionStringToValue("20220406.3");
-
+            var cmp_ver20220406_3 = Utils.ConvertVersionStringToValue("20220406.3");
+            
             Logger.Info($"osu!version compatible condition: {Setting.CurrentOsuVersionValue.ToString(CultureInfo.InvariantCulture)} < {cmp_ver20190816} ?");
 
-            if (Setting.CurrentOsuVersionValue < cmp_ver20190816)
-            {
-                Logger.Warn("BeatmapAddressOffset and others -= 4 for osu!ver < 20190816");
-                BeatmapAddressOffset -= 4;
-                BeatmapSetAddressOffset -= 4;
-                BeatmapFolderAddressOffset -= 4;
-                BeatmapFileNameAddressOffset -= 4;
-            }
-            else if(Setting.CurrentOsuVersionValue >= cmp_ver20211014 && Setting.CurrentOsuVersionValue < cmp_ver202204063)
-            {
-                BeatmapFileNameAddressOffset += 4;
-            }
-            else
-            {
-                BeatmapFolderAddressOffset += 4;
-                BeatmapFileNameAddressOffset += 8;
-            }
+
+            BeatmapOffsetInfo versionBeatmapOffset = BeatmapOffsetInfo.MatchVersion(Setting.CurrentOsuVersionValue);
+            CurrentOffset.AddOffset(versionBeatmapOffset);
         }
+        
 
         public override bool TryInit()
         {
@@ -88,8 +73,8 @@ namespace OsuRTDataProvider.Memory
         public Beatmap GetCurrentBeatmap(int osu_id)
         {
             TryReadIntPtrFromMemory(m_beatmap_address, out IntPtr cur_beatmap_address);
-            TryReadIntFromMemory(cur_beatmap_address + BeatmapAddressOffset, out int id);
-            TryReadIntFromMemory(cur_beatmap_address + BeatmapSetAddressOffset, out int set_id);
+            TryReadIntFromMemory(cur_beatmap_address + CurrentOffset.BeatmapAddressOffset, out int id);
+            TryReadIntFromMemory(cur_beatmap_address + CurrentOffset.BeatmapSetAddressOffset, out int set_id);
 
             string filename = GetCurrentBeatmapFilename();
             string folder = GetCurrentBeatmapFolder();
@@ -137,7 +122,7 @@ namespace OsuRTDataProvider.Memory
         private string GetCurrentBeatmapFolder()
         {
             TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
-            bool success = TryReadStringFromMemory(cur_beatmap_address + BeatmapFolderAddressOffset, out string str);
+            bool success = TryReadStringFromMemory(cur_beatmap_address + CurrentOffset.BeatmapFolderAddressOffset, out string str);
             if (!success) return "";
             return str;
         }
@@ -145,7 +130,7 @@ namespace OsuRTDataProvider.Memory
         private string GetCurrentBeatmapFilename()
         {
             TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
-            bool success = TryReadStringFromMemory(cur_beatmap_address + BeatmapFileNameAddressOffset, out string str);
+            bool success = TryReadStringFromMemory(cur_beatmap_address + CurrentOffset.BeatmapFileNameAddressOffset, out string str);
             if (!success) return "";
             return str;
         }

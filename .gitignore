@@ -155,3 +155,8 @@ $RECYCLE.BIN/
 .vscode/
 
 OtherPlugins/MemoryReader/
+/.idea/.idea.OsuRTDataProvider.dir/.idea
+/OsuRTDataProvider.sln
+/OsuRTDataProviderVisualStudio.sln
+/ObseletedBeatmapFinderVersionDetector.cs
+/BranchBackup.txt
