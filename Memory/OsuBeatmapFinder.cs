@@ -35,18 +35,9 @@ namespace OsuRTDataProvider.Memory
         
         public OsuBeatmapFinder(Process osu) : base(osu)
         {
-            //兼容20190816以前的屙屎
-            var cmp_ver20190816 = Utils.ConvertVersionStringToValue("20190816");
-
-            //兼容20211014后的屙屎
-            var cmp_ver20211014 = Utils.ConvertVersionStringToValue("20211014");
-            var cmp_ver20220406_3 = Utils.ConvertVersionStringToValue("20220406.3");
-            
-            Logger.Info($"osu!version compatible condition: {Setting.CurrentOsuVersionValue.ToString(CultureInfo.InvariantCulture)} < {cmp_ver20190816} ?");
-
-
-            BeatmapOffsetInfo versionBeatmapOffset = BeatmapOffsetInfo.MatchVersion(Setting.CurrentOsuVersionValue);
+            var versionBeatmapOffset = BeatmapOffsetInfo.MatchVersion(Setting.CurrentOsuVersionValue);
             CurrentOffset.AddOffset(versionBeatmapOffset);
+            Logger.Info($"applied offset for osu!version({Setting.CurrentOsuVersionValue.ToString(CultureInfo.InvariantCulture)}) : {versionBeatmapOffset}");
         }
         
 
