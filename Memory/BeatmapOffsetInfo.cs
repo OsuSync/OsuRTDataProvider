@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 
@@ -50,9 +51,9 @@ namespace OsuRTDataProvider.Memory
 
         public static BeatmapOffsetInfo MatchVersion(double version)
         {
-            Dictionary<double, MethodInfo> methodsForVersions = new Dictionary<double, MethodInfo>();
+            Dictionary<OsuVersionCompareInfoAttribute, PropertyInfo> propertyForVersions = new Dictionary<OsuVersionCompareInfoAttribute, PropertyInfo>();
             Type t = typeof(BeatmapOffsetInfo);
-            var methods = t.GetMethods(BindingFlags.Static | BindingFlags.Public);
+            var methods = t.GetProperties(BindingFlags.Static | BindingFlags.Public);
             foreach (var method in methods)
             {
                 if (!method.IsDefined(typeof(OsuVersionCompareInfoAttribute), false))
@@ -62,80 +63,79 @@ namespace OsuRTDataProvider.Memory
 
                 var attr = method.GetCustomAttribute<OsuVersionCompareInfoAttribute>();
 
-                methodsForVersions.Add(attr.OsuVersion, method);
+                propertyForVersions.Add(attr, method);
             }
-
-            methodsForVersions = methodsForVersions.OrderByDescending(item => item.Key).
+            propertyForVersions = propertyForVersions.OrderByDescending(item => item.Key.OsuVersion).
                 ToDictionary(item => item.Key,item => item.Value);
 
-            foreach (var method in methodsForVersions)
+            bool versionMatched = false;
+            foreach (var compareInfo in propertyForVersions)
             {
-                object invokeRet = method.Value.Invoke(null, new object[] {version});
-                if (invokeRet != null)
+                double comparedVersion = compareInfo.Key.OsuVersion;
+                switch (compareInfo.Key.CompareCondition)
                 {
-                    return (BeatmapOffsetInfo)invokeRet;
+                    case CompareCondition.Older: 
+                        versionMatched = comparedVersion < version;
+                        break;
+                    case CompareCondition.OlderOrEquals:
+                        versionMatched = comparedVersion <= version;
+                        break;
+                    case CompareCondition.Newer:
+                        versionMatched = comparedVersion > version;
+                        break;
+                    case CompareCondition.NewerOrEquals:
+                        versionMatched = comparedVersion <= version;
+                        break;
+                    case CompareCondition.Equals:
+                        //https://www.jetbrains.com/help/resharper/2022.1/CompareOfFloatsByEqualityOperator.html
+                        versionMatched = Math.Abs(comparedVersion - version) < 0.00001;
+                        break;
+                }
+
+                if (versionMatched)
+                {
+                    return (BeatmapOffsetInfo)compareInfo.Value.GetValue(null);
                 }
             }
+            
 
             return new BeatmapOffsetInfo {Version = version};
         }
 
         [OsuVersionCompareInfo(20190816, CompareCondition.Older)]
-        public static BeatmapOffsetInfo Version20190816(double version)
+        public static BeatmapOffsetInfo Version20190816 { get; } = new BeatmapOffsetInfo
         {
-            if (version < 20190816)
-            {
-                return new BeatmapOffsetInfo
-                {
-                    Version = 20190816,
-                    BeatmapFileNameAddressOffset = -4,
-                    BeatmapSetAddressOffset = -4,
-                    BeatmapAddressOffset = -4,
-                    BeatmapFolderAddressOffset = -4,
-                    VersionCompareCondition = CompareCondition.Older
-                };
-            }
+            Version = 20190816,
+            BeatmapFileNameAddressOffset = -4,
+            BeatmapSetAddressOffset = -4,
+            BeatmapAddressOffset = -4,
+            BeatmapFolderAddressOffset = -4,
+            VersionCompareCondition = CompareCondition.Older
+        };
 
-            return null;
-        }
 
         [OsuVersionCompareInfo(20211014, CompareCondition.NewerOrEquals)]
-        public static BeatmapOffsetInfo Version20211014(double version)
+        public static BeatmapOffsetInfo Version20211014 { get; } = new BeatmapOffsetInfo
         {
-            if (version >= 20211014)
-            {
-                return new BeatmapOffsetInfo
-                {
-                    Version = 20211014,
-                    BeatmapFileNameAddressOffset = 0,
-                    BeatmapSetAddressOffset = 0,
-                    BeatmapAddressOffset = 4,
-                    BeatmapFolderAddressOffset = 0,
-                    VersionCompareCondition = CompareCondition.NewerOrEquals
-                };
-            }
-
-            return null;
-        }
+            Version = 20211014,
+            BeatmapFileNameAddressOffset = 0,
+            BeatmapSetAddressOffset = 0,
+            BeatmapAddressOffset = 4,
+            BeatmapFolderAddressOffset = 0,
+            VersionCompareCondition = CompareCondition.NewerOrEquals
+        };
 
         [OsuVersionCompareInfo(20220406.3, CompareCondition.NewerOrEquals)]
-        public static BeatmapOffsetInfo Version20220406_3(double version)
+        public static BeatmapOffsetInfo Version202204063 { get; } = new BeatmapOffsetInfo
         {
-            if (version >= 20220406.3)
-            {
-                return new BeatmapOffsetInfo
-                {
-                    Version = 20220406.3,
-                    BeatmapFileNameAddressOffset = 8,
-                    BeatmapSetAddressOffset = 0,
-                    BeatmapAddressOffset = 0,
-                    BeatmapFolderAddressOffset = 4,
-                    VersionCompareCondition = CompareCondition.NewerOrEquals
-                };
-            }
+            Version = 20220406.3,
+            BeatmapFileNameAddressOffset = 8,
+            BeatmapSetAddressOffset = 0,
+            BeatmapAddressOffset = 0,
+            BeatmapFolderAddressOffset = 4,
+            VersionCompareCondition = CompareCondition.NewerOrEquals
+        };
 
-            return null;
-        }
 
 
     }
