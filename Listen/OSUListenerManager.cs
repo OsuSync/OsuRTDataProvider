@@ -210,7 +210,7 @@ namespace OsuRTDataProvider.Listen
             s_stop_flag = false;
 
             //Listen Thread
-            s_listen_task = Task.Run(() =>
+            s_listen_task = Task.Factory.StartNew(() =>
             {
                 Thread.CurrentThread.Name = "OsuRTDataProviderThread";
                 Thread.Sleep(2000);
@@ -224,7 +224,7 @@ namespace OsuRTDataProvider.Listen
 
                     Thread.Sleep(Setting.ListenInterval);
                 }
-            });
+            }, TaskCreationOptions.LongRunning);
         }
         #endregion
 
