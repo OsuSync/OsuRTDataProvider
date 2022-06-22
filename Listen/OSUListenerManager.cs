@@ -210,8 +210,9 @@ namespace OsuRTDataProvider.Listen
             s_stop_flag = false;
 
             //Listen Thread
-            s_listen_task = Task.Run(() =>
+            s_listen_task = Task.Factory.StartNew(() =>
             {
+                var spinWait = new SpinWait();
                 Thread.CurrentThread.Name = "OsuRTDataProviderThread";
                 Thread.Sleep(2000);
                 while (!s_stop_flag)
@@ -222,9 +223,16 @@ namespace OsuRTDataProvider.Listen
                         action.Item2();
                     }
 
-                    Thread.Sleep(Setting.ListenInterval);
+                    if (Setting.ListenInterval == 0)
+                    {
+                        spinWait.SpinOnce();
+                    }
+                    else
+                    {
+                        Thread.Sleep(Setting.ListenInterval);
+                    }
                 }
-            });
+            }, TaskCreationOptions.LongRunning);
         }
         #endregion
 
@@ -395,21 +403,25 @@ namespace OsuRTDataProvider.Listen
         #region Init Finder
         private const long RETRY_INTERVAL = 3000;
 
-        private Dictionary<Type, long> finder_timer_dict = new Dictionary<Type, long>();
+        private Dictionary<Type, Stopwatch> finder_timer_dict = new Dictionary<Type, Stopwatch>();
         private T InitFinder<T>(string success_fmt, string failed_fmt) where T : OsuFinderBase
         {
+            bool firstInit = false;
             if (!finder_timer_dict.ContainsKey(typeof(T)))
-                finder_timer_dict.Add(typeof(T), 0);
+            {
+                finder_timer_dict.Add(typeof(T), new Stopwatch());
+                firstInit = true;
+            }
 
             T finder = null;
-            long timer = finder_timer_dict[typeof(T)];
+            Stopwatch timer = finder_timer_dict[typeof(T)];
 
-            if (timer % RETRY_INTERVAL == 0)
+            if (firstInit || timer.ElapsedMilliseconds >= RETRY_INTERVAL)
             {
                 finder = typeof(T).GetConstructors()[0].Invoke(new object[] { m_osu_process }) as T;
                 if (finder.TryInit())
                 {
-                    timer = 0;
+                    timer.Reset();
                     Logger.Info(string.Format(success_fmt, m_osu_id));
                     return finder;
                 }
@@ -417,21 +429,23 @@ namespace OsuRTDataProvider.Listen
                 finder = null;
                 Logger.Error(string.Format(failed_fmt, m_osu_id, RETRY_INTERVAL / 1000));
             }
-            timer += Setting.ListenInterval;
+            timer.Start();
             finder_timer_dict[typeof(T)] = timer;
             return finder;
         }
         #endregion
 
         #region Find Osu Setting
-        private long find_osu_process_timer = 0;
+        private bool firstInit = true;
+        private Stopwatch find_osu_process_timer = new Stopwatch();
         private const long FIND_OSU_RETRY_INTERVAL = 5000;
 
         private void FindOsuProcess()
         {
-            if (find_osu_process_timer > FIND_OSU_RETRY_INTERVAL)
+            if (firstInit || find_osu_process_timer.ElapsedMilliseconds > FIND_OSU_RETRY_INTERVAL)
             {
-                find_osu_process_timer = 0;
+                firstInit = false;
+                find_osu_process_timer.Reset();
                 Process[] process_list;
 
                 process_list = Process.GetProcessesByName("osu!");
@@ -462,11 +476,11 @@ namespace OsuRTDataProvider.Listen
                         return;
                     }
                 }
-                find_osu_process_timer = 0;
+                find_osu_process_timer.Reset();
                 if (!Setting.DisableProcessNotFoundInformation)
                     Logger.Error(string.Format(LANG_OSU_NOT_FOUND, m_osu_id));
             }
-            find_osu_process_timer += Setting.ListenInterval;
+            find_osu_process_timer.Start();
         }
 
         private void FindSongPathAndUsername()
