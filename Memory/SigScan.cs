@@ -316,7 +316,7 @@ namespace OsuRTDataProvider.Memory
             {
                 MEMORY_BASIC_INFORMATION_X64 mem_basic_info = new MEMORY_BASIC_INFORMATION_X64();
                 int mem_info_size = Marshal.SizeOf<MEMORY_BASIC_INFORMATION_X64>();
-                int size = VirtualQueryEx_X64(handle, current_address, out mem_basic_info, (uint)mem_info_size);
+                int size = VirtualQueryEx_X64(handle, current_address, ref mem_basic_info, (uint)mem_info_size);
 
                 if (size != mem_info_size)
                 {
@@ -337,7 +337,7 @@ namespace OsuRTDataProvider.Memory
             {
                 MEMORY_BASIC_INFORMATION_X86 mem_basic_info = new MEMORY_BASIC_INFORMATION_X86();
                 int mem_info_size = Marshal.SizeOf<MEMORY_BASIC_INFORMATION_X86>();
-                int size = VirtualQueryEx_X86(handle, current_address, out mem_basic_info, (uint)mem_info_size);
+                int size = VirtualQueryEx_X86(handle, current_address, ref mem_basic_info, (uint)mem_info_size);
 
                 if (size != mem_info_size)
                 {
@@ -455,10 +455,10 @@ namespace OsuRTDataProvider.Memory
             );
 
         [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "VirtualQueryEx")]
-        private static extern int VirtualQueryEx_X86(IntPtr hProcess, IntPtr lpAddress, out MEMORY_BASIC_INFORMATION_X86 lpBuffer, uint dwLength);
+        private static extern int VirtualQueryEx_X86(IntPtr hProcess, IntPtr lpAddress, ref MEMORY_BASIC_INFORMATION_X86 lpBuffer, uint dwLength);
 
         [DllImport("kernel32.dll", SetLastError = true, EntryPoint = "VirtualQueryEx")]
-        private static extern int VirtualQueryEx_X64(IntPtr hProcess, IntPtr lpAddress, out MEMORY_BASIC_INFORMATION_X64 lpBuffer, uint dwLength);
+        private static extern int VirtualQueryEx_X64(IntPtr hProcess, IntPtr lpAddress, ref MEMORY_BASIC_INFORMATION_X64 lpBuffer, uint dwLength);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern void GetSystemInfo(out SYSTEM_INFO lpSystemInfo);
