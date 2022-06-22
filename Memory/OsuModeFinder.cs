@@ -17,6 +17,7 @@ namespace OsuRTDataProvider.Memory
         private static readonly string s_mode_mask = "xxxxxx????xxxx";
 
         private IntPtr m_mode_address;
+        private byte[] s_mode_pattern_bytes;
 
         public OsuPlayModeFinder(Process process) : base(process)
         {
@@ -28,7 +29,7 @@ namespace OsuRTDataProvider.Memory
 
             SigScan.Reload();
             {
-                m_mode_address = SigScan.FindPattern(StringToByte(s_mode_pattern), s_mode_mask,6);
+                m_mode_address = SigScan.FindPattern(s_mode_pattern_bytes = s_mode_pattern_bytes ?? StringToByte(s_mode_pattern), s_mode_mask, 6);
                 LogHelper.LogToFile($"Mode Address (0):0x{(int)m_mode_address:X8}");
 
                 success = TryReadIntPtrFromMemory(m_mode_address, out m_mode_address);

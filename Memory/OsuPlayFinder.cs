@@ -30,6 +30,11 @@ namespace OsuRTDataProvider.Memory
         private IntPtr m_time_address;
         private IntPtr m_mods_address;
 
+        private byte[] s_global_mods_pattern_bytes;
+        private byte[] s_acc_pattern_bytes;
+        private byte[] s_acc_pattern_fallback_bytes;
+        private byte[] s_time_pattern_bytes;
+
         public OsuPlayFinder(Process osu) : base(osu)
         {
         }
@@ -46,7 +51,7 @@ namespace OsuRTDataProvider.Memory
                 if (Setting.EnableModsChangedAtListening)
                 {
                     //Find mods address
-                    m_mods_address = SigScan.FindPattern(StringToByte(s_global_mods_pattern), s_global_mods_mask, 3);
+                    m_mods_address = SigScan.FindPattern(s_global_mods_pattern_bytes = s_global_mods_pattern_bytes ?? StringToByte(s_global_mods_pattern), s_global_mods_mask, 3);
                     LogHelper.LogToFile($"Mods Base Address (0):0x{(int)m_mods_address:X8}");
 
                     m_mods_address_success = TryReadIntPtrFromMemory(m_mods_address, out m_mods_address);
@@ -54,7 +59,7 @@ namespace OsuRTDataProvider.Memory
                 }
                 
                 //Find acc Address
-                m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern), s_acc_mask, 1);
+                m_acc_address = SigScan.FindPattern(s_acc_pattern_bytes = s_acc_pattern_bytes ?? StringToByte(s_acc_pattern), s_acc_mask, 1);
                 LogHelper.LogToFile($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
 
                 m_accuracy_address_success = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
@@ -63,7 +68,7 @@ namespace OsuRTDataProvider.Memory
                 if (!m_accuracy_address_success)//use s_acc_pattern_fallback
                 {
                     LogHelper.LogToFile("Use Fallback Accuracy Pattern");
-                    m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern_fallback), s_acc_mask_fallback, 4);
+                    m_acc_address = SigScan.FindPattern(s_acc_pattern_fallback_bytes = s_acc_pattern_fallback_bytes ?? StringToByte(s_acc_pattern_fallback), s_acc_mask_fallback, 4);
                     LogHelper.LogToFile($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
 
                     m_accuracy_address_success = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
@@ -71,7 +76,7 @@ namespace OsuRTDataProvider.Memory
                 }
 
                 //Find Time Address
-                m_time_address = SigScan.FindPattern(StringToByte(s_time_pattern), s_time_mask, 5);
+                m_time_address = SigScan.FindPattern(s_time_pattern_bytes = s_time_pattern_bytes ?? StringToByte(s_time_pattern), s_time_mask, 5);
                 LogHelper.LogToFile($"Time Base Address (0):0x{(int)m_time_address:X8}");
 
                 m_time_address_success = TryReadIntPtrFromMemory(m_time_address, out m_time_address);

@@ -11,6 +11,7 @@ namespace OsuRTDataProvider.Memory
 
         private IntPtr m_game_modes_address;
         private bool success = false;
+        private byte[] s_game_modes_pattern_bytes;
 
         public OsuStatusFinder(Process osu) : base(osu)
         {
@@ -21,7 +22,7 @@ namespace OsuRTDataProvider.Memory
             SigScan.Reload();
             {
                 //Find Game Modes
-                m_game_modes_address = SigScan.FindPattern(StringToByte(s_game_modes_pattern), s_game_modes_mask, 11);
+                m_game_modes_address = SigScan.FindPattern(s_game_modes_pattern_bytes = s_game_modes_pattern_bytes ?? StringToByte(s_game_modes_pattern), s_game_modes_mask, 11);
                 LogHelper.LogToFile($"Game Status Address (0):0x{(int)m_game_modes_address:X8}");
 
                 success = TryReadIntPtrFromMemory(m_game_modes_address, out m_game_modes_address);
