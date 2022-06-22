@@ -212,6 +212,7 @@ namespace OsuRTDataProvider.Listen
             //Listen Thread
             s_listen_task = Task.Factory.StartNew(() =>
             {
+                var spinWait = new SpinWait();
                 Thread.CurrentThread.Name = "OsuRTDataProviderThread";
                 Thread.Sleep(2000);
                 while (!s_stop_flag)
@@ -222,7 +223,14 @@ namespace OsuRTDataProvider.Listen
                         action.Item2();
                     }
 
-                    Thread.Sleep(Setting.ListenInterval);
+                    if (Setting.ListenInterval == 0)
+                    {
+                        spinWait.SpinOnce();
+                    }
+                    else
+                    {
+                        Thread.Sleep(Setting.ListenInterval);
+                    }
                 }
             }, TaskCreationOptions.LongRunning);
         }
