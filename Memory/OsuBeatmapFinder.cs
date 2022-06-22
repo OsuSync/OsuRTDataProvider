@@ -32,7 +32,7 @@ namespace OsuRTDataProvider.Memory
         private const int MAX_RETRY_COUNT = 10;
 
         private IntPtr m_beatmap_address;
-        private byte[] s_beatmap_pattern_bytes;
+        private static byte[] s_beatmap_pattern_bytes;
 
         public OsuBeatmapFinder(Process osu) : base(osu)
         {

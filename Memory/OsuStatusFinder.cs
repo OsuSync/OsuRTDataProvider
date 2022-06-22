@@ -11,7 +11,7 @@ namespace OsuRTDataProvider.Memory
 
         private IntPtr m_game_modes_address;
         private bool success = false;
-        private byte[] s_game_modes_pattern_bytes;
+        private static byte[] s_game_modes_pattern_bytes;
 
         public OsuStatusFinder(Process osu) : base(osu)
         {

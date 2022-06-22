@@ -17,7 +17,7 @@ namespace OsuRTDataProvider.Memory
         private static readonly string s_mode_mask = "xxxxxx????xxxx";
 
         private IntPtr m_mode_address;
-        private byte[] s_mode_pattern_bytes;
+        private static byte[] s_mode_pattern_bytes;
 
         public OsuPlayModeFinder(Process process) : base(process)
         {

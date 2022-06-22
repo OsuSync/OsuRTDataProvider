@@ -30,10 +30,10 @@ namespace OsuRTDataProvider.Memory
         private IntPtr m_time_address;
         private IntPtr m_mods_address;
 
-        private byte[] s_global_mods_pattern_bytes;
-        private byte[] s_acc_pattern_bytes;
-        private byte[] s_acc_pattern_fallback_bytes;
-        private byte[] s_time_pattern_bytes;
+        private static byte[] s_global_mods_pattern_bytes;
+        private static byte[] s_acc_pattern_bytes;
+        private static byte[] s_acc_pattern_fallback_bytes;
+        private static byte[] s_time_pattern_bytes;
 
         public OsuPlayFinder(Process osu) : base(osu)
         {
