@@ -127,11 +127,11 @@ namespace OsuRTDataProvider.Memory
             bool success = TryReadStringFromMemory(cur_beatmap_address + CurrentOffset.BeatmapFileNameAddressOffset, out string str);
             if (!success) return "";
 
-            List<string> filename = new List<string>(str.Split());
+            List<string> fileName = new List<string>(str.Split('['));
             string creator = GetCurrentBeatmapCreator();
-            filename.Insert(filename.Count - 1, $"({creator})");
+            fileName[0] += $"({creator}) ";
 
-            str = string.Join(" ", filename.ToArray());
+            str = string.Join("[", fileName.ToArray());
             str += ".osu";
             return str;
         }
