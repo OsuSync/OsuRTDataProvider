@@ -81,7 +81,6 @@ namespace OsuRTDataProvider.Memory
                 {
                     string folder_full = Path.Combine(Setting.SongsPath, folder);
                     string filename_full = Path.Combine(folder_full, filename);
-                    filename_full += ".osu";
                     using (var fs = File.OpenRead(filename_full))
                     {
                         beatmap = new Beatmap(osu_id, set_id, id, fs);
@@ -133,6 +132,7 @@ namespace OsuRTDataProvider.Memory
             filename.Insert(filename.Count - 1, $"({creator})");
 
             str = string.Join(" ", filename.ToArray());
+            str += ".osu";
             return str;
         }
 
