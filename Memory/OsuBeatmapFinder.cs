@@ -15,18 +15,21 @@ namespace OsuRTDataProvider.Memory
 
         private static readonly string s_beatmap_mask = "xxxx????xxxx";
 
-        private static readonly int s_beatmap_offset = 0xc4;
-        private static readonly int s_beatmap_set_offset = 0xc8;
+        private static readonly int s_beatmap_offset = 0xc8;
+        private static readonly int s_beatmap_set_offset = 0xcc;
 
         private static readonly int s_beatmap_folder_offset = 0x74;
-        private static readonly int s_beatmap_filename_offset = 0x8c;
+        private static readonly int s_beatmap_filename_offset = 0x80;
+
+        private static readonly int s_beatmap_creator_offset = 0x78;
 
         private BeatmapOffsetInfo CurrentOffset { get; } = new BeatmapOffsetInfo()
         {
             BeatmapAddressOffset = s_beatmap_offset,
             BeatmapSetAddressOffset = s_beatmap_set_offset,
             BeatmapFolderAddressOffset = s_beatmap_folder_offset,
-            BeatmapFileNameAddressOffset = s_beatmap_filename_offset
+            BeatmapFileNameAddressOffset = s_beatmap_filename_offset,
+            BeatMapCreatorAddressOffset = s_beatmap_creator_offset
         };
 
         private const int MAX_RETRY_COUNT = 10;
@@ -122,6 +125,21 @@ namespace OsuRTDataProvider.Memory
         {
             TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
             bool success = TryReadStringFromMemory(cur_beatmap_address + CurrentOffset.BeatmapFileNameAddressOffset, out string str);
+            if (!success) return "";
+
+            List<string> fileName = new List<string>(str.Split('['));
+            string creator = GetCurrentBeatmapCreator();
+            fileName[0] += $"({creator}) ";
+
+            str = string.Join("[", fileName.ToArray());
+            str += ".osu";
+            return str;
+        }
+
+        private string GetCurrentBeatmapCreator()
+        {
+            TryReadIntPtrFromMemory(m_beatmap_address, out var cur_beatmap_address);
+            bool success = TryReadStringFromMemory(cur_beatmap_address + CurrentOffset.BeatMapCreatorAddressOffset, out string str);
             if (!success) return "";
             return str;
         }

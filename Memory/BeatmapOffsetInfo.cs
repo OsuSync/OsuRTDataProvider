@@ -24,6 +24,7 @@ namespace OsuRTDataProvider.Memory
         public int BeatmapSetAddressOffset { get; set; }
         public int BeatmapFolderAddressOffset { get; set; }
         public int BeatmapFileNameAddressOffset { get; set; }
+        public int BeatMapCreatorAddressOffset {get; set; }
         public CompareCondition VersionCompareCondition { get; set; }
         public void AddOffset(BeatmapOffsetInfo beatmapOffsetInfo)
         {
@@ -31,6 +32,10 @@ namespace OsuRTDataProvider.Memory
             BeatmapFolderAddressOffset += beatmapOffsetInfo.BeatmapFolderAddressOffset;
             BeatmapSetAddressOffset += beatmapOffsetInfo.BeatmapSetAddressOffset;
             BeatmapFileNameAddressOffset += beatmapOffsetInfo.BeatmapFileNameAddressOffset;
+            if (beatmapOffsetInfo.Version >= 20231219.2)
+            {
+                BeatMapCreatorAddressOffset += beatmapOffsetInfo.BeatMapCreatorAddressOffset;
+            }
         }
         
         public void SetOffset(BeatmapOffsetInfo beatmapOffsetInfo)
@@ -39,6 +44,10 @@ namespace OsuRTDataProvider.Memory
             BeatmapFolderAddressOffset =  beatmapOffsetInfo.BeatmapFolderAddressOffset;
             BeatmapSetAddressOffset = beatmapOffsetInfo.BeatmapSetAddressOffset;
             BeatmapFileNameAddressOffset = beatmapOffsetInfo.BeatmapFileNameAddressOffset;
+            if (beatmapOffsetInfo.Version >= 20231219.2)
+            {
+                BeatMapCreatorAddressOffset = beatmapOffsetInfo.BeatMapCreatorAddressOffset;
+            }
         }
 
 
@@ -136,6 +145,16 @@ namespace OsuRTDataProvider.Memory
             VersionCompareCondition = CompareCondition.NewerOrEquals
         };
 
-
+        [OsuVersionCompareInfo(20231219.2, CompareCondition.NewerOrEquals)]
+        public static BeatmapOffsetInfo Version202312192 { get; } = new BeatmapOffsetInfo
+        {
+            Version = 20231219.2,
+            BeatmapFileNameAddressOffset = 0,
+            BeatmapSetAddressOffset = 0,
+            BeatmapAddressOffset = 0,
+            BeatmapFolderAddressOffset = 4,
+            BeatMapCreatorAddressOffset = 4,
+            VersionCompareCondition = CompareCondition.NewerOrEquals
+        };
     }
 }
