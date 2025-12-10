@@ -40,9 +40,8 @@ namespace OsuRTDataProvider.Listen
             ["Mania"] = OsuPlayMode.Mania,
         };
 
-        static private List<Tuple<int, Action>> s_listen_update_list = new List<Tuple<int, Action>>();
-        static private Task s_listen_task;
-        static private bool s_stop_flag = false;
+        private CancellationTokenSource _cts;
+        private Task _runningTask;
 
         #region Event
 
@@ -203,31 +202,6 @@ namespace OsuRTDataProvider.Listen
         private readonly bool m_is_tourney = false;
         private readonly int m_osu_id = 0;
 
-        #region OsuRTDataProviderThread
-
-        static OsuListenerManager()
-        {
-            s_stop_flag = false;
-
-            //Listen Thread
-            s_listen_task = Task.Run(() =>
-            {
-                Thread.CurrentThread.Name = "OsuRTDataProviderThread";
-                Thread.Sleep(2000);
-                while (!s_stop_flag)
-                {
-                    for (int i = 0; i < s_listen_update_list.Count; i++)
-                    {
-                        var action = s_listen_update_list[i];
-                        action.Item2();
-                    }
-
-                    Thread.Sleep(Setting.ListenInterval);
-                }
-            });
-        }
-        #endregion
-
         public OsuListenerManager(bool tourney = false, int osuid = 0)
         {
             m_is_tourney = tourney;
@@ -236,19 +210,30 @@ namespace OsuRTDataProvider.Listen
 
         public void Start()
         {
-            s_listen_update_list.Add(new Tuple<int, Action>(m_osu_id, ListenLoopUpdate));
+            if (_runningTask != null && !_runningTask.IsCompleted)
+                return;
+
+            _cts = new CancellationTokenSource();
+            _runningTask = Task.Factory.StartNew(
+                () => LoopAsync(_cts.Token),
+                _cts.Token,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default
+            ).Unwrap();
         }
 
         public void Stop()
         {
-            var tuple = s_listen_update_list.Where(t => t.Item1 == m_osu_id).FirstOrDefault();
-            s_listen_update_list.Remove(tuple);
-
-            if (s_listen_update_list.Count == 0)
+            _cts?.Cancel();
+            try
             {
-                s_stop_flag = true;
-                s_listen_task.Wait();
+                _runningTask?.Wait(2000);
             }
+            catch (AggregateException) { }
+            
+            _cts?.Dispose();
+            _cts = null;
+            _runningTask = null;
         }
 
         #region Get Current Data
@@ -436,7 +421,6 @@ namespace OsuRTDataProvider.Listen
 
                 process_list = Process.GetProcessesByName("osu!");
 
-                if (s_stop_flag) return;
                 if (process_list.Length != 0)
                 {
                     if (m_is_tourney)
@@ -475,7 +459,18 @@ namespace OsuRTDataProvider.Listen
             find_osu_filename:
             try
             {
-                osu_path = Path.GetDirectoryName(m_osu_process.MainModule.FileName);
+                string fullPath = ProcessHelper.GetProcessPath(m_osu_process);
+                if (string.IsNullOrEmpty(fullPath)) throw new Win32Exception("Cannot get osu process path");
+                osu_path = Path.GetDirectoryName(fullPath);
+                
+                // Handle osu! update/cleanup folder case
+                // Example: E:\其他文件\osu!\_cleanup\d22ddb5b-3817-4bc5-bde7-a5437b766648
+                if (osu_path.IndexOf("_cleanup", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    var parent = Directory.GetParent(osu_path);
+                    if (parent != null)
+                        osu_path = parent.FullName;
+                }
             }
             catch (Win32Exception e)
             {
@@ -542,7 +537,39 @@ namespace OsuRTDataProvider.Listen
         }
         #endregion
 
-        private void ListenLoopUpdate()
+        private async Task LoopAsync(CancellationToken token)
+        {
+            Thread.CurrentThread.Name = $"OsuRTDataProviderThread_{m_osu_id}";
+            //try
+            //{
+            //    // Initial delay
+            //    await Task.Delay(2000, token);
+            //}
+            //catch (TaskCanceledException) { return; }
+
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    OnLoopUpdate();
+                }
+                catch (Exception e)
+                {
+                    Logger.Error($"Error in LoopAsync: {e}");
+                }
+
+                try
+                {
+                    await Task.Delay(Setting.ListenInterval, token);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
+            }
+        }
+
+        private void OnLoopUpdate()
         {
             OsuStatus status = GetCurrentOsuStatus();
 
