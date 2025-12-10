@@ -94,6 +94,10 @@ namespace OsuRTDataProvider.Memory
         public OsuReplayHitEventFinder(Process osu) : base(osu)
         {
         }
+
+        public OsuReplayHitEventFinder(ISigScan sigScan) : base(sigScan)
+        {
+        }
     }
 
     internal class OsuPlayingHitEventFinder : BaseOsuHitEventFinder
@@ -110,6 +114,10 @@ namespace OsuRTDataProvider.Memory
         internal override string name => "Playing";
 
         public OsuPlayingHitEventFinder(Process osu) : base(osu)
+        {
+        }
+
+        public OsuPlayingHitEventFinder(ISigScan sigScan) : base(sigScan)
         {
         }
     }
@@ -140,6 +148,10 @@ namespace OsuRTDataProvider.Memory
 
 
         public BaseOsuHitEventFinder(Process osu) : base(osu)
+        {
+        }
+
+        public BaseOsuHitEventFinder(ISigScan sigScan) : base(sigScan)
         {
         }
 

@@ -35,6 +35,16 @@ namespace OsuRTDataProvider.Memory
         
         public OsuBeatmapFinder(Process osu) : base(osu)
         {
+            Init();
+        }
+
+        public OsuBeatmapFinder(ISigScan sigScan) : base(sigScan)
+        {
+            Init();
+        }
+
+        private void Init()
+        {
             var versionBeatmapOffset = BeatmapOffsetInfo.MatchVersion(Setting.CurrentOsuVersionValue);
             CurrentOffset.AddOffset(versionBeatmapOffset);
             Logger.Info($"applied offset for osu!version({Setting.CurrentOsuVersionValue.ToString(CultureInfo.InvariantCulture)}) : {versionBeatmapOffset}");

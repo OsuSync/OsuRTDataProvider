@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -9,7 +9,7 @@ namespace OsuRTDataProvider.Memory
 {
     internal abstract class OsuFinderBase
     {
-        protected SigScanWrapper SigScan { get; private set; }
+        protected ISigScan SigScan { get; private set; }
         protected Process OsuProcess { get; private set; }
 
         private int max_bytes_length = 4096;
@@ -31,7 +31,13 @@ namespace OsuRTDataProvider.Memory
         public OsuFinderBase(Process process)
         {
             OsuProcess = process;
-            SigScan = new SigScanWrapper(OsuProcess);
+            SigScan = new SigScan(OsuProcess);
+        }
+
+        protected OsuFinderBase(ISigScan sigScan)
+        {
+            SigScan = sigScan;
+            OsuProcess = null;
         }
 
         private List<byte> _a = new List<byte>(64);
@@ -50,7 +56,7 @@ namespace OsuRTDataProvider.Memory
             int ret_size_ptr = 0;
             value = IntPtr.Zero;
 
-            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(int), out ret_size_ptr))
+            if (SigScan.ReadMemory(address, _number_buf, sizeof(int), out ret_size_ptr))
             {
                 value = (IntPtr)BitConverter.ToInt32(_number_buf, 0);
                 return true;
@@ -63,7 +69,7 @@ namespace OsuRTDataProvider.Memory
             int ret_size_ptr = 0;
             value = 0;
 
-            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(int), out ret_size_ptr))
+            if (SigScan.ReadMemory(address, _number_buf, sizeof(int), out ret_size_ptr))
             {
                 value = BitConverter.ToInt32(_number_buf, 0);
                 return true;
@@ -76,7 +82,7 @@ namespace OsuRTDataProvider.Memory
             int ret_size_ptr = 0;
             value = 0;
 
-            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(ushort), out ret_size_ptr))
+            if (SigScan.ReadMemory(address, _number_buf, sizeof(ushort), out ret_size_ptr))
             {
                 value = BitConverter.ToUInt16(_number_buf, 0);
                 return true;
@@ -89,7 +95,7 @@ namespace OsuRTDataProvider.Memory
             int ret_size_ptr = 0;
             value = double.NaN;
 
-            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(double), out ret_size_ptr))
+            if (SigScan.ReadMemory(address, _number_buf, sizeof(double), out ret_size_ptr))
             {
                 value = BitConverter.ToDouble(_number_buf, 0);
                 return true;
@@ -102,7 +108,7 @@ namespace OsuRTDataProvider.Memory
             int ret_size_ptr = 0;
             value = float.NaN;
 
-            if (SigScan.ReadProcessMemory(OsuProcess.Handle, address, _number_buf, sizeof(float), out ret_size_ptr))
+            if (SigScan.ReadMemory(address, _number_buf, sizeof(float), out ret_size_ptr))
             {
                 value = BitConverter.ToSingle(_number_buf, 0);
                 return true;
@@ -123,7 +129,7 @@ namespace OsuRTDataProvider.Memory
                 len *= 2;
                 if (len > STRING_BUFFER_LENGTH_MAX || len <= 0) return false;
 
-                if (SigScan.ReadProcessMemory(OsuProcess.Handle, str_base + 0x8, _string_bytes_buf, (uint)len, out int ret_size))
+                if (SigScan.ReadMemory(str_base + 0x8, _string_bytes_buf, len, out int ret_size))
                 {
                     if (len == ret_size)
                     {
@@ -160,7 +166,7 @@ namespace OsuRTDataProvider.Memory
 
                 TryReadIntPtrFromMemory(list_ptr + 0x4, out var array_ptr);
 
-                if (SigScan.ReadProcessMemory(OsuProcess.Handle, array_ptr + 0x8, _bytes_buf, (uint)bytes, out int ret_size))
+                if (SigScan.ReadMemory(array_ptr + 0x8, _bytes_buf, bytes, out int ret_size))
                 {
                     if (bytes == ret_size)
                     {

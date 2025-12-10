@@ -1,4 +1,4 @@
-﻿using OsuRTDataProvider.Listen;
+using OsuRTDataProvider.Listen;
 using System;
 using System.Diagnostics;
 
@@ -17,6 +17,10 @@ namespace OsuRTDataProvider.Memory
         private IntPtr m_mode_address;
 
         public OsuPlayModeFinder(Process process) : base(process)
+        {
+        }
+
+        public OsuPlayModeFinder(ISigScan sigScan) : base(sigScan)
         {
         }
 

@@ -30,6 +30,10 @@ namespace OsuRTDataProvider.Memory
         {
         }
 
+        public OsuPlayFinder(ISigScan sigScan) : base(sigScan)
+        {
+        }
+
         public override bool TryInit()
         {
             bool success = false;

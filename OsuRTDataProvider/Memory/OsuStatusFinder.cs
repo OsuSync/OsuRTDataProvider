@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 
 namespace OsuRTDataProvider.Memory
@@ -11,6 +11,10 @@ namespace OsuRTDataProvider.Memory
         private bool success = false;
 
         public OsuStatusFinder(Process osu) : base(osu)
+        {
+        }
+
+        public OsuStatusFinder(ISigScan sigScan) : base(sigScan)
         {
         }
 
