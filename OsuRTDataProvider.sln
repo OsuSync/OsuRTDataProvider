@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11304.174 d18.0
+VisualStudioVersion = 18.1.11304.174
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuRTDataProvider", "OsuRTDataProvider\OsuRTDataProvider.csproj", "{B1D16149-C1C5-4925-B57C-F8A537B03820}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuRTDataProvider.Plugin", "OsuRTDataProvider.Plugin\OsuRTDataProvider.Plugin.csproj", "{E47D0F78-CDCA-4E74-8665-0402301A6E29}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuRTDataProvider.Tests", "OsuRTDataProvider.Tests\OsuRTDataProvider.Tests.csproj", "{212067F4-D953-6D1F-04BB-A9642C47CD70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OsuRTDataProvider.ConsoleTest", "OsuRTDataProvider.ConsoleTest\OsuRTDataProvider.ConsoleTest.csproj", "{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,18 @@ Global
 		{212067F4-D953-6D1F-04BB-A9642C47CD70}.Release|x64.Build.0 = Release|Any CPU
 		{212067F4-D953-6D1F-04BB-A9642C47CD70}.Release|x86.ActiveCfg = Release|Any CPU
 		{212067F4-D953-6D1F-04BB-A9642C47CD70}.Release|x86.Build.0 = Release|Any CPU
+		{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}.Debug|x64.ActiveCfg = Debug|x64
+		{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}.Debug|x64.Build.0 = Debug|x64
+		{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}.Debug|x86.ActiveCfg = Debug|x86
+		{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}.Debug|x86.Build.0 = Debug|x86
+		{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}.Release|x64.ActiveCfg = Release|x64
+		{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}.Release|x64.Build.0 = Release|x64
+		{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}.Release|x86.ActiveCfg = Release|x86
+		{D39C8561-4F1A-4C34-BE2C-3DE64284AA5B}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
