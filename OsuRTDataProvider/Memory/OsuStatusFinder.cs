@@ -5,9 +5,7 @@ namespace OsuRTDataProvider.Memory
 {
     internal class OsuStatusFinder : OsuFinderBase
     {
-        private static readonly string s_game_modes_pattern = "\x75\x07\x8B\x45\x90\xC6\x40\x2A\x00\x83\x3D\x0\x0\x0\x0\x0F";
-
-        private static readonly string s_game_modes_mask = "xxxxxxxxxxx????x";
+        private static readonly string s_game_modes_pattern = "75 07 8B 45 90 C6 40 2A 00 83 3D ?? ?? ?? ?? 0F";
 
         private IntPtr m_game_modes_address;
         private bool success = false;
@@ -21,7 +19,7 @@ namespace OsuRTDataProvider.Memory
             SigScan.Reload();
             {
                 //Find Game Modes
-                m_game_modes_address = SigScan.FindPattern(StringToByte(s_game_modes_pattern), s_game_modes_mask, 11);
+                m_game_modes_address = SigScan.FindPattern(s_game_modes_pattern, 11);
                 LogHelper.LogToFile($"Game Status Address (0):0x{(int)m_game_modes_address:X8}");
 
                 success = TryReadIntPtrFromMemory(m_game_modes_address, out m_game_modes_address);

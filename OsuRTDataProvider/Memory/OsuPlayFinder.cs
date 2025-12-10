@@ -10,19 +10,15 @@ namespace OsuRTDataProvider.Memory
         #region Address Arguments
 
         //0xA1,0,0,0,0,0x8D,0x56,0x0C,0xE8,0x00,0x00,0x00,0x00,0x8B,0x47,0x04
-        private static readonly string s_acc_pattern = "\xA1\x0\x0\x0\x0\x8D\x56\x0C\xE8\x00\x00\x00\x00\x8B\x47\x04";
-        private static readonly string s_acc_mask = "x????xxxx????xxx";
+        private static readonly string s_acc_pattern = "A1 ?? ?? ?? ?? 8D 56 0C E8 ?? ?? ?? ?? 8B 47 04";
 
         //0x73,0x7a,0x8b,0x0d,0x0,0x0,0x0,0x0,0x85,0xc9,0x74,0x1f
-        private static readonly string s_acc_pattern_fallback = "\x73\x7a\x8b\x0d\x0\x0\x0\x0\x85\xc9\x74\x1f\x8d\x55\xf0";
-        private static readonly string s_acc_mask_fallback = "xxxx????xxxxxxx";
+        private static readonly string s_acc_pattern_fallback = "73 7A 8B 0D ?? ?? ?? ?? 85 C9 74 1F 8D 55 F0";
 
         //0x5e,0x5f,0x5d,0xc3,0xa1,0x0,0x0,0x0,0x0,0x89,0x0,0x04
-        private static readonly string s_time_pattern = "\x5e\x5f\x5d\xc3\xa1\x0\x0\x0\x0\x89\x0\x04";
-        private static readonly string s_time_mask = "xxxxx????x?x";
+        private static readonly string s_time_pattern = "5E 5F 5D C3 A1 ?? ?? ?? ?? 89 ?? 04";
 
-        private static readonly string s_global_mods_pattern = "\x8B\xF1\xA1\x00\x00\x00\x00\x25\x00\x00\x40\x00\x85\xC0";
-        private static readonly string s_global_mods_mask = "xxx????xxxxxxx";
+        private static readonly string s_global_mods_pattern = "8B F1 A1 ?? ?? ?? ?? 25 00 00 40 00 85 C0";
 
         #endregion Address Arguments
 
@@ -46,7 +42,7 @@ namespace OsuRTDataProvider.Memory
                 if (Setting.EnableModsChangedAtListening)
                 {
                     //Find mods address
-                    m_mods_address = SigScan.FindPattern(StringToByte(s_global_mods_pattern), s_global_mods_mask, 3);
+                    m_mods_address = SigScan.FindPattern(s_global_mods_pattern, 3);
                     LogHelper.LogToFile($"Mods Base Address (0):0x{(int)m_mods_address:X8}");
 
                     m_mods_address_success = TryReadIntPtrFromMemory(m_mods_address, out m_mods_address);
@@ -54,7 +50,7 @@ namespace OsuRTDataProvider.Memory
                 }
                 
                 //Find acc Address
-                m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern), s_acc_mask, 1);
+                m_acc_address = SigScan.FindPattern(s_acc_pattern, 1);
                 LogHelper.LogToFile($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
 
                 m_accuracy_address_success = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
@@ -63,7 +59,7 @@ namespace OsuRTDataProvider.Memory
                 if (!m_accuracy_address_success)//use s_acc_pattern_fallback
                 {
                     LogHelper.LogToFile("Use Fallback Accuracy Pattern");
-                    m_acc_address = SigScan.FindPattern(StringToByte(s_acc_pattern_fallback), s_acc_mask_fallback, 4);
+                    m_acc_address = SigScan.FindPattern(s_acc_pattern_fallback, 4);
                     LogHelper.LogToFile($"Playing Accuracy Base Address (0):0x{(int)m_acc_address:X8}");
 
                     m_accuracy_address_success = TryReadIntPtrFromMemory(m_acc_address, out m_acc_address);
@@ -71,7 +67,7 @@ namespace OsuRTDataProvider.Memory
                 }
 
                 //Find Time Address
-                m_time_address = SigScan.FindPattern(StringToByte(s_time_pattern), s_time_mask, 5);
+                m_time_address = SigScan.FindPattern(s_time_pattern, 5);
                 LogHelper.LogToFile($"Time Base Address (0):0x{(int)m_time_address:X8}");
 
                 m_time_address_success = TryReadIntPtrFromMemory(m_time_address, out m_time_address);

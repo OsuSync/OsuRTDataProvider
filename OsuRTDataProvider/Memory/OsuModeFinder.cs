@@ -12,9 +12,7 @@ namespace OsuRTDataProvider.Memory
         //private static readonly string s_mode_mask = "xxxxxx????xxxx";
         //Another playmode pattern.
         //It can be used when the main pattern fails.
-        private static readonly string s_mode_pattern = "\xEC\x57\x56\x53\x3B\x0D\x00\x00\x00\x00\x74\x60\x89\x0D";
-
-        private static readonly string s_mode_mask = "xxxxxx????xxxx";
+        private static readonly string s_mode_pattern = "EC 57 56 53 3B 0D ?? ?? ?? ?? 74 60 89 0D";
 
         private IntPtr m_mode_address;
 
@@ -28,7 +26,7 @@ namespace OsuRTDataProvider.Memory
 
             SigScan.Reload();
             {
-                m_mode_address = SigScan.FindPattern(StringToByte(s_mode_pattern), s_mode_mask,6);
+                m_mode_address = SigScan.FindPattern(s_mode_pattern, 6);
                 LogHelper.LogToFile($"Mode Address (0):0x{(int)m_mode_address:X8}");
 
                 success = TryReadIntPtrFromMemory(m_mode_address, out m_mode_address);

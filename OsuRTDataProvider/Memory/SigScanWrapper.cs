@@ -1,0 +1,210 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using Reloaded.Memory.Sigscan;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.Memory;
+using Windows.Win32.System.SystemInformation;
+using Windows.Win32.System.Threading;
+
+namespace OsuRTDataProvider.Memory;
+
+public sealed class SigScanWrapper : IDisposable
+{
+    private readonly Process _process;
+    private readonly List<CachedMemoryRegion> _memoryRegions = new();
+    private bool _isDisposed;
+
+    public SigScanWrapper(Process process)
+    {
+        _process = process ?? throw new ArgumentNullException(nameof(process));
+        InitMemoryRegionInfo();
+    }
+
+    public unsafe IntPtr FindPattern(string pattern, int offset = 0)
+    {
+        EnsureMemoryDumpedAndScannersReady();
+
+        IntPtr foundAddress = IntPtr.Zero;
+
+        Parallel.ForEach(_memoryRegions, (region, state) =>
+        {
+            if (foundAddress != IntPtr.Zero || region.ReloadedScanner == null)
+                return;
+            var result = region.ReloadedScanner.FindPattern(pattern);
+
+            long finalAddress = (long)region.BaseAddress + result.Offset + offset;
+
+            if (Interlocked.CompareExchange(ref foundAddress, new IntPtr(finalAddress), IntPtr.Zero) == IntPtr.Zero)
+            {
+                state.Stop();
+            }
+        });
+
+        return foundAddress;
+    }
+
+    public void Reload()
+    {
+        ResetRegion();
+        InitMemoryRegionInfo();
+    }
+
+    public void ResetRegion()
+    {
+        foreach (var region in _memoryRegions)
+        {
+            region.Dispose();
+        }
+
+        _memoryRegions.Clear();
+    }
+
+    public unsafe bool ReadProcessMemory(IntPtr hProcess,
+        IntPtr lpBaseAddress,
+        byte[] lpBuffer,
+        uint dwSize,
+        out int lpNumberOfBytesRead)
+    {
+        HANDLE handle = (HANDLE)hProcess;
+        void* baseAddr = (void*)lpBaseAddress;
+
+        nuint bytesReadNative = 0;
+
+        fixed (byte* bufferPtr = lpBuffer)
+        {
+            BOOL success = PInvoke.ReadProcessMemory(
+                handle,
+                baseAddr,
+                bufferPtr,
+                dwSize,
+                &bytesReadNative
+            );
+
+            lpNumberOfBytesRead = (int)bytesReadNative;
+
+            return success;
+        }
+    }
+
+    private unsafe void EnsureMemoryDumpedAndScannersReady()
+    {
+        if (_process.HasExited) return;
+        HANDLE hProcess = (HANDLE)_process.Handle;
+
+        foreach (var region in _memoryRegions)
+        {
+            if (region.ReloadedScanner != null) continue;
+
+            region.DumpedRegion = new byte[region.RegionSize];
+            fixed (byte* bufferPtr = region.DumpedRegion)
+            {
+                nuint bytesRead = 0;
+
+                BOOL success = PInvoke.ReadProcessMemory(
+                    hProcess,
+                    region.BaseAddress,
+                    bufferPtr,
+                    (nuint)region.RegionSize,
+                    &bytesRead
+                );
+
+                if (!success || bytesRead != (nuint)region.RegionSize)
+                {
+                    region.DumpedRegion = null;
+                    continue;
+                }
+            }
+
+            region.ReloadedScanner = new Scanner(region.DumpedRegion);
+        }
+    }
+
+    private unsafe void InitMemoryRegionInfo()
+    {
+        if (_process.HasExited) return;
+
+        PInvoke.GetSystemInfo(out SYSTEM_INFO sysInfo);
+
+        void* minAddr = sysInfo.lpMinimumApplicationAddress;
+        void* maxAddr = sysInfo.lpMaximumApplicationAddress;
+
+        HANDLE hProcess = PInvoke.OpenProcess(
+            PROCESS_ACCESS_RIGHTS.PROCESS_QUERY_INFORMATION | PROCESS_ACCESS_RIGHTS.PROCESS_VM_READ,
+            false,
+            (uint)_process.Id
+        );
+
+        if (hProcess.IsNull) return;
+
+        try
+        {
+            MEMORY_BASIC_INFORMATION memInfo = default;
+            byte* currentPtr = (byte*)minAddr;
+
+            while (currentPtr < (byte*)maxAddr)
+            {
+                nuint size = PInvoke.VirtualQueryEx(hProcess, currentPtr, &memInfo,
+                    (nuint)sizeof(MEMORY_BASIC_INFORMATION));
+
+                if (size == 0) break;
+
+                bool isCommit = memInfo.State == VIRTUAL_ALLOCATION_TYPE.MEM_COMMIT;
+                bool isJitPage = (memInfo.Protect & PAGE_PROTECTION_FLAGS.PAGE_EXECUTE_READWRITE) != 0;
+
+                if (isCommit && isJitPage)
+                {
+                    var region = new CachedMemoryRegion
+                    {
+                        BaseAddress = memInfo.BaseAddress,
+                        RegionSize = memInfo.RegionSize
+                    };
+                    _memoryRegions.Add(region);
+                }
+
+                currentPtr += memInfo.RegionSize;
+            }
+        }
+        finally
+        {
+            PInvoke.CloseHandle(hProcess);
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                ResetRegion();
+            }
+
+            _isDisposed = true;
+        }
+    }
+
+    private class CachedMemoryRegion : IDisposable
+    {
+        public unsafe void* BaseAddress { get; set; }
+        public ulong RegionSize { get; set; }
+        public byte[] DumpedRegion { get; set; }
+        public Scanner ReloadedScanner { get; set; }
+
+        public void Dispose()
+        {
+            ReloadedScanner?.Dispose();
+            ReloadedScanner = null;
+            DumpedRegion = null;
+        }
+    }
+}

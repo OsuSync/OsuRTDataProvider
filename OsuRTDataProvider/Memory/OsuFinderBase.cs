@@ -9,7 +9,7 @@ namespace OsuRTDataProvider.Memory
 {
     internal abstract class OsuFinderBase
     {
-        protected SigScan SigScan { get; private set; }
+        protected SigScanWrapper SigScan { get; private set; }
         protected Process OsuProcess { get; private set; }
 
         private int max_bytes_length = 4096;
@@ -31,7 +31,7 @@ namespace OsuRTDataProvider.Memory
         public OsuFinderBase(Process process)
         {
             OsuProcess = process;
-            SigScan = new SigScan(OsuProcess);
+            SigScan = new SigScanWrapper(OsuProcess);
         }
 
         private List<byte> _a = new List<byte>(64);
