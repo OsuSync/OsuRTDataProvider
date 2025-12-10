@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <Platforms>AnyCPU;x86;x64</Platforms>
+    <Version>1.7.1</Version>
+    <Authors>KedamaOvO</Authors>
+    <Company>KedamaOvO</Company>
+    <Product>OsuRTDataProvider</Product>
+    <RootNamespace>OsuRTDataProvider</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OsuRTDataProvider\OsuRTDataProvider.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Sync">
+      <HintPath>ref\Sync.exe</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /y $(TargetPath) $(SolutionDir)\Sync\bin\$(ConfigurationName)\Plugins" Condition="'$(SolutionDir)' != ''" IgnoreExitCode="true" />
+  </Target>
+
+</Project>

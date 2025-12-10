@@ -522,7 +522,7 @@ namespace OsuRTDataProvider.Listen
                         else if (line.StartsWith("LastVersion")&&!line.StartsWith("LastVersionPermissionsFailed"))
                         {
                             Setting.OsuVersion = line.Split('=')[1].Trim();
-                            Logger.Info($"OSU Client Verison:{Setting.OsuVersion} ORTDP Version:{OsuRTDataProviderPlugin.VERSION}");
+                            Logger.Info($"OSU Client Verison:{Setting.OsuVersion} ORTDP Version:{VersionInfo.GetVersion()}");
                         }
                     }
                 }

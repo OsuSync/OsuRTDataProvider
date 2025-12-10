@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OsuRTDataProvider.Helper
 {
-    static class HardwareInformationHelper
+    public static class HardwareInformationHelper
     {
         public static string GetPhysicalMemory()
         {
