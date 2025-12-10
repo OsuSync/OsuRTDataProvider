@@ -400,9 +400,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-.vs/
-.vscode/
-
 OtherPlugins/MemoryReader/
 /.idea/.idea.OsuRTDataProvider.dir/.idea
 /OsuRTDataProvider.sln
