@@ -68,33 +68,6 @@ public sealed class SigScan : IDisposable, ISigScan
         return ReadProcessMemory(_process.Handle, address, buffer, (uint)size, out bytesRead);
     }
 
-    public unsafe bool ReadProcessMemory(IntPtr hProcess,
-        IntPtr lpBaseAddress,
-        byte[] lpBuffer,
-        uint dwSize,
-        out int lpNumberOfBytesRead)
-    {
-        HANDLE handle = (HANDLE)hProcess;
-        void* baseAddr = (void*)lpBaseAddress;
-
-        nuint bytesReadNative = 0;
-
-        fixed (byte* bufferPtr = lpBuffer)
-        {
-            BOOL success = PInvoke.ReadProcessMemory(
-                handle,
-                baseAddr,
-                bufferPtr,
-                dwSize,
-                &bytesReadNative
-            );
-
-            lpNumberOfBytesRead = (int)bytesReadNative;
-
-            return success;
-        }
-    }
-
     private unsafe void EnsureMemoryDumpedAndScannersReady()
     {
         if (_process.HasExited) return;
@@ -176,6 +149,33 @@ public sealed class SigScan : IDisposable, ISigScan
         finally
         {
             PInvoke.CloseHandle(hProcess);
+        }
+    }
+
+    private static unsafe bool ReadProcessMemory(IntPtr hProcess,
+        IntPtr lpBaseAddress,
+        byte[] lpBuffer,
+        uint dwSize,
+        out int lpNumberOfBytesRead)
+    {
+        HANDLE handle = (HANDLE)hProcess;
+        void* baseAddr = (void*)lpBaseAddress;
+
+        nuint bytesReadNative = 0;
+
+        fixed (byte* bufferPtr = lpBuffer)
+        {
+            BOOL success = PInvoke.ReadProcessMemory(
+                handle,
+                baseAddr,
+                bufferPtr,
+                dwSize,
+                &bytesReadNative
+            );
+
+            lpNumberOfBytesRead = (int)bytesReadNative;
+
+            return success;
         }
     }
 
