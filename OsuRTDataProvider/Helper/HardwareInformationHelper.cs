@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace OsuRTDataProvider.Helper
 {
-    static class HardwareInformationHelper
+#if NET5_0_OR_GREATER
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+#endif
+    public static class HardwareInformationHelper
     {
         public static string GetPhysicalMemory()
         {
@@ -61,11 +64,7 @@ namespace OsuRTDataProvider.Helper
 
         private static void Print(string str)
         {
-#if !DEBUG
-            Sync.Tools.IO.FileLogger.Write($"{str}");
-#else   
-            Sync.Tools.IO.CurrentIO.Write($"{str}");
-#endif
+            Logger.Info($"{str}");
         }
 
         public static void PrintHardwareInformation()
