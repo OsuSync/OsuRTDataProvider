@@ -80,18 +80,18 @@ namespace OsuRTDataProvider.Memory
         // 74 4D A1 ?? ?? ?? ?? 8B 58 34 8D 46 FF
         // A1 ?? ?? ?? ?? 8B 40 34 8B 70 0C 
         // 75 0E 33 D2 89 15 ?? ?? ?? ?? 89 15
-        internal override string[] pattern => new string[] {
+        internal override string[] pattern { get; } = new string[] {
             "\xD9\x5D\xC0\xEB\x4E\xA1\x00\x00\x00\x00\x8B\x48\x34\x4E",
             "\x74\x4D\xA1\x00\x00\x00\x00\x8B\x58\x34\x8D\x46\xFF",
             "\xA1\x00\x00\x00\x00\x8B\x40\x34\x8B\x70\x0C",
             "\x75\x0E\x33\xD2\x89\x15\x0\x0\x0\x0\x89\x15"
         };
 
-        internal override string[] mask => new string[] { 
+        internal override string[] mask { get; } = new string[] {
             "xxxxxx????xxxx", "xxx????xxxxxx", "x????xxxxxx", "xxxxxx????xx"
         };
 
-        internal override int[] offset => new int[] { 6, 3, 1, 6 };
+        internal override int[] offset { get; } = new int[] { 6, 3, 1, 6 };
 
         internal override string name => "Replay";
 
@@ -104,16 +104,16 @@ namespace OsuRTDataProvider.Memory
     {
         // 83 7E 60 00 74 2C A1 ?? ?? ?? ?? 8B 50 1C 8B 4A 04
         // 5D C3 A1 ?? ?? ?? ?? 8B 50 1C 8B 4A 04
-        internal override string[] pattern => new string[] {
+        internal override string[] pattern { get; } = new string[] {
             "\x83\x7E\x60\x00\x74\x2C\xA1\x00\x00\x00\x00\x8B\x50\x1C\x8B\x4A\x04",
             "\x5D\xC3\xA1\x00\x00\x00\x00\x8B\x50\x1C\x8B\x4A\x04"
         };
 
-        internal override string[] mask => new string[] {
+        internal override string[] mask { get; } = new string[] {
             "xxxxxxx????xxxxxx", "xxx????xxxxxx"
         };
 
-        internal override int[] offset => new int[] { 7, 3 };
+        internal override int[] offset { get; } = new int[] { 7, 3 };
 
         internal override string name => "Playing";
 
@@ -129,6 +129,7 @@ namespace OsuRTDataProvider.Memory
         int[] PreOffsets = new int[4] { -1, -1, -1, -1 };
 
         internal abstract string[] pattern { get; }
+        internal List<byte[]> pattern_byte { get; private set; }
         internal abstract string[] mask { get; }
         internal abstract int[] offset { get; }
         internal abstract string name { get; }
@@ -155,12 +156,20 @@ namespace OsuRTDataProvider.Memory
         public override bool TryInit()
         {
             bool success = false;
+            if (pattern_byte == null)
+            {
+                pattern_byte = new List<byte[]>(pattern.Length);
+                foreach (var s in pattern)
+                {
+                    pattern_byte.Add(StringToByte(s));
+                }
+            }
 
             SigScan.Reload();
             {
-                for (int i = 0; i < pattern.Length; i++)
+                for (int i = 0; i < pattern_byte.Count; i++)
                 {
-                    Addresses[0] = SigScan.FindPattern(StringToByte(pattern[i]), mask[i], offset[i]);
+                    Addresses[0] = SigScan.FindPattern(pattern_byte[i], mask[i], offset[i]);
                     success = Addresses[0] != IntPtr.Zero;
                     
                     if (!success)

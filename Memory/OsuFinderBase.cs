@@ -39,9 +39,12 @@ namespace OsuRTDataProvider.Memory
 
         protected byte[] StringToByte(string s)
         {
-            _a.Clear();
-            foreach (var c in s) _a.Add((byte)c);
-            return _a.ToArray();
+            lock (_a)
+            {
+                _a.Clear();
+                foreach (var c in s) _a.Add((byte)c);
+                return _a.ToArray();
+            }
         }
 
         private byte[] _number_buf = new byte[8];
